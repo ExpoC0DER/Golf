@@ -1,6 +1,7 @@
 using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _game.Scripts.Controls
 {
@@ -19,11 +20,12 @@ namespace _game.Scripts.Controls
         [SerializeField, MinMaxSlider(1, 100)] private Vector2 _powerBarMinMax;
         [SerializeField] private float _powerSensitivity = 0.1f;
         [SerializeField] private float _power;
-
-        private InputManager _inputManager;
+        
         private CinemachineFramingTransposer _framingTransposer;
         private CinemachinePOV _pov;
         private Rigidbody _rb;
+        private bool _isAiming;
+        private float _powerInput;
 
         private void Awake()
         {
@@ -32,28 +34,17 @@ namespace _game.Scripts.Controls
             _rb = GetComponent<Rigidbody>();
         }
 
-        private void Start() { _inputManager = InputManager.Instance; }
-
         private void Update()
         {
             //Set Player components positions to ball
             _powerBarRotationPivot.position = transform.position;
             _highlightRing.position = transform.position;
 
-            //Handle zooming camera
-            _framingTransposer.m_CameraDistance += _inputManager.GetScrollDelta() * _zoomSpeed;
-            _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
-
-            //Cancel aiming also sets IsAiming false
-            if (_inputManager.CanceledAimingThisFrame())
-            {
-                //Turn off PowerBar rotation and reset scale
-                _powerBarRotationPivot.gameObject.SetActive(false);
-                SetPowerBarScale(-_powerBarMinMax.y);
-            }
+            //Turn on highlight ring if player isn't moving
+            _highlightRing.gameObject.SetActive(_rb.velocity.magnitude < 0.01f);
 
             //Handle aiming when holding down left mouse button
-            if (_inputManager.IsAiming() && _rb.velocity.magnitude < 0.01f)
+            if (_isAiming && _rb.velocity.magnitude < 0.01f)
             {
                 //Lock vertical camera movement and set horizontal sensitivity to more precise
                 _pov.m_VerticalAxis.m_MaxSpeed = 0;
@@ -61,7 +52,7 @@ namespace _game.Scripts.Controls
 
                 //Turn on PowerBar, scale it by mouseYDelta, and rotate facing camera 
                 _powerBarRotationPivot.gameObject.SetActive(true);
-                SetPowerBarScale(_inputManager.GetMouseYDelta() * +_powerSensitivity);
+                SetPowerBarScale(_powerInput * +_powerSensitivity);
                 _powerBarRotationPivot.rotation = Quaternion.Euler(0, _pov.m_HorizontalAxis.Value, 0);
             }
             else
@@ -78,9 +69,42 @@ namespace _game.Scripts.Controls
                 _powerBarRotationPivot.gameObject.SetActive(false);
                 SetPowerBarScale(-_powerBarMinMax.y);
             }
+        }
 
-            //Turn on highlight ring if player isn't moving
-            _highlightRing.gameObject.SetActive(_rb.velocity.magnitude < 0.01f);
+        public void OnLook(InputAction.CallbackContext ctx)
+        {
+            Vector2 mouseDelta = ctx.ReadValue<Vector2>();
+            _pov.m_VerticalAxis.m_InputAxisValue = mouseDelta.y;
+            _pov.m_HorizontalAxis.m_InputAxisValue = mouseDelta.x;
+        }
+
+        public void OnZooming(InputAction.CallbackContext ctx)
+        {
+            //Handle zooming camera
+            _framingTransposer.m_CameraDistance += ctx.ReadValue<float>() * _zoomSpeed;
+            _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
+        }
+
+        public void IsAiming(InputAction.CallbackContext ctx)
+        {
+            if (ctx.started)
+                _isAiming = true;
+            if (ctx.canceled)
+                _isAiming = false;
+        }
+
+        public void GetPower(InputAction.CallbackContext ctx) { _powerInput = ctx.ReadValue<float>(); }
+
+        public void CancelAiming(InputAction.CallbackContext ctx)
+        {
+            //Cancel aiming
+            if (ctx.performed)
+            {
+                _isAiming = false;
+                //Turn off PowerBar and reset scale
+                _powerBarRotationPivot.gameObject.SetActive(false);
+                SetPowerBarScale(-_powerBarMinMax.y);
+            }
         }
 
         /// <summary>
