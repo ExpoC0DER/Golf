@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
@@ -7,7 +8,11 @@ namespace _game.Scripts.Controls
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private CinemachineVirtualCamera _playerCamera;
+        [field: SerializeField, ReadOnly] public int PlayerID { get; set; } = -1;
+        [SerializeField, ReadOnly] private bool _active;
+        public GameManager GameManager { get; set; }
+
+        [Space, SerializeField] private CinemachineVirtualCamera _playerCamera;
         [SerializeField] private Transform _powerBar;
         [SerializeField] private Transform _powerBarRotationPivot;
         [SerializeField] private Transform _highlightRing;
@@ -20,12 +25,15 @@ namespace _game.Scripts.Controls
         [SerializeField, MinMaxSlider(1, 100)] private Vector2 _powerBarMinMax;
         [SerializeField] private float _powerSensitivity = 0.1f;
         [SerializeField] private float _power;
-        
+
         private CinemachineFramingTransposer _framingTransposer;
         private CinemachinePOV _pov;
         private Rigidbody _rb;
         private bool _isAiming;
         private float _powerInput;
+
+        public static event Action<PlayerController> OnPlayerJoined;
+        public static event Action<int> OnPlayerLeft;
 
         private void Awake()
         {
@@ -43,7 +51,14 @@ namespace _game.Scripts.Controls
             //Turn on highlight ring if player isn't moving
             _highlightRing.gameObject.SetActive(_rb.velocity.magnitude < 0.01f);
 
+            if (!_active) return;
+
             //Handle aiming when holding down left mouse button
+            HandleAiming();
+        }
+
+        private void HandleAiming()
+        {
             if (_isAiming && _rb.velocity.magnitude < 0.01f)
             {
                 //Lock vertical camera movement and set horizontal sensitivity to more precise
@@ -117,6 +132,32 @@ namespace _game.Scripts.Controls
             powerBarLocalScale.z += lenght;
             powerBarLocalScale.z = Mathf.Clamp(powerBarLocalScale.z, _powerBarMinMax.x, _powerBarMinMax.y);
             _powerBar.localScale = powerBarLocalScale;
+        }
+
+        private void OnActivePlayerChanged(int playerId)
+        {
+            if (PlayerID == playerId)
+            {
+                _playerCamera.m_Priority = 10;
+                _active = true;
+            }
+            else
+            {
+                _playerCamera.m_Priority = 0;
+                _active = false;
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
+            OnPlayerJoined?.Invoke(this);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
+            OnPlayerLeft?.Invoke(PlayerID);
         }
     }
 }

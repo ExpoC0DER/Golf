@@ -306,6 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ff5cec8f9ea785408d39a5837c9d19f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <PlayerID>k__BackingField: -1
+  _active: 0
   _playerCamera: {fileID: 3952190247341306527}
   _powerBar: {fileID: 7787248091618927971}
   _powerBarRotationPivot: {fileID: 1557183286881308663}
@@ -536,7 +538,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 1398196092672690374}
   m_Follow: {fileID: 1398196092672690374}
