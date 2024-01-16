@@ -3,13 +3,18 @@ using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Layer = _game.Scripts.Enums.Layer;
+using Random = UnityEngine.Random;
 
 namespace _game.Scripts.Controls
 {
     public class PlayerController : MonoBehaviour
     {
+        [field: Header("Automatic Properties")]
         [field: SerializeField, ReadOnly] public int PlayerID { get; set; } = -1;
+        [field: SerializeField, ReadOnly] public Color Color { get; set; }
         [SerializeField, ReadOnly] private bool _active;
+
         public GameManager GameManager { get; set; }
 
         [Space, SerializeField] private CinemachineVirtualCamera _playerCamera;
@@ -31,6 +36,8 @@ namespace _game.Scripts.Controls
         private Rigidbody _rb;
         private bool _isAiming;
         private float _powerInput;
+        private bool _shotBall, _tookTurn;
+        private static readonly int MaterialColorReference = Shader.PropertyToID("_BaseColor");
 
         public static event Action<PlayerController> OnPlayerJoined;
         public static event Action<int> OnPlayerLeft;
@@ -40,6 +47,7 @@ namespace _game.Scripts.Controls
             _framingTransposer = _playerCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             _pov = _playerCamera.GetCinemachineComponent<CinemachinePOV>();
             _rb = GetComponent<Rigidbody>();
+            SetRandomColor();
         }
 
         private void Update()
@@ -48,13 +56,31 @@ namespace _game.Scripts.Controls
             _powerBarRotationPivot.position = transform.position;
             _highlightRing.position = transform.position;
 
-            //Turn on highlight ring if player isn't moving
-            _highlightRing.gameObject.SetActive(_rb.velocity.magnitude < 0.01f);
-
             if (!_active) return;
 
             //Handle aiming when holding down left mouse button
             HandleAiming();
+        }
+
+        private void FixedUpdate()
+        {
+            float ballSpeed = _rb.velocity.magnitude;
+            //Turn on highlight ring if player isn't moving
+            _highlightRing.gameObject.SetActive(ballSpeed < 0.01f);
+
+            if (!_active) return;
+
+            if (_tookTurn && ballSpeed < 0.01f)
+            {
+                _tookTurn = false;
+                GameManager.SwitchPlayer(1);
+            }
+
+            if (_shotBall && ballSpeed > 0.01f)
+            {
+                _tookTurn = true;
+                _shotBall = false;
+            }
         }
 
         private void HandleAiming()
@@ -74,7 +100,11 @@ namespace _game.Scripts.Controls
             {
                 //If PowerBar is active (player was aiming) add force to ball in direction of pivot times power multiplied by fraction of PowerBar
                 if (_powerBarRotationPivot.gameObject.activeSelf)
+                {
                     _rb.AddForce(_powerBarRotationPivot.forward * (_power * (_powerBar.localScale.z / _powerBarMinMax.y)), ForceMode.Impulse);
+                    _shotBall = true;
+                    gameObject.layer = (int)Layer.Player;
+                }
 
                 //Set vertical and horizontal camera movement back to normal
                 _pov.m_VerticalAxis.m_MaxSpeed = _cameraSensitivity.y;
@@ -84,6 +114,14 @@ namespace _game.Scripts.Controls
                 _powerBarRotationPivot.gameObject.SetActive(false);
                 SetPowerBarScale(-_powerBarMinMax.y);
             }
+        }
+
+        private void SetRandomColor()
+        {
+            Color = Random.ColorHSV(0f, 1f, 0f, 1f, 0f, 1f, 1f, 1f);
+            MaterialPropertyBlock mpb = new MaterialPropertyBlock();
+            mpb.SetColor(MaterialColorReference, Color);
+            GetComponent<Renderer>().SetPropertyBlock(mpb);
         }
 
         public void OnLook(InputAction.CallbackContext ctx)

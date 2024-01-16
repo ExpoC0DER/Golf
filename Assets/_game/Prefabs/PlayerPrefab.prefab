@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7917293188390071673}
   - component: {fileID: 2698541571107317752}
   - component: {fileID: 9166351546679521616}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: cm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ MonoBehaviour:
     m_InputAxisName: 
     m_InputAxisValue: 0
     m_InvertInput: 1
-    m_MinValue: 0
+    m_MinValue: 1
     m_MaxValue: 90
     m_Wrap: 0
     m_Recentering:
@@ -160,7 +160,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1323614591275711273}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,7 +176,7 @@ Transform:
   m_GameObject: {fileID: 2202449079868754379}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.05, z: 0}
+  m_LocalPosition: {x: 0, y: 0.0215, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -201,7 +201,7 @@ GameObject:
   - component: {fileID: 8221349741261837532}
   - component: {fileID: 2966389698227816297}
   - component: {fileID: 2875582034229385179}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PlayerBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 0.043, y: 0.043, z: 0.043}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1323614591275711273}
@@ -251,7 +251,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f1e38594f14520c48bc546f3a41f4f56, type: 2}
+  - {fileID: 2100000, guid: 3069380b388d37740a4e2988dc8d7baf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -280,7 +280,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2870615914036560918}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: b1feaebcee38e3747b9337182996180a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -307,6 +307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PlayerID>k__BackingField: -1
+  <Color>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
   _active: 0
   _playerCamera: {fileID: 3952190247341306527}
   _powerBar: {fileID: 7787248091618927971}
@@ -316,9 +317,9 @@ MonoBehaviour:
   _zoomMinMax: {x: 1, y: 5}
   _cameraSensitivity: {x: 200, y: 200}
   _cameraPrecisionSensitivity: 30
-  _powerBarMinMax: {x: 1, y: 20}
+  _powerBarMinMax: {x: 1, y: 8}
   _powerSensitivity: 0.1
-  _power: 10
+  _power: 1
 --- !u!54 &2966389698227816297
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -327,9 +328,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2870615914036560918}
   serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0.3
-  m_AngularDrag: 0.05
+  m_Mass: 0.046
+  m_Drag: 0.5
+  m_AngularDrag: 0.25
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -343,9 +344,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &2875582034229385179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,7 +467,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1557183286881308663}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PowerBarRotationPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -499,7 +500,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8856246192753032113}
   - component: {fileID: 3952190247341306527}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerBallFollowCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -570,7 +571,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7787248091618927971}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PowerBarStart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +587,7 @@ Transform:
   m_GameObject: {fileID: 7281410367601128876}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.08}
+  m_LocalPosition: {x: 0, y: 0, z: 0.04}
   m_LocalScale: {x: 1, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -604,7 +605,7 @@ GameObject:
   - component: {fileID: 4521714642184196804}
   - component: {fileID: 5414246202400637551}
   - component: {fileID: 592596315584640132}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PowerBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,7 +622,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.025}
-  m_LocalScale: {x: 0.05, y: 0.025, z: 0.05}
+  m_LocalScale: {x: 0.025, y: 0.005, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7787248091618927971}
@@ -687,7 +688,7 @@ GameObject:
   - component: {fileID: 3926406153785272369}
   - component: {fileID: 6050567541581727826}
   - component: {fileID: 8138068026739507471}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: HighlightRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -704,7 +705,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.005, z: 0.15}
+  m_LocalScale: {x: 0.06, y: 0.003, z: 0.06}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1323614591275711273}

@@ -16,7 +16,7 @@ namespace _game.Scripts
 
         public static event Action<int> OnActivePlayerChanged;
 
-        void Update()
+        private void Update()
         {
             // Check for debug input
             if (Input.GetKeyDown(KeyCode.Period))
@@ -44,6 +44,8 @@ namespace _game.Scripts
             _players.Add(player.PlayerID, player);
             ChangeActivePlayer(_activePlayerId);
         }
+
+        public PlayerController GetPlayer(int playerId) { return _players.TryGetValue(playerId, out PlayerController player) ? player : null; }
 
         private void RemovePlayer(int playerId)
         {
