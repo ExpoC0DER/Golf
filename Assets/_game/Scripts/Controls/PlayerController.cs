@@ -12,7 +12,11 @@ namespace _game.Scripts.Controls
     {
         [field: Header("Automatic Properties")]
         [field: SerializeField, ReadOnly] public int PlayerID { get; set; } = -1;
-        [field: SerializeField, ReadOnly] public Color Color { get; set; }
+        [field: SerializeField, ReadOnly] public Color Color { get; private set; }
+        [field: SerializeField, ReadOnly] public string PlayerName { get; set; }
+        [field: SerializeField, ReadOnly] public bool Finished { get; private set; }
+        [field: SerializeField, ReadOnly] public int ShotsTaken { get; private set; }
+        [field: SerializeField, ReadOnly] public int ShotsTakenTotal { get; private set; }
         [SerializeField, ReadOnly] private bool _active;
 
         public GameManager GameManager { get; set; }
@@ -36,18 +40,18 @@ namespace _game.Scripts.Controls
         private Rigidbody _rb;
         private bool _isAiming;
         private float _powerInput;
-        private bool _shotBall, _tookTurn;
+        private bool _shotBall, _tookTurn, _isInTheHole;
         private static readonly int MaterialColorReference = Shader.PropertyToID("_BaseColor");
 
         public static event Action<PlayerController> OnPlayerJoined;
         public static event Action<int> OnPlayerLeft;
+        public static event Action<int> OnPlayerFinished;
 
         private void Awake()
         {
             _framingTransposer = _playerCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             _pov = _playerCamera.GetCinemachineComponent<CinemachinePOV>();
             _rb = GetComponent<Rigidbody>();
-            SetRandomColor();
         }
 
         private void Update()
@@ -81,6 +85,14 @@ namespace _game.Scripts.Controls
                 _tookTurn = true;
                 _shotBall = false;
             }
+
+            if (_isInTheHole && ballSpeed < 0.01f)
+            {
+                Finished = true;
+                gameObject.layer = (int)Layer.Ghost;
+                _active = false;
+                OnPlayerFinished?.Invoke(PlayerID);
+            }
         }
 
         private void HandleAiming()
@@ -103,6 +115,8 @@ namespace _game.Scripts.Controls
                 {
                     _rb.AddForce(_powerBarRotationPivot.forward * (_power * (_powerBar.localScale.z / _powerBarMinMax.y)), ForceMode.Impulse);
                     _shotBall = true;
+                    ShotsTaken++;
+                    ShotsTakenTotal++;
                     gameObject.layer = (int)Layer.Player;
                 }
 
@@ -116,11 +130,27 @@ namespace _game.Scripts.Controls
             }
         }
 
-        private void SetRandomColor()
+        private void OnTriggerEnter(Collider other)
         {
-            Color = Random.ColorHSV(0f, 1f, 0f, 1f, 0f, 1f, 1f, 1f);
+            if (other.CompareTag("Hole"))
+            {
+                _isInTheHole = true;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Hole"))
+            {
+                _isInTheHole = false;
+            }
+        }
+
+        public void SetColor(Color newColor)
+        {
+            Color = newColor;
             MaterialPropertyBlock mpb = new MaterialPropertyBlock();
-            mpb.SetColor(MaterialColorReference, Color);
+            mpb.SetColor(MaterialColorReference, newColor);
             GetComponent<Renderer>().SetPropertyBlock(mpb);
         }
 

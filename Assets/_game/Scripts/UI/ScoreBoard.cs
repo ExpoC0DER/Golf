@@ -1,13 +1,18 @@
 using System.Collections.Generic;
+using _game.Scripts.Controls;
+using AYellowpaper.SerializedCollections;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _game.Scripts.UI
 {
     public class ScoreBoard : MonoBehaviour
     {
+        [SerializeField] private GameManager _gameManager;
         [SerializeField] private ScoreBoardLine _scoreBoardLinePrefab;
         [SerializeField] private ScoreBoardLine _headerLine;
+        [SerializeField] private Transform _content;
 
         [Header("Settings"), SerializeField, Min(0), OnValueChanged("UpdateScoreBoard")]
         private int _numberOfRounds;
@@ -16,8 +21,9 @@ namespace _game.Scripts.UI
         [SerializeField, OnValueChanged("UpdateScoreBoard")]
         private bool _forceSameWidth = true;
 
-        [SerializeField, ReadOnly]
-        private List<ScoreBoardLine> _players = new List<ScoreBoardLine>();
+        [SerializeField, SerializedDictionary("PlayerId", "Line"), ReadOnly]
+        private SerializedDictionary<int, ScoreBoardLine> _playerLines = new();
+        
 
         //* Update scoreboard when changed from editor
         private void UpdateScoreBoard() { InstantiateScoreboard(_numberOfPlayers, _numberOfRounds); }
@@ -28,8 +34,8 @@ namespace _game.Scripts.UI
 
             for(int i = 0; i < numberOfPlayers; i++)
             {
-                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, transform);
-                _players.Add(tempLine);
+                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
+                _playerLines.Add(i, tempLine);
                 tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
             }
 
@@ -37,6 +43,24 @@ namespace _game.Scripts.UI
 
             //*Update settings if changed from script
             _numberOfPlayers = numberOfPlayers;
+            _numberOfRounds = numberOfRounds;
+        }
+
+        public void InstantiateScoreboard(SerializedDictionary<int, PlayerController> players, int numberOfRounds)
+        {
+            DeletePlayers();
+
+            foreach (KeyValuePair<int, PlayerController> pair in players)
+            {
+                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
+                _playerLines.Add(pair.Key, tempLine);
+                tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
+            }
+
+            SetHeaderLine(numberOfRounds);
+
+            //*Update settings if changed from script
+            _numberOfPlayers = players.Count;
             _numberOfRounds = numberOfRounds;
         }
 
@@ -51,11 +75,24 @@ namespace _game.Scripts.UI
 
         private void DeletePlayers()
         {
-            foreach (ScoreBoardLine roundScore in _players)
+            foreach (KeyValuePair<int, ScoreBoardLine> pair in _playerLines)
             {
-                DestroyImmediate(roundScore.gameObject);
+                DestroyImmediate(pair.Value.gameObject);
             }
-            _players.Clear();
+            _playerLines.Clear();
         }
+
+        private void OnRoundEnd(int round, SerializedDictionary<int, PlayerController> players)
+        {
+            foreach (KeyValuePair<int, PlayerController> pair in players)
+            {
+                _playerLines[pair.Key].SetScore(round, pair.Value.ShotsTaken);
+            }
+            _content.gameObject.SetActive(true);
+        }
+
+        private void OnEnable() { GameManager.OnRoundEnd += OnRoundEnd; }
+
+        private void OnDisable() { GameManager.OnRoundEnd -= OnRoundEnd; }
     }
 }

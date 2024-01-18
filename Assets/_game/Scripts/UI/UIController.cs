@@ -13,7 +13,7 @@ namespace _game.Scripts.UI
 
         private void OnActivePlayerChanged(int playerId)
         {
-            _playerName.text = "Player " + playerId;
+            _playerName.text = _gameManager.GetPlayer(playerId).PlayerName;
             Color playerColor = _gameManager.GetPlayer(playerId).Color;
             _playerName.color = playerColor;
             _playerNameGraphic.color = playerColor;

@@ -71,6 +71,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlayerJoin"",
+                    ""type"": ""Button"",
+                    ""id"": ""0bc1a9ab-333b-49b9-8a67-a7191d2eef2e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -205,6 +214,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""CancelAiming"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""acdebbf9-1a91-497c-9678-a848b12059dc"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""PlayerJoin"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9ae157d4-2c9c-498c-992f-ab0c25e4c740"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""PlayerJoin"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -246,6 +277,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Aiming = m_Player.FindAction("Aiming", throwIfNotFound: true);
         m_Player_Power = m_Player.FindAction("Power", throwIfNotFound: true);
         m_Player_CancelAiming = m_Player.FindAction("CancelAiming", throwIfNotFound: true);
+        m_Player_PlayerJoin = m_Player.FindAction("PlayerJoin", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -312,6 +344,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Aiming;
     private readonly InputAction m_Player_Power;
     private readonly InputAction m_Player_CancelAiming;
+    private readonly InputAction m_Player_PlayerJoin;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -321,6 +354,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Aiming => m_Wrapper.m_Player_Aiming;
         public InputAction @Power => m_Wrapper.m_Player_Power;
         public InputAction @CancelAiming => m_Wrapper.m_Player_CancelAiming;
+        public InputAction @PlayerJoin => m_Wrapper.m_Player_PlayerJoin;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -345,6 +379,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CancelAiming.started += instance.OnCancelAiming;
             @CancelAiming.performed += instance.OnCancelAiming;
             @CancelAiming.canceled += instance.OnCancelAiming;
+            @PlayerJoin.started += instance.OnPlayerJoin;
+            @PlayerJoin.performed += instance.OnPlayerJoin;
+            @PlayerJoin.canceled += instance.OnPlayerJoin;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -364,6 +401,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CancelAiming.started -= instance.OnCancelAiming;
             @CancelAiming.performed -= instance.OnCancelAiming;
             @CancelAiming.canceled -= instance.OnCancelAiming;
+            @PlayerJoin.started -= instance.OnPlayerJoin;
+            @PlayerJoin.performed -= instance.OnPlayerJoin;
+            @PlayerJoin.canceled -= instance.OnPlayerJoin;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -406,5 +446,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnAiming(InputAction.CallbackContext context);
         void OnPower(InputAction.CallbackContext context);
         void OnCancelAiming(InputAction.CallbackContext context);
+        void OnPlayerJoin(InputAction.CallbackContext context);
     }
 }
