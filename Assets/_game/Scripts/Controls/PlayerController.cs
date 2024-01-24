@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Layer = _game.Scripts.Enums.Layer;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 namespace _game.Scripts.Controls
 {
@@ -14,6 +15,7 @@ namespace _game.Scripts.Controls
         [field: SerializeField, ReadOnly] public int PlayerID { get; set; } = -1;
         [field: SerializeField, ReadOnly] public Color Color { get; private set; }
         [field: SerializeField, ReadOnly] public string PlayerName { get; set; }
+        [field: SerializeField, ReadOnly] public Map Map { get; set; }
         [field: SerializeField, ReadOnly] public bool Finished { get; private set; }
         [field: SerializeField, ReadOnly] public int ShotsTaken { get; private set; }
         [field: SerializeField, ReadOnly] public int ShotsTakenTotal { get; private set; }
@@ -23,15 +25,18 @@ namespace _game.Scripts.Controls
 
         [Space, SerializeField] private CinemachineVirtualCamera _playerCamera;
         [SerializeField] private Transform _powerBar;
+        [SerializeField] private Material _powerBarMat;
         [SerializeField] private Transform _powerBarRotationPivot;
         [SerializeField] private Transform _highlightRing;
 
         [Header("Settings")]
         [SerializeField] private float _zoomSpeed;
-        [SerializeField, MinMaxSlider(1, 10)] private Vector2 _zoomMinMax;
+        [SerializeField, MinMaxSlider(0.1f, 10)]
+        private Vector2 _zoomMinMax;
         [SerializeField] private Vector2 _cameraSensitivity = new Vector2(300, 300);
         [SerializeField] private float _cameraPrecisionSensitivity = 30;
-        [SerializeField, MinMaxSlider(1, 100)] private Vector2 _powerBarMinMax;
+        [SerializeField, MinMaxSlider(0.1f, 100)]
+        private Vector2 _powerBarMinMax;
         [SerializeField] private float _powerSensitivity = 0.1f;
         [SerializeField] private float _power;
 
@@ -47,12 +52,34 @@ namespace _game.Scripts.Controls
         public static event Action<int> OnPlayerLeft;
         public static event Action<int> OnPlayerFinished;
 
+        public float input;
         private void Awake()
         {
             _framingTransposer = _playerCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             _pov = _playerCamera.GetCinemachineComponent<CinemachinePOV>();
             _rb = GetComponent<Rigidbody>();
+
         }
+
+        private void OnValidate() { print(InterpolateInCubic(input)); }
+
+        // Method to interpolate values on an InCubic curve
+        public float InterpolateInCubic(float inputPower)
+        {
+            // Ensure that inputPower is within the specified range
+            inputPower = Mathf.Clamp(inputPower, _powerBarMinMax.x, _powerBarMinMax.y);
+
+            // Normalize inputPower within the range [0, 1]
+            float t = Mathf.InverseLerp(_powerBarMinMax.x, _powerBarMinMax.y, inputPower);
+
+            // Use Mathf.Lerp to interpolate on the InCubic curve
+            float interpolatedValue = Mathf.Lerp(0, _power, InSine(t));
+
+            return interpolatedValue;
+        }
+
+        // InCubic function for interpolation
+        private static float InSine(float t) { return 1 - Mathf.Cos((t * Mathf.PI) / 2); }
 
         private void Update()
         {
@@ -110,7 +137,7 @@ namespace _game.Scripts.Controls
             }
             else
             {
-                //If PowerBar is active (player was aiming) add force to ball in direction of pivot times power multiplied by fraction of PowerBar
+                //If PowerBar is active (player was aiming) add force to ball in direction of pivot times inputPower multiplied by fraction of PowerBar
                 if (_powerBarRotationPivot.gameObject.activeSelf)
                 {
                     _rb.AddForce(_powerBarRotationPivot.forward * (_power * (_powerBar.localScale.z / _powerBarMinMax.y)), ForceMode.Impulse);
@@ -200,6 +227,11 @@ namespace _game.Scripts.Controls
             powerBarLocalScale.z += lenght;
             powerBarLocalScale.z = Mathf.Clamp(powerBarLocalScale.z, _powerBarMinMax.x, _powerBarMinMax.y);
             _powerBar.localScale = powerBarLocalScale;
+            float hue = powerBarLocalScale.z.Remap(_powerBarMinMax.x, _powerBarMinMax.y, 0.42f, 0f);
+            print(hue);
+            Color newColor = Color.HSVToRGB(hue, 1, 1);
+            _powerBarMat.SetColor("_BaseColor", newColor);
+            _powerBarMat.SetColor("_EmissionColor", newColor);
         }
 
         private void OnActivePlayerChanged(int playerId)
@@ -216,16 +248,34 @@ namespace _game.Scripts.Controls
             }
         }
 
+        private void OnRoundStart(int round)
+        {
+            _isInTheHole = false;
+            Finished = false;
+            if (Map.GetRoundStartLocation(round, out Transform startLocation))
+                _rb.position = startLocation.position;
+            _rb.isKinematic = false;
+        }
+        private void OnRoundEnd(int round)
+        {
+            ShotsTaken = 0;
+            _rb.isKinematic = true;
+        }
+
         private void OnEnable()
         {
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
             OnPlayerJoined?.Invoke(this);
+            GameManager.OnRoundStart += OnRoundStart;
+            GameManager.OnRoundEnd += OnRoundEnd;
         }
 
         private void OnDisable()
         {
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
             OnPlayerLeft?.Invoke(PlayerID);
+            GameManager.OnRoundStart -= OnRoundStart;
+            GameManager.OnRoundEnd -= OnRoundEnd;
         }
     }
 }

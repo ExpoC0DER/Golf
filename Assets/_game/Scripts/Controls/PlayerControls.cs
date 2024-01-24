@@ -238,6 +238,96 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Build"",
+            ""id"": ""310f7cbc-a179-48f2-94ee-aea26510f0bb"",
+            ""actions"": [
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""5ac31e69-d1bc-4355-883d-fc912ec64b2c"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeftClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""38d1fd7e-0ac5-4026-b39c-62a3ceb57978"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""7ea7e919-1cc5-485d-89b1-335614ed3b86"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f3274be2-a2aa-4bc6-9533-172ff3cc92f8"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b0eda65-9851-4d39-9ea4-8d02c1e04cf1"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""LeftClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""2f916633-2234-44cb-9c3c-88938376cfe9"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""6a9498ab-189f-44d3-a9a9-c77c7c1d3384"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""47356dc6-35d8-4674-94e6-e153f06a92c5"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -278,6 +368,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Power = m_Player.FindAction("Power", throwIfNotFound: true);
         m_Player_CancelAiming = m_Player.FindAction("CancelAiming", throwIfNotFound: true);
         m_Player_PlayerJoin = m_Player.FindAction("PlayerJoin", throwIfNotFound: true);
+        // Build
+        m_Build = asset.FindActionMap("Build", throwIfNotFound: true);
+        m_Build_MousePosition = m_Build.FindAction("MousePosition", throwIfNotFound: true);
+        m_Build_LeftClick = m_Build.FindAction("LeftClick", throwIfNotFound: true);
+        m_Build_Rotate = m_Build.FindAction("Rotate", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -421,6 +516,68 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Build
+    private readonly InputActionMap m_Build;
+    private List<IBuildActions> m_BuildActionsCallbackInterfaces = new List<IBuildActions>();
+    private readonly InputAction m_Build_MousePosition;
+    private readonly InputAction m_Build_LeftClick;
+    private readonly InputAction m_Build_Rotate;
+    public struct BuildActions
+    {
+        private @PlayerControls m_Wrapper;
+        public BuildActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @MousePosition => m_Wrapper.m_Build_MousePosition;
+        public InputAction @LeftClick => m_Wrapper.m_Build_LeftClick;
+        public InputAction @Rotate => m_Wrapper.m_Build_Rotate;
+        public InputActionMap Get() { return m_Wrapper.m_Build; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(BuildActions set) { return set.Get(); }
+        public void AddCallbacks(IBuildActions instance)
+        {
+            if (instance == null || m_Wrapper.m_BuildActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_BuildActionsCallbackInterfaces.Add(instance);
+            @MousePosition.started += instance.OnMousePosition;
+            @MousePosition.performed += instance.OnMousePosition;
+            @MousePosition.canceled += instance.OnMousePosition;
+            @LeftClick.started += instance.OnLeftClick;
+            @LeftClick.performed += instance.OnLeftClick;
+            @LeftClick.canceled += instance.OnLeftClick;
+            @Rotate.started += instance.OnRotate;
+            @Rotate.performed += instance.OnRotate;
+            @Rotate.canceled += instance.OnRotate;
+        }
+
+        private void UnregisterCallbacks(IBuildActions instance)
+        {
+            @MousePosition.started -= instance.OnMousePosition;
+            @MousePosition.performed -= instance.OnMousePosition;
+            @MousePosition.canceled -= instance.OnMousePosition;
+            @LeftClick.started -= instance.OnLeftClick;
+            @LeftClick.performed -= instance.OnLeftClick;
+            @LeftClick.canceled -= instance.OnLeftClick;
+            @Rotate.started -= instance.OnRotate;
+            @Rotate.performed -= instance.OnRotate;
+            @Rotate.canceled -= instance.OnRotate;
+        }
+
+        public void RemoveCallbacks(IBuildActions instance)
+        {
+            if (m_Wrapper.m_BuildActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IBuildActions instance)
+        {
+            foreach (var item in m_Wrapper.m_BuildActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_BuildActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public BuildActions @Build => new BuildActions(this);
     private int m_KeyboardAndMouseSchemeIndex = -1;
     public InputControlScheme KeyboardAndMouseScheme
     {
@@ -447,5 +604,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnPower(InputAction.CallbackContext context);
         void OnCancelAiming(InputAction.CallbackContext context);
         void OnPlayerJoin(InputAction.CallbackContext context);
+    }
+    public interface IBuildActions
+    {
+        void OnMousePosition(InputAction.CallbackContext context);
+        void OnLeftClick(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
 }

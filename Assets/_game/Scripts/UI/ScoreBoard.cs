@@ -23,7 +23,7 @@ namespace _game.Scripts.UI
 
         [SerializeField, SerializedDictionary("PlayerId", "Line"), ReadOnly]
         private SerializedDictionary<int, ScoreBoardLine> _playerLines = new();
-        
+
 
         //* Update scoreboard when changed from editor
         private void UpdateScoreBoard() { InstantiateScoreboard(_numberOfPlayers, _numberOfRounds); }
@@ -82,11 +82,12 @@ namespace _game.Scripts.UI
             _playerLines.Clear();
         }
 
-        private void OnRoundEnd(int round, SerializedDictionary<int, PlayerController> players)
+        private void OnRoundEnd(int round)
         {
-            foreach (KeyValuePair<int, PlayerController> pair in players)
+            foreach (KeyValuePair<int, PlayerController> pair in _gameManager.Players)
             {
                 _playerLines[pair.Key].SetScore(round, pair.Value.ShotsTaken);
+                _playerLines[pair.Key].SetTotal(pair.Value.ShotsTakenTotal);
             }
             _content.gameObject.SetActive(true);
         }

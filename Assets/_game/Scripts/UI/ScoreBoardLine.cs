@@ -12,6 +12,7 @@ namespace _game.Scripts.UI
         [SerializeField] private RectTransform _roundsHolder;
         [SerializeField] private HorizontalLayoutGroup _roundsHolderLayout;
         [SerializeField] private TMP_Text _roundScorePrefab;
+        [SerializeField] private TMP_Text _total;
 
         [Header("Settings"), SerializeField, Min(0), OnValueChanged("UpdateLine")]
         private int _numberOfScores;
@@ -36,7 +37,7 @@ namespace _game.Scripts.UI
             _roundsHolderLayout.childControlWidth = true;
             LayoutRebuilder.ForceRebuildLayoutImmediate(_roundsHolder);
             _roundsHolderLayout.childControlWidth = forceSameWidth;
-            
+
             //*Update settings if changed from script
             _forceSameWidth = forceSameWidth;
             _numberOfScores = numberOfScores;
@@ -52,6 +53,8 @@ namespace _game.Scripts.UI
             if (round < _roundScores.Count)
                 _roundScores[round].text = score.ToString();
         }
+
+        public void SetTotal(int totalScore) { _total.text = totalScore.ToString(); }
 
         private void DeleteRoundScores()
         {

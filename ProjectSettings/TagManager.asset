@@ -5,17 +5,18 @@ TagManager:
   serializedVersion: 2
   tags:
   - Hole
+  - Obstacle
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - Player
   - Ghost
-  - 
-  - 
+  - Obstacle
+  - ObstaclePreview
   - 
   - 
   - 

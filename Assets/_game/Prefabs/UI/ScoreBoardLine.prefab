@@ -199,7 +199,9 @@ MonoBehaviour:
   _roundsHolderLayout: {fileID: 1948669465460777861}
   _roundScorePrefab: {fileID: 5381210731400822438, guid: 713cc34c04b74954b8b6e84418406f81,
     type: 3}
+  _total: {fileID: 2311417560477242991}
   _numberOfScores: 0
+  _forceSameWidth: 1
   _roundScores: []
 --- !u!114 &5424039976376867290
 MonoBehaviour:
