@@ -314,7 +314,7 @@ GameObject:
   - component: {fileID: 2787778515335661661}
   - component: {fileID: 8003996797254346569}
   - component: {fileID: 4344856022435229436}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -743,6 +743,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5261383187928176348, guid: d1a5e2083af427c4b9e47c92c01c9a7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d1a5e2083af427c4b9e47c92c01c9a7a,
         type: 3}

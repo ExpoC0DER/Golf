@@ -1,3 +1,5 @@
+using System;
+using _game.Scripts.Controls;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -5,9 +7,11 @@ using UnityEngine.Serialization;
 
 namespace _game.Scripts.Building
 {
-    public class BuildManager : MonoBehaviour
+    public class BuildController : MonoBehaviour
     {
-        public bool CanPlace { get; set; } = true;
+        [HideInInspector] public bool IsBuilding;
+        [HideInInspector] public bool CanPlace = true;
+        
         [field: SerializeField] public Material PreviewMaterial { get; private set; }
         [SerializeField] private Color _canPlaceColor;
         [SerializeField] private Color _canNotPlaceColor;
@@ -15,6 +19,7 @@ namespace _game.Scripts.Building
         [SerializeField] private ObstaclesDatabaseSO _obstacles;
         [SerializeField] private LayerMask _layerMask;
 
+        private PlayerInput _playerInput;
         private Vector3 _pos;
         private RaycastHit _hit;
         private Camera _mainCamera;
@@ -24,10 +29,16 @@ namespace _game.Scripts.Building
         private Vector2 _mousePos;
         private float _rotateInput;
 
-        private void Start() { _mainCamera = Camera.main; }
+        private void Start()
+        {
+            _mainCamera = Camera.main;
+            _playerInput = GetComponent<PlayerInput>();
+        }
 
         private void Update()
         {
+            if (!IsBuilding) return;
+
             PreviewMaterial.color = CanPlace ? _canPlaceColor : _canNotPlaceColor;
 
             if (_selectedObstacleIndex < 0) return;
@@ -62,7 +73,7 @@ namespace _game.Scripts.Building
             }
             _pendingObject = Instantiate(_obstacles.ObstaclesData[_selectedObstacleIndex].Prefab, _pos, Quaternion.identity);
             _pendingObject.gameObject.layer = (int)Enums.Layer.ObstaclePreview;
-            _pendingObject.BuildManager = this;
+            _pendingObject.BuildController = this;
         }
 
         private void EndPlacement()

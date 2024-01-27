@@ -46,11 +46,11 @@ namespace _game.Scripts.UI
             _numberOfRounds = numberOfRounds;
         }
 
-        public void InstantiateScoreboard(SerializedDictionary<int, PlayerController> players, int numberOfRounds)
+        public void InstantiateScoreboard(SerializedDictionary<int, Player> players, int numberOfRounds)
         {
             DeletePlayers();
 
-            foreach (KeyValuePair<int, PlayerController> pair in players)
+            foreach (KeyValuePair<int, Player> pair in players)
             {
                 ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
                 _playerLines.Add(pair.Key, tempLine);
@@ -84,7 +84,7 @@ namespace _game.Scripts.UI
 
         private void OnRoundEnd(int round)
         {
-            foreach (KeyValuePair<int, PlayerController> pair in _gameManager.Players)
+            foreach (KeyValuePair<int, Player> pair in _gameManager.Players)
             {
                 _playerLines[pair.Key].SetScore(round, pair.Value.ShotsTaken);
                 _playerLines[pair.Key].SetTotal(pair.Value.ShotsTakenTotal);

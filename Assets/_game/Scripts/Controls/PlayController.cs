@@ -6,24 +6,14 @@ using UnityEngine.InputSystem;
 using Layer = _game.Scripts.Enums.Layer;
 using Random = UnityEngine.Random;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 namespace _game.Scripts.Controls
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayController : MonoBehaviour
     {
-        [field: Header("Automatic Properties")]
-        [field: SerializeField, ReadOnly] public int PlayerID { get; set; } = -1;
-        [field: SerializeField, ReadOnly] public Color Color { get; private set; }
-        [field: SerializeField, ReadOnly] public string PlayerName { get; set; }
-        [field: SerializeField, ReadOnly] public Map Map { get; set; }
-        [field: SerializeField, ReadOnly] public bool Finished { get; private set; }
-        [field: SerializeField, ReadOnly] public int ShotsTaken { get; private set; }
-        [field: SerializeField, ReadOnly] public int ShotsTakenTotal { get; private set; }
-        [SerializeField, ReadOnly] private bool _active;
+        [HideInInspector] public bool IsPlaying = true;
 
-        public GameManager GameManager { get; set; }
-
-        [Space, SerializeField] private CinemachineVirtualCamera _playerCamera;
         [SerializeField] private Transform _powerBar;
         [SerializeField] private Material _powerBarMat;
         [SerializeField] private Transform _powerBarRotationPivot;
@@ -40,54 +30,50 @@ namespace _game.Scripts.Controls
         [SerializeField] private float _powerSensitivity = 0.1f;
         [SerializeField] private float _power;
 
+        private Player _player;
         private CinemachineFramingTransposer _framingTransposer;
         private CinemachinePOV _pov;
         private Rigidbody _rb;
-        private bool _isAiming;
+        private PlayerInput _playerInput;
         private float _powerInput;
-        private bool _shotBall, _tookTurn, _isInTheHole;
-        private static readonly int MaterialColorReference = Shader.PropertyToID("_BaseColor");
+        private bool _isAiming, _shotBall, _tookTurn, _isInTheHole;
 
-        public static event Action<PlayerController> OnPlayerJoined;
-        public static event Action<int> OnPlayerLeft;
         public static event Action<int> OnPlayerFinished;
 
-        public float input;
         private void Awake()
         {
-            _framingTransposer = _playerCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
-            _pov = _playerCamera.GetCinemachineComponent<CinemachinePOV>();
+            _player = GetComponent<Player>();
+            _framingTransposer = _player.PlayCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+            _pov = _player.PlayCamera.GetCinemachineComponent<CinemachinePOV>();
             _rb = GetComponent<Rigidbody>();
-
+            _playerInput = GetComponent<PlayerInput>();
         }
 
-        private void OnValidate() { print(InterpolateInCubic(input)); }
-
-        // Method to interpolate values on an InCubic curve
-        public float InterpolateInCubic(float inputPower)
+        // Method to interpolate values on an InSine curve
+        private float InterpolateInSine(float inputPower)
         {
             // Ensure that inputPower is within the specified range
             inputPower = Mathf.Clamp(inputPower, _powerBarMinMax.x, _powerBarMinMax.y);
-
             // Normalize inputPower within the range [0, 1]
             float t = Mathf.InverseLerp(_powerBarMinMax.x, _powerBarMinMax.y, inputPower);
-
-            // Use Mathf.Lerp to interpolate on the InCubic curve
+            // Use Mathf.Lerp to interpolate on the InSine curve
             float interpolatedValue = Mathf.Lerp(0, _power, InSine(t));
 
             return interpolatedValue;
         }
 
-        // InCubic function for interpolation
+        // InSine function for interpolation
         private static float InSine(float t) { return 1 - Mathf.Cos((t * Mathf.PI) / 2); }
 
         private void Update()
         {
+            if (!IsPlaying) return;
+
             //Set Player components positions to ball
             _powerBarRotationPivot.position = transform.position;
             _highlightRing.position = transform.position;
 
-            if (!_active) return;
+            if (!_player.Active) return;
 
             //Handle aiming when holding down left mouse button
             HandleAiming();
@@ -96,15 +82,15 @@ namespace _game.Scripts.Controls
         private void FixedUpdate()
         {
             float ballSpeed = _rb.velocity.magnitude;
-            //Turn on highlight ring if player isn't moving
+            //Turn on highlight ring if play isn't moving
             _highlightRing.gameObject.SetActive(ballSpeed < 0.01f);
 
-            if (!_active) return;
+            if (!_player.Active) return;
 
             if (_tookTurn && ballSpeed < 0.01f)
             {
                 _tookTurn = false;
-                GameManager.SwitchPlayer(1);
+                _player.GameManager.SwitchPlayer(1);
             }
 
             if (_shotBall && ballSpeed > 0.01f)
@@ -115,10 +101,10 @@ namespace _game.Scripts.Controls
 
             if (_isInTheHole && ballSpeed < 0.01f)
             {
-                Finished = true;
+                _player.Finished = true;
                 gameObject.layer = (int)Layer.Ghost;
-                _active = false;
-                OnPlayerFinished?.Invoke(PlayerID);
+                _player.Active = false;
+                OnPlayerFinished?.Invoke(_player.PlayerID);
             }
         }
 
@@ -137,13 +123,13 @@ namespace _game.Scripts.Controls
             }
             else
             {
-                //If PowerBar is active (player was aiming) add force to ball in direction of pivot times inputPower multiplied by fraction of PowerBar
+                //If PowerBar is active (play was aiming) add force to ball in direction of pivot times inputPower multiplied by fraction of PowerBar
                 if (_powerBarRotationPivot.gameObject.activeSelf)
                 {
-                    _rb.AddForce(_powerBarRotationPivot.forward * (_power * (_powerBar.localScale.z / _powerBarMinMax.y)), ForceMode.Impulse);
+                    _rb.AddForce(_powerBarRotationPivot.forward * InterpolateInSine(_powerBar.localScale.z), ForceMode.Impulse);
                     _shotBall = true;
-                    ShotsTaken++;
-                    ShotsTakenTotal++;
+                    _player.ShotsTaken++;
+                    _player.ShotsTakenTotal++;
                     gameObject.layer = (int)Layer.Player;
                 }
 
@@ -173,12 +159,34 @@ namespace _game.Scripts.Controls
             }
         }
 
-        public void SetColor(Color newColor)
+        /// <summary>
+        /// Changes PowerBar length(Z scale) by amount
+        /// </summary>
+        /// <param name="lenght">Amount to change length by</param>
+        private void SetPowerBarScale(float lenght)
         {
-            Color = newColor;
-            MaterialPropertyBlock mpb = new MaterialPropertyBlock();
-            mpb.SetColor(MaterialColorReference, newColor);
-            GetComponent<Renderer>().SetPropertyBlock(mpb);
+            Vector3 powerBarLocalScale = _powerBar.localScale;
+            powerBarLocalScale.z += lenght;
+            powerBarLocalScale.z = Mathf.Clamp(powerBarLocalScale.z, _powerBarMinMax.x, _powerBarMinMax.y);
+            _powerBar.localScale = powerBarLocalScale;
+            float hue = powerBarLocalScale.z.Remap(_powerBarMinMax.x, _powerBarMinMax.y, 0.42f, 0f);
+            Color newColor = Color.HSVToRGB(hue, 1, 1);
+            _powerBarMat.SetColor("_BaseColor", newColor);
+            _powerBarMat.SetColor("_EmissionColor", newColor);
+        }
+        
+        private void OnRoundStart(int round)
+        {
+            _isInTheHole = false;
+            _player.Finished = false;
+            if (_player.Map.GetRoundStartLocation(round, out Transform startLocation))
+                _rb.position = startLocation.position;
+            _rb.isKinematic = false;
+        }
+        private void OnRoundEnd(int round)
+        {
+            _player.ShotsTaken = 0;
+            _rb.isKinematic = true;
         }
 
         public void OnLook(InputAction.CallbackContext ctx)
@@ -217,63 +225,14 @@ namespace _game.Scripts.Controls
             }
         }
 
-        /// <summary>
-        /// Changes PowerBar length(Z scale) by amount
-        /// </summary>
-        /// <param name="lenght">Amount to change length by</param>
-        private void SetPowerBarScale(float lenght)
-        {
-            Vector3 powerBarLocalScale = _powerBar.localScale;
-            powerBarLocalScale.z += lenght;
-            powerBarLocalScale.z = Mathf.Clamp(powerBarLocalScale.z, _powerBarMinMax.x, _powerBarMinMax.y);
-            _powerBar.localScale = powerBarLocalScale;
-            float hue = powerBarLocalScale.z.Remap(_powerBarMinMax.x, _powerBarMinMax.y, 0.42f, 0f);
-            print(hue);
-            Color newColor = Color.HSVToRGB(hue, 1, 1);
-            _powerBarMat.SetColor("_BaseColor", newColor);
-            _powerBarMat.SetColor("_EmissionColor", newColor);
-        }
-
-        private void OnActivePlayerChanged(int playerId)
-        {
-            if (PlayerID == playerId)
-            {
-                _playerCamera.m_Priority = 10;
-                _active = true;
-            }
-            else
-            {
-                _playerCamera.m_Priority = 0;
-                _active = false;
-            }
-        }
-
-        private void OnRoundStart(int round)
-        {
-            _isInTheHole = false;
-            Finished = false;
-            if (Map.GetRoundStartLocation(round, out Transform startLocation))
-                _rb.position = startLocation.position;
-            _rb.isKinematic = false;
-        }
-        private void OnRoundEnd(int round)
-        {
-            ShotsTaken = 0;
-            _rb.isKinematic = true;
-        }
-
         private void OnEnable()
         {
-            GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
-            OnPlayerJoined?.Invoke(this);
             GameManager.OnRoundStart += OnRoundStart;
             GameManager.OnRoundEnd += OnRoundEnd;
         }
 
         private void OnDisable()
         {
-            GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
-            OnPlayerLeft?.Invoke(PlayerID);
             GameManager.OnRoundStart -= OnRoundStart;
             GameManager.OnRoundEnd -= OnRoundEnd;
         }

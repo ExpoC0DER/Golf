@@ -7,6 +7,7 @@ using AYellowpaper.SerializedCollections;
 using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
+using static _game.Scripts.Enums;
 
 namespace _game.Scripts
 {
@@ -15,8 +16,11 @@ namespace _game.Scripts
         [SerializeField] private Map _gameMap;
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
+        
+        [SerializeField,ReadOnly] private GamePhase _gamePhase = GamePhase.Play;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
-        public SerializedDictionary<int, PlayerController> Players { get; private set; } = new();
+        public SerializedDictionary<int, Player> Players { get; private set; } = new();
+        
         private int _nextAvailableId = 1;
         private int _activePlayerId = -1;
         private int _currentRound = 0;
@@ -25,6 +29,7 @@ namespace _game.Scripts
         public static event Action<int> OnActivePlayerChanged;
         public static event Action<int> OnRoundEnd;
         public static event Action<int> OnRoundStart;
+        public static event Action<GamePhase> OnGamePhaseChanged;
 
         private void Update()
         {
@@ -39,6 +44,8 @@ namespace _game.Scripts
             }
         }
 
+        public void PrintTest(string message) { Debug.Log(message); }
+
 
         private void ChangeActivePlayer(int playerId)
         {
@@ -46,7 +53,7 @@ namespace _game.Scripts
             OnActivePlayerChanged?.Invoke(_activePlayerId);
         }
 
-        private void AddPlayer(PlayerController player)
+        private void AddPlayer(Player player)
         {
             if (player.PlayerID == -1)
             {
@@ -61,7 +68,7 @@ namespace _game.Scripts
 
         public void StartGame()
         {
-            foreach (KeyValuePair<int, PlayerController> pair in Players)
+            foreach (KeyValuePair<int, Player> pair in Players)
             {
                 Map newMap = Instantiate(_gameMap);
                 int playerId = pair.Value.PlayerID;
@@ -76,7 +83,7 @@ namespace _game.Scripts
             OnRoundStart?.Invoke(_currentRound);
         }
 
-        public PlayerController GetPlayer(int playerId) { return Players.TryGetValue(playerId, out PlayerController player) ? player : null; }
+        public Player GetPlayer(int playerId) { return Players.TryGetValue(playerId, out Player player) ? player : null; }
 
         private void RemovePlayer(int playerId)
         {
@@ -102,8 +109,7 @@ namespace _game.Scripts
             _numberOfFinishedPlayers++;
             if (_numberOfFinishedPlayers >= Players.Count)
             {
-                OnRoundEnd?.Invoke(_currentRound);
-                _currentRound++;
+                EndRound();
             }
         }
 
@@ -114,22 +120,29 @@ namespace _game.Scripts
             ChangeActivePlayer(_activePlayerId);
         }
 
+        private void EndRound()
+        {
+            OnRoundEnd?.Invoke(_currentRound);
+            _currentRound++;
+        }
+
         private void OnEnable()
         {
-            PlayerController.OnPlayerJoined += AddPlayer;
-            PlayerController.OnPlayerLeft += RemovePlayer;
-            PlayerController.OnPlayerFinished += OnPlayerFinished;
+            Player.OnPlayerJoined += AddPlayer;
+            Player.OnPlayerLeft += RemovePlayer;
+            PlayController.OnPlayerFinished += OnPlayerFinished;
         }
 
         private void OnDestroy()
         {
-            PlayerController.OnPlayerJoined -= AddPlayer;
-            PlayerController.OnPlayerLeft -= RemovePlayer;
-            PlayerController.OnPlayerFinished -= OnPlayerFinished;
+            Player.OnPlayerJoined -= AddPlayer;
+            Player.OnPlayerLeft -= RemovePlayer;
+            PlayController.OnPlayerFinished -= OnPlayerFinished;
         }
 
         public void SwitchPlayer(int value)
         {
+            //Do not switch player if round finishes
             if (_numberOfFinishedPlayers >= Players.Count) return;
 
             int[] keys = Players.Keys.ToArray();
@@ -143,7 +156,11 @@ namespace _game.Scripts
                     _activePlayerId += value;
 
                     if (_activePlayerId > lastPlayerId)
+                    {
                         _activePlayerId = firstPlayerId;
+                        _gamePhase = _gamePhase == GamePhase.Play ? GamePhase.Build : GamePhase.Play;
+                        OnGamePhaseChanged?.Invoke(_gamePhase);
+                    }
                     if (_activePlayerId < firstPlayerId)
                         _activePlayerId = lastPlayerId;
 

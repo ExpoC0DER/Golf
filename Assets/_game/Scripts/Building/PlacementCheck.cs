@@ -5,13 +5,13 @@ namespace _game.Scripts.Building
 {
     public class PlacementCheck : MonoBehaviour
     {
-        public BuildManager BuildManager { get; set; }
+        public BuildController BuildController { get; set; }
 
         private void OnTriggerStay(Collider other)
         {
             if (other.CompareTag("Obstacle"))
             {
-                BuildManager.CanPlace = false;
+                BuildController.CanPlace = false;
             }
         }
 
@@ -19,7 +19,7 @@ namespace _game.Scripts.Building
         {
             if (other.CompareTag("Obstacle"))
             {
-                BuildManager.CanPlace = true;
+                BuildController.CanPlace = true;
             }
         }
     }

@@ -9,5 +9,11 @@ namespace _game.Scripts
             Obstacle = 8,
             ObstaclePreview = 9
         }
+
+        public enum GamePhase
+        {
+            Play,
+            Build
+        }
     }
 }

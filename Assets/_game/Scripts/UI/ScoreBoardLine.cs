@@ -44,7 +44,7 @@ namespace _game.Scripts.UI
         }
 
         /// <summary>
-        /// Set the player score on round if it exists else does nothing
+        /// Set the play score on round if it exists else does nothing
         /// </summary>
         /// <param name="round">Round index (0 indexed)</param>
         /// <param name="score">Player score</param>

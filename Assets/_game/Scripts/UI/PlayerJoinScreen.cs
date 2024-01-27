@@ -7,24 +7,23 @@ namespace _game.Scripts.UI
     {
         [SerializeField] private PlayerListItem _playerListItemPrefab;
         [SerializeField] private RectTransform _playerListContent;
-        [SerializeField]
 
-        private void OnPlayerJoined(PlayerController playerController)
+        private void OnPlayerJoined(Player player)
         {
             PlayerListItem newPlayerListItem = Instantiate(_playerListItemPrefab, _playerListContent);
-            newPlayerListItem.PlayerController = playerController;
+            newPlayerListItem.Player = player;
         }
 
         private void OnEnable()
         {
-            PlayerController.OnPlayerJoined += OnPlayerJoined;
-            //PlayerController.OnPlayerLeft += RemovePlayer;
+            Player.OnPlayerJoined += OnPlayerJoined;
+            //Player.OnPlayerLeft += RemovePlayer;
         }
 
         private void OnDestroy()
         {
-            PlayerController.OnPlayerJoined -= OnPlayerJoined;
-            //PlayerController.OnPlayerLeft -= RemovePlayer;
+            Player.OnPlayerJoined -= OnPlayerJoined;
+            //Player.OnPlayerLeft -= RemovePlayer;
         }
     }
 }

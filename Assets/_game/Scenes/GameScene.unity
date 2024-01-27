@@ -686,6 +686,7 @@ MonoBehaviour:
     type: 3}
   _sceneCamera: {fileID: 649057830}
   _scoreBoard: {fileID: 1340019323}
+  _gamePhase: 0
   <Players>k__BackingField:
     _serializedList: []
 --- !u!1 &330585543
@@ -2028,6 +2029,7 @@ GameObject:
   - component: {fileID: 1469477239}
   - component: {fileID: 1469477242}
   - component: {fileID: 1469477241}
+  - component: {fileID: 1469477243}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -2164,6 +2166,85 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
+--- !u!114 &1469477243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1469477236}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: ad03b34235832644bb97ad65674fec32,
+    type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8eddd4b9-ebd8-4666-8864-bd53b2a5e3d4
+    m_ActionName: 'Player/Look[/Mouse/delta]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 05d631e7-f334-4418-a315-6f43caca573b
+    m_ActionName: 'Player/Zoom[/Mouse/scroll/y]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: de23e9cd-5f83-4f29-8f8a-3add92b47e8e
+    m_ActionName: 'Player/Aiming[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 93642e3f-2142-4997-8801-ed5a68990296
+    m_ActionName: 'Player/Power[/Mouse/delta/y]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 49e85e7f-a4e6-43bf-a74c-21499c1ef9cd
+    m_ActionName: 'Player/CancelAiming[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0bc1a9ab-333b-49b9-8a67-a7191d2eef2e
+    m_ActionName: 'Player/PlayerJoin[/Keyboard/enter]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5ac31e69-d1bc-4355-883d-fc912ec64b2c
+    m_ActionName: 'Build/MousePosition[/Mouse/position]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 329584098}
+        m_TargetAssemblyTypeName: _game.Scripts.GameManager, Assembly-CSharp
+        m_MethodName: PrintTest
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Click
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 38d1fd7e-0ac5-4026-b39c-62a3ceb57978
+    m_ActionName: 'Build/LeftClick[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7ea7e919-1cc5-485d-89b1-335614ed3b86
+    m_ActionName: 'Build/Rotate[/Keyboard/q,/Keyboard/e]'
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: KeyboardAndMouse
+  m_DefaultActionMap: Build
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &1476380663
 GameObject:
   m_ObjectHideFlags: 0
@@ -3002,6 +3083,16 @@ PrefabInstance:
     - target: {fileID: 6786992268398549499, guid: 9d30b766880125741b7737421491c06b,
         type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8221349741261837532, guid: 9d30b766880125741b7737421491c06b,
+        type: 3}
+      propertyPath: input
+      value: 7.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 8221349741261837532, guid: 9d30b766880125741b7737421491c06b,
+        type: 3}
+      propertyPath: _power
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8221349741261837532, guid: 9d30b766880125741b7737421491c06b,
