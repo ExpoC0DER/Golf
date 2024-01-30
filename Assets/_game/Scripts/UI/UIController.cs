@@ -9,6 +9,7 @@ namespace _game.Scripts.UI
         [SerializeField] private GameManager _gameManager;
         [SerializeField] private TMP_Text _playerName;
         [SerializeField] private Image _playerNameGraphic;
+        [SerializeField] private GameObject _playerJoinScreen;
 
 
         private void OnActivePlayerChanged(int playerId)
@@ -19,8 +20,24 @@ namespace _game.Scripts.UI
             _playerNameGraphic.color = playerColor;
         }
 
-        private void OnEnable() { GameManager.OnActivePlayerChanged += OnActivePlayerChanged; }
+        private void OnGameStart(int round)
+        {
+            if(round != 0) return;
+            
+            _playerJoinScreen.SetActive(false);
+            _playerNameGraphic.gameObject.SetActive(true);
+        }
 
-        private void OnDisable() { GameManager.OnActivePlayerChanged -= OnActivePlayerChanged; }
+        private void OnEnable()
+        {
+            GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
+            GameManager.OnRoundStart += OnGameStart;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnActivePlayerChanged -= OnActivePlayerChanged; 
+            GameManager.OnRoundStart -= OnGameStart;
+        }
     }
 }

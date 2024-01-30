@@ -349,30 +349,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1186104967}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1320986604}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
 --- !u!114 &50095504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1657,6 +1633,7 @@ MonoBehaviour:
   _gameManager: {fileID: 329584098}
   _playerName: {fileID: 1441515949}
   _playerNameGraphic: {fileID: 1320986606}
+  _playerJoinScreen: {fileID: 1186104967}
 --- !u!1 &1186104967
 GameObject:
   m_ObjectHideFlags: 0
@@ -2085,19 +2062,7 @@ MonoBehaviour:
   m_JoinBehavior: 1
   m_PlayerJoinedEvent:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1340019323}
-        m_TargetAssemblyTypeName: _game.Scripts.UI.ScoreBoard, Assembly-CSharp
-        m_MethodName: SpawnPlayer
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_PlayerLeftEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2240,8 +2205,24 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 7ea7e919-1cc5-485d-89b1-335614ed3b86
     m_ActionName: 'Build/Rotate[/Keyboard/q,/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e873b852-73e7-4f83-8602-a71fdd004dda
+    m_ActionName: 'Build/Zoom[/Mouse/scroll/y]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a7e9f17b-035b-42aa-b666-c7827bb9c2d8
+    m_ActionName: 'Player/AimingRotation[/Mouse/delta/x,/DualShock4GamepadHID/leftStick/x,/DualShock4GamepadHID1/leftStick/x,/DualShock4GamepadHID2/leftStick/x]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9d657251-a8dd-4174-b58f-d646abb726ee
+    m_ActionName: 'Build/Look[/Mouse/delta,/DualShock4GamepadHID/rightStick,/DualShock4GamepadHID1/rightStick,/DualShock4GamepadHID2/rightStick]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 4c7de15f-de18-48a2-8a5e-04fb482219c4
+    m_ActionName: 'Build/MoveCamera[/Keyboard/space,/Keyboard/shift,/Keyboard/a,/Keyboard/d,/Keyboard/w,/Keyboard/s,/DualShock4GamepadHID/leftStick/left,/DualShock4GamepadHID1/leftStick/left,/DualShock4GamepadHID2/leftStick/left,/DualShock4GamepadHID/leftStick/right,/DualShock4GamepadHID1/leftStick/right,/DualShock4GamepadHID2/leftStick/right,/DualShock4GamepadHID/leftStick/up,/DualShock4GamepadHID1/leftStick/up,/DualShock4GamepadHID2/leftStick/up,/DualShock4GamepadHID/leftStick/down,/DualShock4GamepadHID1/leftStick/down,/DualShock4GamepadHID2/leftStick/down]'
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: KeyboardAndMouse
+  m_DefaultControlScheme: Controller
   m_DefaultActionMap: Build
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

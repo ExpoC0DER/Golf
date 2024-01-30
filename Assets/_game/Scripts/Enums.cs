@@ -15,5 +15,12 @@ namespace _game.Scripts
             Play,
             Build
         }
+
+        public enum ActionMap
+        {
+            Player,
+            Build,
+            Menu
+        }
     }
 }

@@ -4,6 +4,7 @@ using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace _game.Scripts.Controls
 {
@@ -12,6 +13,7 @@ namespace _game.Scripts.Controls
     {
         [field: SerializeField] public CinemachineVirtualCamera PlayCamera { get; private set; }
         [field: SerializeField] public CinemachineVirtualCamera BuildCamera { get; private set; }
+        [field: SerializeField] public Transform BuildCameraFollowPoint { get; private set; }
 
         [Header("Player Info")]
         [ReadOnly] public int PlayerID = -1;
@@ -54,12 +56,12 @@ namespace _game.Scripts.Controls
         {
             if (PlayerID == playerId)
             {
-                GetActiveCamera(_gamePhase).m_Priority = 10;
+                SetActiveCameraPriority(10);
                 Active = true;
             }
             else
             {
-                GetActiveCamera(_gamePhase).m_Priority = 0;
+                SetActiveCameraPriority(0);
                 Active = false;
             }
         }
@@ -69,12 +71,12 @@ namespace _game.Scripts.Controls
             switch (gamePhase)
             {
                 case Enums.GamePhase.Play:
-                    _playerInput.SwitchCurrentActionMap("Player");
+                    _playerInput.SwitchCurrentActionMap(Enums.ActionMap.Player.ToString());
                     _playController.IsPlaying = true;
                     _buildController.IsBuilding = false;
                     break;
                 case Enums.GamePhase.Build:
-                    _playerInput.SwitchCurrentActionMap("Build");
+                    _playerInput.SwitchCurrentActionMap(Enums.ActionMap.Build.ToString());
                     _playController.IsPlaying = false;
                     _buildController.IsBuilding = true;
                     _buildController.StartPlacement(0);
@@ -84,15 +86,37 @@ namespace _game.Scripts.Controls
             }
         }
 
-        //Get relevant camera depending on gamePhase
-        private CinemachineVirtualCamera GetActiveCamera(Enums.GamePhase gamePhase) { return gamePhase == Enums.GamePhase.Play ? PlayCamera : BuildCamera; }
+        public void StartGame() { GameManager.StartGame(); }
+
+        private void OnGameStart(int round)
+        {
+            if (round != 0) return;
+            _playerInput.SwitchCurrentActionMap(Enums.ActionMap.Player.ToString());
+            Cursor.visible = false;
+        }
+        private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(Enums.ActionMap.Menu.ToString()); }
+
+        private void SetActiveCameraPriority(int newPriority)
+        {
+            BuildCameraFollowPoint.position = PlayCamera.transform.position;
+            if (_gamePhase == Enums.GamePhase.Play)
+            {
+                PlayCamera.m_Priority = newPriority;
+                BuildCamera.m_Priority = 0;
+            }
+            if (_gamePhase == Enums.GamePhase.Build)
+            {
+                BuildCamera.m_Priority = newPriority;
+                PlayCamera.m_Priority = 0;
+            }
+        }
 
         private void OnEnable()
         {
             OnPlayerJoined?.Invoke(this);
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
-            // GameManager.OnRoundStart += OnRoundStart;
-            // GameManager.OnRoundEnd += OnRoundEnd;
+            GameManager.OnRoundStart += OnGameStart;
+            GameManager.OnRoundEnd += OnRoundEnd;
             GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
         }
 
@@ -100,8 +124,8 @@ namespace _game.Scripts.Controls
         {
             OnPlayerLeft?.Invoke(PlayerID);
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
-            // GameManager.OnRoundStart -= OnRoundStart;
-            // GameManager.OnRoundEnd -= OnRoundEnd;
+            GameManager.OnRoundStart -= OnGameStart;
+            GameManager.OnRoundEnd -= OnRoundEnd;
             GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
         }
     }

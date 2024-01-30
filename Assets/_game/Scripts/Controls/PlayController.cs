@@ -21,6 +21,7 @@ namespace _game.Scripts.Controls
 
         [Header("Settings")]
         [SerializeField] private float _zoomSpeed;
+        [SerializeField] private float _zoomSpeedScroll;
         [SerializeField, MinMaxSlider(0.1f, 10)]
         private Vector2 _zoomMinMax;
         [SerializeField] private Vector2 _cameraSensitivity = new Vector2(300, 300);
@@ -34,8 +35,7 @@ namespace _game.Scripts.Controls
         private CinemachineFramingTransposer _framingTransposer;
         private CinemachinePOV _pov;
         private Rigidbody _rb;
-        private PlayerInput _playerInput;
-        private float _powerInput;
+        private float _powerInput, _aimRotationInput, _zoomInput;
         private bool _isAiming, _shotBall, _tookTurn, _isInTheHole;
 
         public static event Action<int> OnPlayerFinished;
@@ -46,7 +46,6 @@ namespace _game.Scripts.Controls
             _framingTransposer = _player.PlayCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             _pov = _player.PlayCamera.GetCinemachineComponent<CinemachinePOV>();
             _rb = GetComponent<Rigidbody>();
-            _playerInput = GetComponent<PlayerInput>();
         }
 
         // Method to interpolate values on an InSine curve
@@ -77,6 +76,7 @@ namespace _game.Scripts.Controls
 
             //Handle aiming when holding down left mouse button
             HandleAiming();
+            HandleZooming();
         }
 
         private void FixedUpdate()
@@ -143,6 +143,13 @@ namespace _game.Scripts.Controls
             }
         }
 
+        private void HandleZooming()
+        {
+            //Handle zooming camera
+            _framingTransposer.m_CameraDistance += _zoomInput * _zoomSpeed * Time.deltaTime;
+            _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Hole"))
@@ -174,7 +181,7 @@ namespace _game.Scripts.Controls
             _powerBarMat.SetColor("_BaseColor", newColor);
             _powerBarMat.SetColor("_EmissionColor", newColor);
         }
-        
+
         private void OnRoundStart(int round)
         {
             _isInTheHole = false;
@@ -193,14 +200,20 @@ namespace _game.Scripts.Controls
         {
             Vector2 mouseDelta = ctx.ReadValue<Vector2>();
             _pov.m_VerticalAxis.m_InputAxisValue = mouseDelta.y;
-            _pov.m_HorizontalAxis.m_InputAxisValue = mouseDelta.x;
+            if (!_isAiming)
+                _pov.m_HorizontalAxis.m_InputAxisValue = mouseDelta.x;
         }
 
-        public void OnZooming(InputAction.CallbackContext ctx)
+        public void OnZoomScroll(InputAction.CallbackContext ctx)
         {
             //Handle zooming camera
-            _framingTransposer.m_CameraDistance += ctx.ReadValue<float>() * _zoomSpeed;
+            _framingTransposer.m_CameraDistance += ctx.ReadValue<float>() * _zoomSpeedScroll;
             _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
+        }
+        
+        public void OnZooming(InputAction.CallbackContext ctx)
+        {
+            _zoomInput = ctx.ReadValue<float>();
         }
 
         public void IsAiming(InputAction.CallbackContext ctx)
@@ -212,6 +225,13 @@ namespace _game.Scripts.Controls
         }
 
         public void GetPower(InputAction.CallbackContext ctx) { _powerInput = ctx.ReadValue<float>(); }
+
+        public void GetAimRotation(InputAction.CallbackContext ctx)
+        {
+            _aimRotationInput = ctx.ReadValue<float>();
+            if (_isAiming)
+                _pov.m_HorizontalAxis.m_InputAxisValue = _aimRotationInput;
+        }
 
         public void CancelAiming(InputAction.CallbackContext ctx)
         {
