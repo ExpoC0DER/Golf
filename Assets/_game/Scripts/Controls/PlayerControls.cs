@@ -82,15 +82,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""PlayerJoin"",
-                    ""type"": ""Button"",
-                    ""id"": ""0bc1a9ab-333b-49b9-8a67-a7191d2eef2e"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Zooming"",
                     ""type"": ""Button"",
                     ""id"": ""f30bbf22-c742-4779-9351-17d28e75d626"",
@@ -223,28 +214,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""acdebbf9-1a91-497c-9678-a848b12059dc"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Controller"",
-                    ""action"": ""PlayerJoin"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9ae157d4-2c9c-498c-992f-ab0c25e4c740"",
-                    ""path"": ""<Keyboard>/enter"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""KeyboardAndMouse"",
-                    ""action"": ""PlayerJoin"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""1D Axis"",
                     ""id"": ""367aa7be-7d06-4b51-9f45-52599bf44501"",
                     ""path"": ""1DAxis"",
@@ -333,6 +302,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""4c7de15f-de18-48a2-8a5e-04fb482219c4"",
                     ""expectedControlType"": ""Vector3"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchSpectatingPlayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""96ca72f5-e2a8-47b5-85fa-290c5a32c294"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""IterateSpectatingPlayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""607ab84c-aa60-4a96-8557-621ed825d3ad"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -624,6 +611,83 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""MoveCamera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""348e9d54-e62d-42a8-b63e-9d5fdde990c2"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp"",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""SwitchSpectatingPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ff3ea331-0d91-4dde-a098-a718e775bd1d"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp(min=1,max=1)"",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""SwitchSpectatingPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7f5b0a1a-2a9c-4c68-84c4-e8baf0ea90cf"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp(min=2,max=2)"",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""SwitchSpectatingPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8808936c-181f-49cb-a876-ff20f6ade735"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp(min=3,max=3)"",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""SwitchSpectatingPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""38ae5c0c-bac1-432a-be2f-ded1d5cbe370"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""IterateSpectatingPlayer"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""ad18538a-5424-4cf9-b37c-846f1d5450d9"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""IterateSpectatingPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""bd571184-3654-4087-b420-4f882c71a1b2"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""IterateSpectatingPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -639,6 +703,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlayerJoin"",
+                    ""type"": ""Button"",
+                    ""id"": ""62da7c54-e2e8-4201-af26-e0f34b30ff47"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -650,6 +723,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Controller"",
                     ""action"": ""StartGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65a029b3-36bd-4aaa-82e6-624a6009b06d"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""PlayerJoin"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""905ec30e-05de-457a-8409-ec42a570bd7c"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""PlayerJoin"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -694,7 +789,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Power = m_Player.FindAction("Power", throwIfNotFound: true);
         m_Player_CancelAiming = m_Player.FindAction("CancelAiming", throwIfNotFound: true);
         m_Player_AimingRotation = m_Player.FindAction("AimingRotation", throwIfNotFound: true);
-        m_Player_PlayerJoin = m_Player.FindAction("PlayerJoin", throwIfNotFound: true);
         m_Player_Zooming = m_Player.FindAction("Zooming", throwIfNotFound: true);
         // Build
         m_Build = asset.FindActionMap("Build", throwIfNotFound: true);
@@ -704,9 +798,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Build_Zoom = m_Build.FindAction("Zoom", throwIfNotFound: true);
         m_Build_Look = m_Build.FindAction("Look", throwIfNotFound: true);
         m_Build_MoveCamera = m_Build.FindAction("MoveCamera", throwIfNotFound: true);
+        m_Build_SwitchSpectatingPlayer = m_Build.FindAction("SwitchSpectatingPlayer", throwIfNotFound: true);
+        m_Build_IterateSpectatingPlayer = m_Build.FindAction("IterateSpectatingPlayer", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_StartGame = m_Menu.FindAction("StartGame", throwIfNotFound: true);
+        m_Menu_PlayerJoin = m_Menu.FindAction("PlayerJoin", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -774,7 +871,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Power;
     private readonly InputAction m_Player_CancelAiming;
     private readonly InputAction m_Player_AimingRotation;
-    private readonly InputAction m_Player_PlayerJoin;
     private readonly InputAction m_Player_Zooming;
     public struct PlayerActions
     {
@@ -786,7 +882,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Power => m_Wrapper.m_Player_Power;
         public InputAction @CancelAiming => m_Wrapper.m_Player_CancelAiming;
         public InputAction @AimingRotation => m_Wrapper.m_Player_AimingRotation;
-        public InputAction @PlayerJoin => m_Wrapper.m_Player_PlayerJoin;
         public InputAction @Zooming => m_Wrapper.m_Player_Zooming;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -815,9 +910,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @AimingRotation.started += instance.OnAimingRotation;
             @AimingRotation.performed += instance.OnAimingRotation;
             @AimingRotation.canceled += instance.OnAimingRotation;
-            @PlayerJoin.started += instance.OnPlayerJoin;
-            @PlayerJoin.performed += instance.OnPlayerJoin;
-            @PlayerJoin.canceled += instance.OnPlayerJoin;
             @Zooming.started += instance.OnZooming;
             @Zooming.performed += instance.OnZooming;
             @Zooming.canceled += instance.OnZooming;
@@ -843,9 +935,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @AimingRotation.started -= instance.OnAimingRotation;
             @AimingRotation.performed -= instance.OnAimingRotation;
             @AimingRotation.canceled -= instance.OnAimingRotation;
-            @PlayerJoin.started -= instance.OnPlayerJoin;
-            @PlayerJoin.performed -= instance.OnPlayerJoin;
-            @PlayerJoin.canceled -= instance.OnPlayerJoin;
             @Zooming.started -= instance.OnZooming;
             @Zooming.performed -= instance.OnZooming;
             @Zooming.canceled -= instance.OnZooming;
@@ -876,6 +965,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Build_Zoom;
     private readonly InputAction m_Build_Look;
     private readonly InputAction m_Build_MoveCamera;
+    private readonly InputAction m_Build_SwitchSpectatingPlayer;
+    private readonly InputAction m_Build_IterateSpectatingPlayer;
     public struct BuildActions
     {
         private @PlayerControls m_Wrapper;
@@ -886,6 +977,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Zoom => m_Wrapper.m_Build_Zoom;
         public InputAction @Look => m_Wrapper.m_Build_Look;
         public InputAction @MoveCamera => m_Wrapper.m_Build_MoveCamera;
+        public InputAction @SwitchSpectatingPlayer => m_Wrapper.m_Build_SwitchSpectatingPlayer;
+        public InputAction @IterateSpectatingPlayer => m_Wrapper.m_Build_IterateSpectatingPlayer;
         public InputActionMap Get() { return m_Wrapper.m_Build; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -913,6 +1006,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @MoveCamera.started += instance.OnMoveCamera;
             @MoveCamera.performed += instance.OnMoveCamera;
             @MoveCamera.canceled += instance.OnMoveCamera;
+            @SwitchSpectatingPlayer.started += instance.OnSwitchSpectatingPlayer;
+            @SwitchSpectatingPlayer.performed += instance.OnSwitchSpectatingPlayer;
+            @SwitchSpectatingPlayer.canceled += instance.OnSwitchSpectatingPlayer;
+            @IterateSpectatingPlayer.started += instance.OnIterateSpectatingPlayer;
+            @IterateSpectatingPlayer.performed += instance.OnIterateSpectatingPlayer;
+            @IterateSpectatingPlayer.canceled += instance.OnIterateSpectatingPlayer;
         }
 
         private void UnregisterCallbacks(IBuildActions instance)
@@ -935,6 +1034,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @MoveCamera.started -= instance.OnMoveCamera;
             @MoveCamera.performed -= instance.OnMoveCamera;
             @MoveCamera.canceled -= instance.OnMoveCamera;
+            @SwitchSpectatingPlayer.started -= instance.OnSwitchSpectatingPlayer;
+            @SwitchSpectatingPlayer.performed -= instance.OnSwitchSpectatingPlayer;
+            @SwitchSpectatingPlayer.canceled -= instance.OnSwitchSpectatingPlayer;
+            @IterateSpectatingPlayer.started -= instance.OnIterateSpectatingPlayer;
+            @IterateSpectatingPlayer.performed -= instance.OnIterateSpectatingPlayer;
+            @IterateSpectatingPlayer.canceled -= instance.OnIterateSpectatingPlayer;
         }
 
         public void RemoveCallbacks(IBuildActions instance)
@@ -957,11 +1062,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Menu;
     private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
     private readonly InputAction m_Menu_StartGame;
+    private readonly InputAction m_Menu_PlayerJoin;
     public struct MenuActions
     {
         private @PlayerControls m_Wrapper;
         public MenuActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @StartGame => m_Wrapper.m_Menu_StartGame;
+        public InputAction @PlayerJoin => m_Wrapper.m_Menu_PlayerJoin;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -974,6 +1081,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @StartGame.started += instance.OnStartGame;
             @StartGame.performed += instance.OnStartGame;
             @StartGame.canceled += instance.OnStartGame;
+            @PlayerJoin.started += instance.OnPlayerJoin;
+            @PlayerJoin.performed += instance.OnPlayerJoin;
+            @PlayerJoin.canceled += instance.OnPlayerJoin;
         }
 
         private void UnregisterCallbacks(IMenuActions instance)
@@ -981,6 +1091,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @StartGame.started -= instance.OnStartGame;
             @StartGame.performed -= instance.OnStartGame;
             @StartGame.canceled -= instance.OnStartGame;
+            @PlayerJoin.started -= instance.OnPlayerJoin;
+            @PlayerJoin.performed -= instance.OnPlayerJoin;
+            @PlayerJoin.canceled -= instance.OnPlayerJoin;
         }
 
         public void RemoveCallbacks(IMenuActions instance)
@@ -1024,7 +1137,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnPower(InputAction.CallbackContext context);
         void OnCancelAiming(InputAction.CallbackContext context);
         void OnAimingRotation(InputAction.CallbackContext context);
-        void OnPlayerJoin(InputAction.CallbackContext context);
         void OnZooming(InputAction.CallbackContext context);
     }
     public interface IBuildActions
@@ -1035,9 +1147,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnZoom(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnMoveCamera(InputAction.CallbackContext context);
+        void OnSwitchSpectatingPlayer(InputAction.CallbackContext context);
+        void OnIterateSpectatingPlayer(InputAction.CallbackContext context);
     }
     public interface IMenuActions
     {
         void OnStartGame(InputAction.CallbackContext context);
+        void OnPlayerJoin(InputAction.CallbackContext context);
     }
 }

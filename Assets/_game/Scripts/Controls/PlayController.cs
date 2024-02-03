@@ -3,7 +3,7 @@ using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Layer = _game.Scripts.Enums.Layer;
+using static _game.Scripts.Enums;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 using UnityEngine.Serialization;
@@ -49,29 +49,25 @@ namespace _game.Scripts.Controls
         }
 
         // Method to interpolate values on an InSine curve
-        private float InterpolateInSine(float inputPower)
+        private float Interpolate(float inputPower)
         {
             // Ensure that inputPower is within the specified range
             inputPower = Mathf.Clamp(inputPower, _powerBarMinMax.x, _powerBarMinMax.y);
             // Normalize inputPower within the range [0, 1]
             float t = Mathf.InverseLerp(_powerBarMinMax.x, _powerBarMinMax.y, inputPower);
             // Use Mathf.Lerp to interpolate on the InSine curve
-            float interpolatedValue = Mathf.Lerp(0, _power, InSine(t));
+            float interpolatedValue = Mathf.Lerp(0, _power, t);
 
             return interpolatedValue;
         }
 
-        // InSine function for interpolation
-        private static float InSine(float t) { return 1 - Mathf.Cos((t * Mathf.PI) / 2); }
-
         private void Update()
         {
-            if (!IsPlaying) return;
-
             //Set Player components positions to ball
             _powerBarRotationPivot.position = transform.position;
             _highlightRing.position = transform.position;
 
+            if (!IsPlaying) return;
             if (!_player.Active) return;
 
             //Handle aiming when holding down left mouse button
@@ -90,7 +86,7 @@ namespace _game.Scripts.Controls
             if (_tookTurn && ballSpeed < 0.01f)
             {
                 _tookTurn = false;
-                _player.GameManager.SwitchPlayer(1);
+                _player.GameManager.SwitchPlayer(Iterate.Next);
             }
 
             if (_shotBall && ballSpeed > 0.01f)
@@ -126,7 +122,7 @@ namespace _game.Scripts.Controls
                 //If PowerBar is active (play was aiming) add force to ball in direction of pivot times inputPower multiplied by fraction of PowerBar
                 if (_powerBarRotationPivot.gameObject.activeSelf)
                 {
-                    _rb.AddForce(_powerBarRotationPivot.forward * InterpolateInSine(_powerBar.localScale.z), ForceMode.Impulse);
+                    _rb.AddForce(_powerBarRotationPivot.forward * Interpolate(_powerBar.localScale.z), ForceMode.Impulse);
                     _shotBall = true;
                     _player.ShotsTaken++;
                     _player.ShotsTakenTotal++;
@@ -210,11 +206,8 @@ namespace _game.Scripts.Controls
             _framingTransposer.m_CameraDistance += ctx.ReadValue<float>() * _zoomSpeedScroll;
             _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
         }
-        
-        public void OnZooming(InputAction.CallbackContext ctx)
-        {
-            _zoomInput = ctx.ReadValue<float>();
-        }
+
+        public void OnZooming(InputAction.CallbackContext ctx) { _zoomInput = ctx.ReadValue<float>(); }
 
         public void IsAiming(InputAction.CallbackContext ctx)
         {
@@ -235,14 +228,13 @@ namespace _game.Scripts.Controls
 
         public void CancelAiming(InputAction.CallbackContext ctx)
         {
+            if (!ctx.performed) return;
+            
             //Cancel aiming
-            if (ctx.performed)
-            {
-                _isAiming = false;
-                //Turn off PowerBar and reset scale
-                _powerBarRotationPivot.gameObject.SetActive(false);
-                SetPowerBarScale(-_powerBarMinMax.y);
-            }
+            _isAiming = false;
+            //Turn off PowerBar and reset scale
+            _powerBarRotationPivot.gameObject.SetActive(false);
+            SetPowerBarScale(-_powerBarMinMax.y);
         }
 
         private void OnEnable()

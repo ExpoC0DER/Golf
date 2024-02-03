@@ -16,11 +16,11 @@ namespace _game.Scripts
         [SerializeField] private Map _gameMap;
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
-        
-        [SerializeField,ReadOnly] private GamePhase _gamePhase = GamePhase.Play;
+
+        [SerializeField, ReadOnly] private GamePhase _gamePhase = GamePhase.Play;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
         public SerializedDictionary<int, Player> Players { get; private set; } = new();
-        
+
         private int _nextAvailableId = 1;
         private int _activePlayerId = -1;
         private int _currentRound = 0;
@@ -36,11 +36,11 @@ namespace _game.Scripts
             // Check for debug input
             if (Input.GetKeyDown(KeyCode.Period))
             {
-                SwitchPlayer(1);
+                SwitchPlayer(Iterate.Next);
             }
             if (Input.GetKeyDown(KeyCode.Comma))
             {
-                SwitchPlayer(-1);
+                SwitchPlayer(Iterate.Previous);
             }
         }
 
@@ -140,11 +140,26 @@ namespace _game.Scripts
             PlayController.OnPlayerFinished -= OnPlayerFinished;
         }
 
-        public void SwitchPlayer(int value)
+        public void SwitchPlayer(Iterate iterate)
         {
             //Do not switch player if round finishes
             if (_numberOfFinishedPlayers >= Players.Count) return;
 
+            int nextPlayerId = GetIteratedPlayerId(iterate);
+            if (nextPlayerId <= _activePlayerId)
+            {
+                _gamePhase = _gamePhase == GamePhase.Play ? GamePhase.Build : GamePhase.Play;
+                OnGamePhaseChanged?.Invoke(_gamePhase);
+            }
+
+            _activePlayerId = nextPlayerId;
+            ChangeActivePlayer(_activePlayerId);
+        }
+
+        private int GetIteratedPlayerId(Iterate iterate, int startPlayerId = -1)
+        {
+            int nextPlayerId = startPlayerId == -1 ? _activePlayerId : startPlayerId;
+            int iterateBy = iterate == Iterate.Next ? 1 : -1;
             int[] keys = Players.Keys.ToArray();
             Array.Sort(keys);
             int firstPlayerId = keys.First();
@@ -153,28 +168,24 @@ namespace _game.Scripts
             {
                 while (true)
                 {
-                    _activePlayerId += value;
+                    nextPlayerId += iterateBy;
 
-                    if (_activePlayerId > lastPlayerId)
-                    {
-                        _activePlayerId = firstPlayerId;
-                        _gamePhase = _gamePhase == GamePhase.Play ? GamePhase.Build : GamePhase.Play;
-                        OnGamePhaseChanged?.Invoke(_gamePhase);
-                    }
-                    if (_activePlayerId < firstPlayerId)
-                        _activePlayerId = lastPlayerId;
+                    if (nextPlayerId > lastPlayerId)
+                        nextPlayerId = firstPlayerId;
+                    if (nextPlayerId < firstPlayerId)
+                        nextPlayerId = lastPlayerId;
 
-                    if (!Players.ContainsKey(_activePlayerId))
+                    if (!Players.ContainsKey(nextPlayerId))
                         continue;
                     break;
                 }
-                if (Players[_activePlayerId].Finished)
+                if (Players[nextPlayerId].Finished)
                 {
                     continue;
                 }
-                ChangeActivePlayer(_activePlayerId);
                 break;
             }
+            return nextPlayerId;
         }
     }
 }

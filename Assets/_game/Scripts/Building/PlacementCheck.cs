@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static _game.Scripts.Enums;
 
 namespace _game.Scripts.Building
 {
@@ -13,14 +14,11 @@ namespace _game.Scripts.Building
             _collider = GetComponent<Collider>();
         }
 
-        public void Place()
-        {
-            _collider.isTrigger = false;
-        }
+        public void Place() { _collider.isTrigger = false; }
 
         private void OnTriggerStay(Collider other)
         {
-            if (other.CompareTag("Obstacle"))
+            if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
             {
                 BuildController.CanPlace = false;
             }
@@ -28,7 +26,7 @@ namespace _game.Scripts.Building
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.CompareTag("Obstacle"))
+            if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
             {
                 BuildController.CanPlace = true;
             }

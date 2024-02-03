@@ -60,15 +60,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "PlayerJoin",
-                    "type": "Button",
-                    "id": "0bc1a9ab-333b-49b9-8a67-a7191d2eef2e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Zooming",
                     "type": "Button",
                     "id": "f30bbf22-c742-4779-9351-17d28e75d626",
@@ -201,28 +192,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "acdebbf9-1a91-497c-9678-a848b12059dc",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "PlayerJoin",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9ae157d4-2c9c-498c-992f-ab0c25e4c740",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardAndMouse",
-                    "action": "PlayerJoin",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "1D Axis",
                     "id": "367aa7be-7d06-4b51-9f45-52599bf44501",
                     "path": "1DAxis",
@@ -311,6 +280,24 @@
                     "type": "PassThrough",
                     "id": "4c7de15f-de18-48a2-8a5e-04fb482219c4",
                     "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchSpectatingPlayer",
+                    "type": "Button",
+                    "id": "96ca72f5-e2a8-47b5-85fa-290c5a32c294",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "IterateSpectatingPlayer",
+                    "type": "Button",
+                    "id": "607ab84c-aa60-4a96-8557-621ed825d3ad",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -602,6 +589,83 @@
                     "action": "MoveCamera",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "348e9d54-e62d-42a8-b63e-9d5fdde990c2",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "Clamp",
+                    "groups": "KeyboardAndMouse",
+                    "action": "SwitchSpectatingPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ff3ea331-0d91-4dde-a098-a718e775bd1d",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "Clamp(min=1,max=1)",
+                    "groups": "KeyboardAndMouse",
+                    "action": "SwitchSpectatingPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7f5b0a1a-2a9c-4c68-84c4-e8baf0ea90cf",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "Clamp(min=2,max=2)",
+                    "groups": "KeyboardAndMouse",
+                    "action": "SwitchSpectatingPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8808936c-181f-49cb-a876-ff20f6ade735",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "Clamp(min=3,max=3)",
+                    "groups": "KeyboardAndMouse",
+                    "action": "SwitchSpectatingPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "38ae5c0c-bac1-432a-be2f-ded1d5cbe370",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "IterateSpectatingPlayer",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "ad18538a-5424-4cf9-b37c-846f1d5450d9",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "IterateSpectatingPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "bd571184-3654-4087-b420-4f882c71a1b2",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "IterateSpectatingPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
@@ -617,6 +681,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PlayerJoin",
+                    "type": "Button",
+                    "id": "62da7c54-e2e8-4201-af26-e0f34b30ff47",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -628,6 +701,28 @@
                     "processors": "",
                     "groups": "Controller",
                     "action": "StartGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "65a029b3-36bd-4aaa-82e6-624a6009b06d",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "PlayerJoin",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "905ec30e-05de-457a-8409-ec42a570bd7c",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardAndMouse",
+                    "action": "PlayerJoin",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

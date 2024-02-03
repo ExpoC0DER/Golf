@@ -22,5 +22,18 @@ namespace _game.Scripts
             Build,
             Menu
         }
+        
+        public enum Tags
+        {
+            Hole,
+            Obstacle,
+            Wall
+        }
+        
+        public enum Iterate
+        {
+            Next,
+            Previous
+        }
     }
 }

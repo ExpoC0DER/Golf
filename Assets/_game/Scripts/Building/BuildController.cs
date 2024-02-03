@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using _game.Scripts.Controls;
 using Cinemachine;
 using NaughtyAttributes;
@@ -6,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using static _game.Scripts.Enums;
 
 namespace _game.Scripts.Building
 {
@@ -13,8 +15,6 @@ namespace _game.Scripts.Building
     {
         [HideInInspector] public bool IsBuilding;
         [HideInInspector] public bool CanPlace = true;
-
-        [field: SerializeField] public Material PreviewMaterial { get; private set; }
 
         [FormerlySerializedAs("_zoomSpeed")]
         [Header("Settings")]
@@ -27,6 +27,8 @@ namespace _game.Scripts.Building
         [SerializeField] private Color _canPlaceColor;
         [SerializeField] private Color _canNotPlaceColor;
 
+        [Space]
+        [SerializeField] private Material _previewMaterial;
         [SerializeField] private ObstaclesDatabaseSO _obstacles;
         [SerializeField] private LayerMask _layerMask;
 
@@ -37,6 +39,7 @@ namespace _game.Scripts.Building
         private Camera _mainCamera;
         private PlacementCheck _pendingObject;
         private int _selectedObstacleIndex = -1;
+        private int _spectatingPlayerIndex;
 
         private Vector2 _mousePos;
         private float _rotateInput;
@@ -47,6 +50,7 @@ namespace _game.Scripts.Building
             _mainCamera = Camera.main;
             _player = GetComponent<Player>();
             _pov = _player.BuildCamera.GetCinemachineComponent<CinemachinePOV>();
+            ResetSpectatingPlayerKey();
             UpdateCameraSensitivity();
             Cursor.lockState = CursorLockMode.Confined;
         }
@@ -54,10 +58,11 @@ namespace _game.Scripts.Building
         private void Update()
         {
             if (!IsBuilding) return;
+            if (!_player.Active) return;
 
             HandleMovement();
 
-            PreviewMaterial.color = CanPlace ? _canPlaceColor : _canNotPlaceColor;
+            _previewMaterial.color = CanPlace ? _canPlaceColor : _canNotPlaceColor;
 
             if (_selectedObstacleIndex < 0) return;
 
@@ -72,7 +77,10 @@ namespace _game.Scripts.Building
             _player.BuildCameraFollowPoint.LookAt(new Vector3(cameraForwardPos.x, _player.BuildCameraFollowPoint.position.y, cameraForwardPos.z));
             //Multiply input with direction of followPoint and move it in resulting direction
             Vector3 moveDirection = _player.BuildCameraFollowPoint.transform.forward * _movementInput.z + _player.BuildCameraFollowPoint.transform.up * _movementInput.y + _player.BuildCameraFollowPoint.transform.right * _movementInput.x;
-            _player.BuildCameraFollowPoint.position += _moveSpeed * Time.deltaTime * moveDirection;
+            Vector3 cameraPos = _player.BuildCameraFollowPoint.position + _moveSpeed * Time.deltaTime * moveDirection;
+            cameraPos.y = Mathf.Clamp(cameraPos.y, _zoomMinMax.x, _zoomMinMax.y);
+            _player.BuildCameraFollowPoint.position = cameraPos;
+
         }
 
         private void FixedUpdate()
@@ -85,13 +93,6 @@ namespace _game.Scripts.Building
             }
         }
 
-        public void OnLeftClick(InputAction.CallbackContext ctx)
-        {
-            if (_selectedObstacleIndex < 0 || !CanPlace || !ctx.performed || EventSystem.current.IsPointerOverGameObject()) return;
-
-            EndPlacement();
-        }
-
         public void StartPlacement(int index)
         {
             _selectedObstacleIndex = _obstacles.ObstaclesData.FindIndex(data => data.ID == index);
@@ -101,18 +102,19 @@ namespace _game.Scripts.Building
                 return;
             }
             _pendingObject = Instantiate(_obstacles.ObstaclesData[_selectedObstacleIndex].Prefab, _pos, Quaternion.identity);
-            _pendingObject.gameObject.layer = (int)Enums.Layer.ObstaclePreview;
+            _pendingObject.gameObject.layer = (int)Layer.ObstaclePreview;
             _pendingObject.BuildController = this;
         }
 
         private void EndPlacement()
         {
             //Set back default material before reset
-            _pendingObject.gameObject.layer = (int)Enums.Layer.Obstacle;
+            _pendingObject.gameObject.layer = (int)Layer.Obstacle;
             _pendingObject.Place();
             _pendingObject = null;
             _selectedObstacleIndex = -1;
-            _player.GameManager.SwitchPlayer(1);
+            _player.GameManager.SwitchPlayer(Iterate.Next);
+            ResetSpectatingPlayerKey();
         }
 
         private void UpdateCameraSensitivity()
@@ -120,6 +122,36 @@ namespace _game.Scripts.Building
             if (!Application.isPlaying) return;
             _pov.m_HorizontalAxis.m_MaxSpeed = _cameraSensitivity.x;
             _pov.m_VerticalAxis.m_MaxSpeed = _cameraSensitivity.y;
+        }
+
+        /// <summary>
+        /// Sets spectatingPlayerIndex to one based on playerId
+        /// </summary>
+        private void ResetSpectatingPlayerKey()
+        {
+            int key = Array.IndexOf(_player.GameManager.Players.Keys.ToArray(), _player.PlayerID);
+            _spectatingPlayerIndex = key;
+        }
+
+        /// <summary>
+        /// Set position and rotation of BuildCamera to that of different player
+        /// </summary>
+        /// <param name="index">Index of player in order from first starting at 0</param>
+        private void SwitchPlayerCam(int index)
+        {
+            //Get playerId of player at index
+            int playerId = _player.GameManager.Players.Keys.ToArray()[index];
+            //Set current BuildCamera pos and rot to that of selected player's playCamera
+            Transform playerCam = _player.GameManager.Players[playerId].PlayCamera.transform;
+            _player.BuildCameraFollowPoint.position = playerCam.position;
+            _player.BuildCamera.ForceCameraPosition(playerCam.position, playerCam.rotation);
+        }
+
+        public void OnLeftClick(InputAction.CallbackContext ctx)
+        {
+            if (_selectedObstacleIndex < 0 || !CanPlace || !ctx.performed || EventSystem.current.IsPointerOverGameObject()) return;
+
+            EndPlacement();
         }
 
         public void OnCameraMove(InputAction.CallbackContext ctx) { _movementInput = ctx.ReadValue<Vector3>(); }
@@ -141,5 +173,31 @@ namespace _game.Scripts.Building
 
         public void GetMousePos(InputAction.CallbackContext ctx) { _mousePos = ctx.ReadValue<Vector2>(); }
         public void OnRotate(InputAction.CallbackContext ctx) { _rotateInput = ctx.ReadValue<float>(); }
+
+        public void OnSwitchSpectatingPlayer(InputAction.CallbackContext ctx)
+        {
+            if(!ctx.performed) return;
+            
+            int index = (int)ctx.ReadValue<float>();
+            if (index == _spectatingPlayerIndex) return;
+            if (index >= _player.GameManager.Players.Count) return;
+
+            _spectatingPlayerIndex = index;
+            SwitchPlayerCam(index);
+        }
+
+        public void OnIterateSpectatingPlayer(InputAction.CallbackContext ctx)
+        {
+            if(!ctx.performed) return;
+            
+            _spectatingPlayerIndex += (int)ctx.ReadValue<float>();
+
+            if (_spectatingPlayerIndex >= _player.GameManager.Players.Count)
+                _spectatingPlayerIndex = 0;
+            if (_spectatingPlayerIndex < 0)
+                _spectatingPlayerIndex = _player.GameManager.Players.Count - 1;
+            
+            SwitchPlayerCam(_spectatingPlayerIndex);
+        }
     }
 }

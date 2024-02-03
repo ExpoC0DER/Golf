@@ -2077,7 +2077,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 3949657927075518762, guid: ad03b34235832644bb97ad65674fec32,
+    m_Reference: {fileID: 6062131050049283650, guid: ad03b34235832644bb97ad65674fec32,
       type: 3}
   m_PlayerPrefab: {fileID: 2202449079868754379, guid: 9d30b766880125741b7737421491c06b,
     type: 3}
@@ -2179,10 +2179,6 @@ MonoBehaviour:
     m_ActionName: 'Player/CancelAiming[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: 0bc1a9ab-333b-49b9-8a67-a7191d2eef2e
-    m_ActionName: 'Player/PlayerJoin[/Keyboard/enter]'
-  - m_PersistentCalls:
-      m_Calls: []
     m_ActionId: 5ac31e69-d1bc-4355-883d-fc912ec64b2c
     m_ActionName: 'Build/MousePosition[/Mouse/position]'
   - m_PersistentCalls:
@@ -2221,6 +2217,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 4c7de15f-de18-48a2-8a5e-04fb482219c4
     m_ActionName: 'Build/MoveCamera[/Keyboard/space,/Keyboard/shift,/Keyboard/a,/Keyboard/d,/Keyboard/w,/Keyboard/s,/DualShock4GamepadHID/leftStick/left,/DualShock4GamepadHID1/leftStick/left,/DualShock4GamepadHID2/leftStick/left,/DualShock4GamepadHID/leftStick/right,/DualShock4GamepadHID1/leftStick/right,/DualShock4GamepadHID2/leftStick/right,/DualShock4GamepadHID/leftStick/up,/DualShock4GamepadHID1/leftStick/up,/DualShock4GamepadHID2/leftStick/up,/DualShock4GamepadHID/leftStick/down,/DualShock4GamepadHID1/leftStick/down,/DualShock4GamepadHID2/leftStick/down]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f30bbf22-c742-4779-9351-17d28e75d626
+    m_ActionName: 'Player/Zooming[/DualShock4GamepadHID/leftTrigger,/DualShock4GamepadHID/rightTrigger]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1436adbc-adff-4c21-908c-357238079a66
+    m_ActionName: 'Menu/StartGame[/DualShock4GamepadHID/start]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 62da7c54-e2e8-4201-af26-e0f34b30ff47
+    m_ActionName: 'Menu/PlayerJoin[/DualShock4GamepadHID/buttonSouth,/Keyboard/enter]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 96ca72f5-e2a8-47b5-85fa-290c5a32c294
+    m_ActionName: 'Build/SwitchPlayer[/Keyboard/1,/Keyboard/2]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Controller
   m_DefaultActionMap: Build
