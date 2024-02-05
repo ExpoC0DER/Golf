@@ -5,6 +5,7 @@ using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace _game.Scripts.Controls
 {
@@ -24,13 +25,14 @@ namespace _game.Scripts.Controls
         [ReadOnly] public int ShotsTaken;
         [ReadOnly] public int ShotsTakenTotal;
         [ReadOnly] public bool Active;
+        [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
 
         [HideInInspector] public GameManager GameManager;
         [SerializeField] private Renderer _renderer;
 
         private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
         private BuildController _buildController;
-        private Enums.GamePhase _gamePhase = Enums.GamePhase.Play;
+
         private PlayController _playController;
         private PlayerInput _playerInput;
         public static event Action<Player> OnPlayerJoined;
@@ -51,14 +53,30 @@ namespace _game.Scripts.Controls
             _renderer.SetPropertyBlock(mpb);
         }
 
+        private void SetActiveCameraPriority(int newPriority)
+        {
+            if (GamePhase == GamePhase.Play)
+            {
+                PlayCamera.m_Priority = newPriority;
+                BuildCamera.m_Priority = 0;
+            }
+            if (GamePhase == GamePhase.Build)
+            {
+                BuildCameraFollowPoint.position = PlayCamera.transform.position;
+                BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
+                BuildCamera.m_Priority = newPriority;
+                PlayCamera.m_Priority = 0;
+            }
+        }
+
         private void OnActivePlayerChanged(int playerId)
         {
             if (PlayerID == playerId)
             {
                 SetActiveCameraPriority(10);
                 Active = true;
-                if (_gamePhase == GamePhase.Build)
-                    _buildController.StartPlacement(0);
+                if (GamePhase == GamePhase.Build)
+                    _buildController.StartBuild();
             }
             else
             {
@@ -68,56 +86,42 @@ namespace _game.Scripts.Controls
         }
         private void OnGamePhaseChanged(GamePhase gamePhase)
         {
-            _gamePhase = gamePhase;
+            if (Finished) return;
+
+            GamePhase = gamePhase;
             switch (gamePhase)
             {
                 case GamePhase.Play:
                     _playerInput.SwitchCurrentActionMap(ActionMap.Player.ToString());
-                    _playController.IsPlaying = true;
-                    _buildController.IsBuilding = false;
                     break;
                 case GamePhase.Build:
                     _playerInput.SwitchCurrentActionMap(ActionMap.Build.ToString());
-                    _playController.IsPlaying = false;
-                    _buildController.IsBuilding = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gamePhase), gamePhase, null);
             }
         }
 
-        public void StartGame() { GameManager.StartGame(); }
-
-        private void OnGameStart(int round)
+        private void OnRoundStart(int round)
         {
-            if (round != 0) return;
+            if (round == 0)
+            {
+                Map.SetGrassColor(Color);
+                Cursor.visible = false;
+            }
+            Finished = false;
+            GamePhase = GamePhase.Play;
+            gameObject.layer = (int)Layer.Player;
+            ShotsTaken = 0;
             _playerInput.SwitchCurrentActionMap(ActionMap.Player.ToString());
-            Map.SetGrassColor(Color);
-            Cursor.visible = false;
         }
         private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString()); }
-
-        private void SetActiveCameraPriority(int newPriority)
-        {
-            BuildCameraFollowPoint.position = PlayCamera.transform.position;
-            if (_gamePhase == GamePhase.Play)
-            {
-                PlayCamera.m_Priority = newPriority;
-                BuildCamera.m_Priority = 0;
-            }
-            if (_gamePhase == GamePhase.Build)
-            {
-                BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
-                BuildCamera.m_Priority = newPriority;
-                PlayCamera.m_Priority = 0;
-            }
-        }
 
         private void OnEnable()
         {
             OnPlayerJoined?.Invoke(this);
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
-            GameManager.OnRoundStart += OnGameStart;
+            GameManager.OnRoundStart += OnRoundStart;
             GameManager.OnRoundEnd += OnRoundEnd;
             GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
         }
@@ -126,7 +130,7 @@ namespace _game.Scripts.Controls
         {
             OnPlayerLeft?.Invoke(PlayerID);
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
-            GameManager.OnRoundStart -= OnGameStart;
+            GameManager.OnRoundStart -= OnRoundStart;
             GameManager.OnRoundEnd -= OnRoundEnd;
             GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
         }

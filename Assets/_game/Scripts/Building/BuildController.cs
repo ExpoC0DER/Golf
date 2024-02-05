@@ -13,7 +13,6 @@ namespace _game.Scripts.Building
 {
     public class BuildController : MonoBehaviour
     {
-        [HideInInspector] public bool IsBuilding;
         [HideInInspector] public bool CanPlace = true;
 
         [FormerlySerializedAs("_zoomSpeed")]
@@ -45,6 +44,8 @@ namespace _game.Scripts.Building
         private float _rotateInput;
         private Vector3 _movementInput;
 
+        public static event Action<string, Color> OnSpectatingPlayerChanged;
+
         private void Start()
         {
             _mainCamera = Camera.main;
@@ -53,6 +54,16 @@ namespace _game.Scripts.Building
             ResetSpectatingPlayerKey();
             UpdateCameraSensitivity();
             Cursor.lockState = CursorLockMode.Confined;
+        }
+        
+        private bool IsBuilding
+        {
+            get
+            {
+                if (_player)
+                    return _player.GamePhase == GamePhase.Build;
+                return false;
+            }
         }
 
         private void Update()
@@ -93,7 +104,14 @@ namespace _game.Scripts.Building
             }
         }
 
-        public void StartPlacement(int index)
+        public void StartBuild()
+        {
+            OnSpectatingPlayerChanged?.Invoke(_player.PlayerName, _player.Color);
+
+            StartPlacement(0);
+        }
+
+        private void StartPlacement(int index)
         {
             _selectedObstacleIndex = _obstacles.ObstaclesData.FindIndex(data => data.ID == index);
             if (_selectedObstacleIndex < 0)
@@ -115,6 +133,14 @@ namespace _game.Scripts.Building
             _selectedObstacleIndex = -1;
             _player.GameManager.SwitchPlayer(Iterate.Next);
             ResetSpectatingPlayerKey();
+        }
+
+        private void CancelPlacement()
+        {
+            if (_pendingObject)
+                Destroy(_pendingObject.gameObject);
+            _pendingObject = null;
+            _selectedObstacleIndex = -1;
         }
 
         private void UpdateCameraSensitivity()
@@ -141,10 +167,19 @@ namespace _game.Scripts.Building
         {
             //Get playerId of player at index
             int playerId = _player.GameManager.Players.Keys.ToArray()[index];
+
             //Set current BuildCamera pos and rot to that of selected player's playCamera
-            Transform playerCam = _player.GameManager.Players[playerId].PlayCamera.transform;
+            Player player = _player.GameManager.GetPlayer(playerId);
+            Transform playerCam = player.PlayCamera.transform;
             _player.BuildCameraFollowPoint.position = playerCam.position;
             _player.BuildCamera.ForceCameraPosition(playerCam.position, playerCam.rotation);
+
+            OnSpectatingPlayerChanged?.Invoke(player.PlayerName, player.Color);
+        }
+
+        private void OnRoundEnd(int round)
+        {
+            CancelPlacement();
         }
 
         public void OnLeftClick(InputAction.CallbackContext ctx)
@@ -176,8 +211,8 @@ namespace _game.Scripts.Building
 
         public void OnSwitchSpectatingPlayer(InputAction.CallbackContext ctx)
         {
-            if(!ctx.performed) return;
-            
+            if (!ctx.performed) return;
+
             int index = (int)ctx.ReadValue<float>();
             if (index == _spectatingPlayerIndex) return;
             if (index >= _player.GameManager.Players.Count) return;
@@ -188,16 +223,26 @@ namespace _game.Scripts.Building
 
         public void OnIterateSpectatingPlayer(InputAction.CallbackContext ctx)
         {
-            if(!ctx.performed) return;
-            
+            if (!ctx.performed) return;
+
             _spectatingPlayerIndex += (int)ctx.ReadValue<float>();
 
             if (_spectatingPlayerIndex >= _player.GameManager.Players.Count)
                 _spectatingPlayerIndex = 0;
             if (_spectatingPlayerIndex < 0)
                 _spectatingPlayerIndex = _player.GameManager.Players.Count - 1;
-            
+
             SwitchPlayerCam(_spectatingPlayerIndex);
+        }
+
+        private void OnEnable()
+        {
+            GameManager.OnRoundEnd += OnRoundEnd;
+        }
+        
+        private void OnDisable()
+        {
+            GameManager.OnRoundEnd -= OnRoundEnd;
         }
     }
 }

@@ -12,8 +12,6 @@ namespace _game.Scripts.Controls
 {
     public class PlayController : MonoBehaviour
     {
-        [HideInInspector] public bool IsPlaying = true;
-
         [SerializeField] private Transform _powerBar;
         [SerializeField] private Material _powerBarMat;
         [SerializeField] private Transform _powerBarRotationPivot;
@@ -61,6 +59,16 @@ namespace _game.Scripts.Controls
             return interpolatedValue;
         }
 
+        private bool IsPlaying
+        {
+            get
+            {
+                if (_player)
+                    return _player.GamePhase == GamePhase.Play;
+                return false;
+            }
+        }
+
         private void Update()
         {
             //Set Player components positions to ball
@@ -100,6 +108,7 @@ namespace _game.Scripts.Controls
                 _player.Finished = true;
                 gameObject.layer = (int)Layer.Ghost;
                 _player.Active = false;
+                _rb.isKinematic = true;
                 OnPlayerFinished?.Invoke(_player.PlayerID);
             }
         }
@@ -146,22 +155,6 @@ namespace _game.Scripts.Controls
             _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("Hole"))
-            {
-                _isInTheHole = true;
-            }
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.CompareTag("Hole"))
-            {
-                _isInTheHole = false;
-            }
-        }
-
         /// <summary>
         /// Changes PowerBar length(Z scale) by amount
         /// </summary>
@@ -178,19 +171,30 @@ namespace _game.Scripts.Controls
             _powerBarMat.SetColor("_EmissionColor", newColor);
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Hole"))
+            {
+                _isInTheHole = true;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Hole"))
+            {
+                _isInTheHole = false;
+            }
+        }
+
         private void OnRoundStart(int round)
         {
             _isInTheHole = false;
-            _player.Finished = false;
             if (_player.Map.GetRoundStartLocation(round, out Transform startLocation))
                 _rb.position = startLocation.position;
             _rb.isKinematic = false;
         }
-        private void OnRoundEnd(int round)
-        {
-            _player.ShotsTaken = 0;
-            _rb.isKinematic = true;
-        }
+        private void OnRoundEnd(int round) { _rb.isKinematic = true; }
 
         public void OnLook(InputAction.CallbackContext ctx)
         {
@@ -229,7 +233,7 @@ namespace _game.Scripts.Controls
         public void CancelAiming(InputAction.CallbackContext ctx)
         {
             if (!ctx.performed) return;
-            
+
             //Cancel aiming
             _isAiming = false;
             //Turn off PowerBar and reset scale

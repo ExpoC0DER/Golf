@@ -7,6 +7,7 @@ using AYellowpaper.SerializedCollections;
 using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static _game.Scripts.Enums;
 
 namespace _game.Scripts
@@ -17,7 +18,7 @@ namespace _game.Scripts
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
 
-        [SerializeField, ReadOnly] private GamePhase _gamePhase = GamePhase.Play;
+        [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
         public SerializedDictionary<int, Player> Players { get; private set; } = new();
 
@@ -115,6 +116,8 @@ namespace _game.Scripts
 
         public void StartNextRound()
         {
+            GamePhase = GamePhase.Play;
+            OnGamePhaseChanged?.Invoke(GamePhase);
             _numberOfFinishedPlayers = 0;
             OnRoundStart?.Invoke(_currentRound);
             ChangeActivePlayer(_activePlayerId);
@@ -148,8 +151,8 @@ namespace _game.Scripts
             int nextPlayerId = GetIteratedPlayerId(iterate);
             if (nextPlayerId <= _activePlayerId)
             {
-                _gamePhase = _gamePhase == GamePhase.Play ? GamePhase.Build : GamePhase.Play;
-                OnGamePhaseChanged?.Invoke(_gamePhase);
+                GamePhase = GamePhase == GamePhase.Play ? GamePhase.Build : GamePhase.Play;
+                OnGamePhaseChanged?.Invoke(GamePhase);
             }
 
             _activePlayerId = nextPlayerId;
