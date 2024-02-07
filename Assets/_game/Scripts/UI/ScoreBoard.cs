@@ -23,8 +23,7 @@ namespace _game.Scripts.UI
 
         [SerializeField, SerializedDictionary("PlayerId", "Line"), ReadOnly]
         private SerializedDictionary<int, ScoreBoardLine> _playerLines = new();
-
-
+        
         //* Update scoreboard when changed from editor
         private void UpdateScoreBoard() { InstantiateScoreboard(_numberOfPlayers, _numberOfRounds); }
 

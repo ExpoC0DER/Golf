@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using static _game.Scripts.Enums;
+using Random = UnityEngine.Random;
 
 namespace _game.Scripts.Building
 {
@@ -91,7 +92,6 @@ namespace _game.Scripts.Building
             Vector3 cameraPos = _player.BuildCameraFollowPoint.position + _moveSpeed * Time.deltaTime * moveDirection;
             cameraPos.y = Mathf.Clamp(cameraPos.y, _zoomMinMax.x, _zoomMinMax.y);
             _player.BuildCameraFollowPoint.position = cameraPos;
-
         }
 
         private void FixedUpdate()
@@ -108,7 +108,7 @@ namespace _game.Scripts.Building
         {
             OnSpectatingPlayerChanged?.Invoke(_player.PlayerName, _player.Color);
 
-            StartPlacement(0);
+            StartPlacement(Random.Range(0,3));
         }
 
         private void StartPlacement(int index)

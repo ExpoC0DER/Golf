@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -8953018010335914418}
   - component: {fileID: 7214101481979420899}
   m_Layer: 8
-  m_Name: Cube
+  m_Name: Plank
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

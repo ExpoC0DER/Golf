@@ -13,15 +13,18 @@ MonoBehaviour:
   m_Name: Database
   m_EditorClassIdentifier: 
   ObstaclesData:
-  - <Name>k__BackingField: Cube
+  - <Name>k__BackingField: Plank
     <ID>k__BackingField: 0
     <Prefab>k__BackingField: {fileID: 2892066726160671717, guid: aa571287718148541b52e6f17cc2e76f,
       type: 3}
-  - <Name>k__BackingField: Cylinder
+    <Sprite>k__BackingField: {fileID: 0}
+  - <Name>k__BackingField: Tornado
     <ID>k__BackingField: 1
-    <Prefab>k__BackingField: {fileID: 3371388362583408253, guid: 12f3faed76c5b4e47b226f863132488f,
+    <Prefab>k__BackingField: {fileID: 6021940366359138858, guid: 27fe806c78a900a4c9b11ea7bd3c957c,
       type: 3}
-  - <Name>k__BackingField: Sphere
+    <Sprite>k__BackingField: {fileID: 0}
+  - <Name>k__BackingField: Black Hole
     <ID>k__BackingField: 2
-    <Prefab>k__BackingField: {fileID: 597341804067486234, guid: 93e4cbd237c24fe40bd037868e560e0c,
+    <Prefab>k__BackingField: {fileID: 18190644458476307, guid: 30b2b8b722875114e8ead524f7998cfa,
       type: 3}
+    <Sprite>k__BackingField: {fileID: 0}
