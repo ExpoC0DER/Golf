@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using _game.Scripts.Controls;
 using Cinemachine;
@@ -46,6 +47,7 @@ namespace _game.Scripts.Building
         private Vector3 _movementInput;
 
         public static event Action<string, Color> OnSpectatingPlayerChanged;
+        public static event Action<int, float> OnStartBuild;
 
         private void Start()
         {
@@ -56,7 +58,7 @@ namespace _game.Scripts.Building
             UpdateCameraSensitivity();
             Cursor.lockState = CursorLockMode.Confined;
         }
-        
+
         private bool IsBuilding
         {
             get
@@ -76,6 +78,11 @@ namespace _game.Scripts.Building
 
             _previewMaterial.color = CanPlace ? _canPlaceColor : _canNotPlaceColor;
 
+
+        }
+
+        private void LateUpdate()
+        {
             if (_selectedObstacleIndex < 0) return;
 
             _pendingObject.transform.position = _pos;
@@ -108,18 +115,27 @@ namespace _game.Scripts.Building
         {
             OnSpectatingPlayerChanged?.Invoke(_player.PlayerName, _player.Color);
 
-            StartPlacement(Random.Range(0,3));
+            int random = Random.Range(0, 3);
+            OnStartBuild?.Invoke(random, 3);
+            StartCoroutine(StartPlacementWithDelay(random, 3));
+        }
+
+        private IEnumerator StartPlacementWithDelay(int index, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            StartPlacement(index);
         }
 
         private void StartPlacement(int index)
         {
-            _selectedObstacleIndex = _obstacles.ObstaclesData.FindIndex(data => data.ID == index);
-            if (_selectedObstacleIndex < 0)
+            //_selectedObstacleIndex = _obstacles.Obstacles.FindIndex(data => data.ID == index);
+            _selectedObstacleIndex = index;
+            if (_selectedObstacleIndex < 0 || _selectedObstacleIndex >= _obstacles.EnabledObstacles.Count)
             {
-                Debug.LogError($"No ID found {index}");
+                Debug.LogError($"Cannot start placement! No active obstacle at {index} found.");
                 return;
             }
-            _pendingObject = Instantiate(_obstacles.ObstaclesData[_selectedObstacleIndex].Prefab, _pos, Quaternion.identity);
+            _pendingObject = Instantiate(_obstacles.EnabledObstacles[_selectedObstacleIndex].Prefab, _pos, Quaternion.identity);
             _pendingObject.gameObject.layer = (int)Layer.ObstaclePreview;
             _pendingObject.BuildController = this;
         }
@@ -177,10 +193,7 @@ namespace _game.Scripts.Building
             OnSpectatingPlayerChanged?.Invoke(player.PlayerName, player.Color);
         }
 
-        private void OnRoundEnd(int round)
-        {
-            CancelPlacement();
-        }
+        private void OnRoundEnd(int round) { CancelPlacement(); }
 
         public void OnLeftClick(InputAction.CallbackContext ctx)
         {
@@ -235,14 +248,8 @@ namespace _game.Scripts.Building
             SwitchPlayerCam(_spectatingPlayerIndex);
         }
 
-        private void OnEnable()
-        {
-            GameManager.OnRoundEnd += OnRoundEnd;
-        }
-        
-        private void OnDisable()
-        {
-            GameManager.OnRoundEnd -= OnRoundEnd;
-        }
+        private void OnEnable() { GameManager.OnRoundEnd += OnRoundEnd; }
+
+        private void OnDisable() { GameManager.OnRoundEnd -= OnRoundEnd; }
     }
 }
