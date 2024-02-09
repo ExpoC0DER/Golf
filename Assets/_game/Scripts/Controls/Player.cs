@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using _game.Scripts.Building;
 using static _game.Scripts.Enums;
 using Cinemachine;
@@ -6,6 +7,7 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace _game.Scripts.Controls
 {
@@ -25,6 +27,7 @@ namespace _game.Scripts.Controls
         [ReadOnly] public int ShotsTaken;
         [ReadOnly] public int ShotsTakenTotal;
         [ReadOnly] public bool Active;
+        [ReadOnly] public int NextObstacleId = -1;
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
 
         [HideInInspector] public GameManager GameManager;
@@ -32,11 +35,21 @@ namespace _game.Scripts.Controls
 
         private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
         private BuildController _buildController;
-
         private PlayController _playController;
         private PlayerInput _playerInput;
+        
+        /// <summary>
+        /// Returns Player object of Player who joined
+        /// </summary>
         public static event Action<Player> OnPlayerJoined;
+        /// <summary>
+        /// Returns int PlayerId of player who left
+        /// </summary>
         public static event Action<int> OnPlayerLeft;
+        /// <summary>
+        /// Returns int PlayerId, int NextObstacleId, float duration
+        /// </summary>
+        public static event Action<int, int, float>OnRandomObstacleGenerated;
 
         private void Awake()
         {
@@ -55,12 +68,12 @@ namespace _game.Scripts.Controls
 
         private void SetActiveCameraPriority(int newPriority)
         {
-            if (GamePhase == GamePhase.Play)
+            if (GamePhase is GamePhase.Play)
             {
                 PlayCamera.m_Priority = newPriority;
                 BuildCamera.m_Priority = 0;
             }
-            if (GamePhase == GamePhase.Build)
+            if (GamePhase is GamePhase.Build or GamePhase.Intermission)
             {
                 BuildCameraFollowPoint.position = PlayCamera.transform.position;
                 BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
@@ -75,7 +88,7 @@ namespace _game.Scripts.Controls
             {
                 SetActiveCameraPriority(10);
                 Active = true;
-                if (GamePhase == GamePhase.Build)
+                if (GamePhase is GamePhase.Build or GamePhase.Intermission)
                     _buildController.StartBuild();
             }
             else
@@ -96,6 +109,10 @@ namespace _game.Scripts.Controls
                     break;
                 case GamePhase.Build:
                     _playerInput.SwitchCurrentActionMap(ActionMap.Build.ToString());
+                    break;
+                case GamePhase.Intermission:
+                    NextObstacleId = _buildController.GetRandomActiveObstacleId();
+                    OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId, GameManager.RandomizeDuration);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gamePhase), gamePhase, null);

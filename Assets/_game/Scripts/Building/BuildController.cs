@@ -47,7 +47,6 @@ namespace _game.Scripts.Building
         private Vector3 _movementInput;
 
         public static event Action<string, Color> OnSpectatingPlayerChanged;
-        public static event Action<int, float> OnStartBuild;
 
         private void Start()
         {
@@ -78,11 +77,6 @@ namespace _game.Scripts.Building
 
             _previewMaterial.color = CanPlace ? _canPlaceColor : _canNotPlaceColor;
 
-
-        }
-
-        private void LateUpdate()
-        {
             if (_selectedObstacleIndex < 0) return;
 
             _pendingObject.transform.position = _pos;
@@ -111,13 +105,14 @@ namespace _game.Scripts.Building
             }
         }
 
+        public int GetRandomActiveObstacleId() { return Random.Range(0, _obstacles.EnabledObstacles.Count); }
+
         public void StartBuild()
         {
             OnSpectatingPlayerChanged?.Invoke(_player.PlayerName, _player.Color);
+            StartPlacement(_player.NextObstacleId);
 
-            int random = Random.Range(0, 3);
-            OnStartBuild?.Invoke(random, 3);
-            StartCoroutine(StartPlacementWithDelay(random, 3));
+            //StartCoroutine(StartPlacementWithDelay(_player.NextObstacleId, _player.GameManager.RandomizeDuration));
         }
 
         private IEnumerator StartPlacementWithDelay(int index, float delay)
@@ -126,7 +121,7 @@ namespace _game.Scripts.Building
             StartPlacement(index);
         }
 
-        private void StartPlacement(int index)
+        public void StartPlacement(int index)
         {
             //_selectedObstacleIndex = _obstacles.Obstacles.FindIndex(data => data.ID == index);
             _selectedObstacleIndex = index;
@@ -171,6 +166,8 @@ namespace _game.Scripts.Building
         /// </summary>
         private void ResetSpectatingPlayerKey()
         {
+            if (!_player.GameManager) return;
+            
             int key = Array.IndexOf(_player.GameManager.Players.Keys.ToArray(), _player.PlayerID);
             _spectatingPlayerIndex = key;
         }

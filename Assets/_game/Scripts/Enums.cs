@@ -13,7 +13,8 @@ namespace _game.Scripts
         public enum GamePhase
         {
             Play,
-            Build
+            Build,
+            Intermission
         }
 
         public enum ActionMap

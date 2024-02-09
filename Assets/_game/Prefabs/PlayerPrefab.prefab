@@ -434,6 +434,7 @@ MonoBehaviour:
   <PlayCamera>k__BackingField: {fileID: 3952190247341306527}
   <BuildCamera>k__BackingField: {fileID: 1026984804802244678}
   <BuildCameraFollowPoint>k__BackingField: {fileID: 4812628574398887274}
+  <RandomizeDuration>k__BackingField: 3
   PlayerID: -1
   Color: {r: 0, g: 0, b: 0, a: 0}
   PlayerName: 
@@ -442,6 +443,8 @@ MonoBehaviour:
   ShotsTaken: 0
   ShotsTakenTotal: 0
   Active: 0
+  NextObstacleId: -1
+  <GamePhase>k__BackingField: 0
   GameManager: {fileID: 0}
   _renderer: {fileID: 4270644776232405842}
 --- !u!114 &8221349741261837532
@@ -456,7 +459,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ff5cec8f9ea785408d39a5837c9d19f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsPlaying: 1
   _powerBar: {fileID: 7787248091618927971}
   _powerBarMat: {fileID: 2100000, guid: efa6ba2e267cac5459c16a7f38494e7b, type: 2}
   _powerBarRotationPivot: {fileID: 1557183286881308663}
@@ -481,7 +483,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5748565e9babfca489a96b93f091bc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsBuilding: 0
   CanPlace: 1
   _zoomSpeedScroll: 1
   _zoomMinMax: {x: 1, y: 5}

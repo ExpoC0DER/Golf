@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _game.Scripts.Controls;
@@ -17,6 +18,7 @@ namespace _game.Scripts
         [SerializeField] private Map _gameMap;
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
+        [field: SerializeField] public float RandomizeDuration { get; private set; }
 
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
@@ -151,12 +153,20 @@ namespace _game.Scripts
             int nextPlayerId = GetIteratedPlayerId(iterate);
             if (nextPlayerId <= _activePlayerId)
             {
-                GamePhase = GamePhase == GamePhase.Play ? GamePhase.Build : GamePhase.Play;
+                GamePhase = GamePhase == GamePhase.Play ? GamePhase.Intermission : GamePhase.Play;
                 OnGamePhaseChanged?.Invoke(GamePhase);
+                if (GamePhase == GamePhase.Intermission)
+                    StartCoroutine(ChangeGamePhaseDelayed(GamePhase.Build, RandomizeDuration));
             }
-
             _activePlayerId = nextPlayerId;
             ChangeActivePlayer(_activePlayerId);
+        }
+
+        private IEnumerator ChangeGamePhaseDelayed(GamePhase gamePhase, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            GamePhase = gamePhase;
+            OnGamePhaseChanged?.Invoke(GamePhase);
         }
 
         private int GetIteratedPlayerId(Iterate iterate, int startPlayerId = -1)
