@@ -73,7 +73,7 @@ namespace _game.Scripts.Controls
                 PlayCamera.m_Priority = newPriority;
                 BuildCamera.m_Priority = 0;
             }
-            if (GamePhase is GamePhase.Build or GamePhase.Intermission)
+            if (GamePhase is GamePhase.Build)
             {
                 BuildCameraFollowPoint.position = PlayCamera.transform.position;
                 BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
@@ -88,7 +88,7 @@ namespace _game.Scripts.Controls
             {
                 SetActiveCameraPriority(10);
                 Active = true;
-                if (GamePhase is GamePhase.Build or GamePhase.Intermission)
+                if (GamePhase is GamePhase.Build)
                     _buildController.StartBuild();
             }
             else

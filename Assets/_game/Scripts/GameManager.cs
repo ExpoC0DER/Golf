@@ -18,7 +18,10 @@ namespace _game.Scripts
         [SerializeField] private Map _gameMap;
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
+
+        [field: Header("Settings")]
         [field: SerializeField] public float RandomizeDuration { get; private set; }
+        [field: SerializeField] public bool SingleBoard { get; set; }
 
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
@@ -71,11 +74,17 @@ namespace _game.Scripts
 
         public void StartGame()
         {
+            Map newMap = null;
             foreach (KeyValuePair<int, Player> pair in Players)
             {
-                Map newMap = Instantiate(_gameMap);
                 int playerId = pair.Value.PlayerID;
-                newMap.transform.position = Vector3.right * playerId * 100;
+
+                if (!newMap || !SingleBoard)
+                {
+                    newMap = Instantiate(_gameMap);
+                    newMap.transform.position = Vector3.right * playerId * 100;
+                }
+
                 pair.Value.Map = newMap;
             }
 
@@ -93,7 +102,6 @@ namespace _game.Scripts
             if (Players.ContainsKey(playerId))
             {
                 //TODO: Disable/Delete Player
-
                 Players.Remove(playerId);
             }
         }
@@ -118,6 +126,7 @@ namespace _game.Scripts
 
         public void StartNextRound()
         {
+            StopAllCoroutines();
             GamePhase = GamePhase.Play;
             OnGamePhaseChanged?.Invoke(GamePhase);
             _numberOfFinishedPlayers = 0;
@@ -155,11 +164,13 @@ namespace _game.Scripts
             {
                 GamePhase = GamePhase == GamePhase.Play ? GamePhase.Intermission : GamePhase.Play;
                 OnGamePhaseChanged?.Invoke(GamePhase);
-                if (GamePhase == GamePhase.Intermission)
-                    StartCoroutine(ChangeGamePhaseDelayed(GamePhase.Build, RandomizeDuration));
             }
+
             _activePlayerId = nextPlayerId;
-            ChangeActivePlayer(_activePlayerId);
+            if (GamePhase == GamePhase.Intermission)
+                StartCoroutine(ChangeGamePhaseDelayed(GamePhase.Build, RandomizeDuration));
+            else
+                ChangeActivePlayer(_activePlayerId);
         }
 
         private IEnumerator ChangeGamePhaseDelayed(GamePhase gamePhase, float delay)
@@ -167,8 +178,10 @@ namespace _game.Scripts
             yield return new WaitForSeconds(delay);
             GamePhase = gamePhase;
             OnGamePhaseChanged?.Invoke(GamePhase);
+            ChangeActivePlayer(_activePlayerId);
         }
 
+        //TODO add support to iterate by more than 1
         private int GetIteratedPlayerId(Iterate iterate, int startPlayerId = -1)
         {
             int nextPlayerId = startPlayerId == -1 ? _activePlayerId : startPlayerId;

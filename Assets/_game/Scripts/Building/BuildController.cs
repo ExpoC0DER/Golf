@@ -111,14 +111,6 @@ namespace _game.Scripts.Building
         {
             OnSpectatingPlayerChanged?.Invoke(_player.PlayerName, _player.Color);
             StartPlacement(_player.NextObstacleId);
-
-            //StartCoroutine(StartPlacementWithDelay(_player.NextObstacleId, _player.GameManager.RandomizeDuration));
-        }
-
-        private IEnumerator StartPlacementWithDelay(int index, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            StartPlacement(index);
         }
 
         public void StartPlacement(int index)
