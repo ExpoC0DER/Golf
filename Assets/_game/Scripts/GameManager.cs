@@ -37,14 +37,14 @@ namespace _game.Scripts
         private void Update()
         {
             // Check for debug input
-            if (Input.GetKeyDown(KeyCode.Period))
-            {
-                SwitchPlayer(Iterate.Next);
-            }
-            if (Input.GetKeyDown(KeyCode.Comma))
-            {
-                SwitchPlayer(Iterate.Previous);
-            }
+            // if (Input.GetKeyDown(KeyCode.Period))
+            // {
+            //     SwitchPlayer(Iterate.Next);
+            // }
+            // if (Input.GetKeyDown(KeyCode.Comma))
+            // {
+            //     SwitchPlayer(Iterate.Previous);
+            // }
         }
 
         public void PrintTest(string message) { Debug.Log(message); }

@@ -9,10 +9,7 @@ namespace _game.Scripts.Building
         public BuildController BuildController { get; set; }
         private Collider _collider;
 
-        private void Awake()
-        {
-            _collider = GetComponent<Collider>();
-        }
+        private void Awake() { _collider = GetComponent<Collider>(); }
 
         public void Place() { _collider.isTrigger = false; }
 

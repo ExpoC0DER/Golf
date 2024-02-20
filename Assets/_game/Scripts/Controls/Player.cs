@@ -6,7 +6,9 @@ using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace _game.Scripts.Controls
@@ -16,6 +18,7 @@ namespace _game.Scripts.Controls
     {
         [field: SerializeField] public CinemachineVirtualCamera PlayCamera { get; private set; }
         [field: SerializeField] public CinemachineVirtualCamera BuildCamera { get; private set; }
+        //[field: SerializeField] public CinemachineVirtualCamera Camera { get; private set; }
         [field: SerializeField] public Transform BuildCameraFollowPoint { get; private set; }
 
         [Header("Player Info")]
@@ -28,16 +31,18 @@ namespace _game.Scripts.Controls
         [ReadOnly] public int ShotsTakenTotal;
         [ReadOnly] public bool Active;
         [ReadOnly] public int NextObstacleId = -1;
+        
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
-
-        [HideInInspector] public GameManager GameManager;
+        [field: SerializeField, ReadOnly] public RectTransform PlayerCursor { get; set; }
         [SerializeField] private Renderer _renderer;
 
+        [HideInInspector] public GameManager GameManager;
+        
         private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
         private BuildController _buildController;
         private PlayController _playController;
         private PlayerInput _playerInput;
-        
+
         /// <summary>
         /// Returns Player object of Player who joined
         /// </summary>
@@ -49,7 +54,7 @@ namespace _game.Scripts.Controls
         /// <summary>
         /// Returns int PlayerId, int NextObstacleId, float duration
         /// </summary>
-        public static event Action<int, int, float>OnRandomObstacleGenerated;
+        public static event Action<int, int, float> OnRandomObstacleGenerated;
 
         private void Awake()
         {
@@ -61,6 +66,7 @@ namespace _game.Scripts.Controls
         public void SetColor(Color newColor)
         {
             Color = newColor;
+            PlayerCursor.GetComponent<Image>().color = newColor;
             MaterialPropertyBlock mpb = new MaterialPropertyBlock();
             mpb.SetColor(_materialColorReference, newColor);
             _renderer.SetPropertyBlock(mpb);
@@ -68,6 +74,7 @@ namespace _game.Scripts.Controls
 
         private void SetActiveCameraPriority(int newPriority)
         {
+            //Camera.m_Priority = newPriority;
             if (GamePhase is GamePhase.Play)
             {
                 PlayCamera.m_Priority = newPriority;
@@ -75,7 +82,7 @@ namespace _game.Scripts.Controls
             }
             if (GamePhase is GamePhase.Build or GamePhase.Intermission)
             {
-                BuildCameraFollowPoint.position = PlayCamera.transform.position;
+                BuildCameraFollowPoint.position = transform.position;
                 BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
                 BuildCamera.m_Priority = newPriority;
                 PlayCamera.m_Priority = 0;
@@ -87,6 +94,7 @@ namespace _game.Scripts.Controls
             if (PlayerID == playerId)
             {
                 SetActiveCameraPriority(10);
+                PlayerCursor.gameObject.SetActive(true);
                 Active = true;
                 if (GamePhase is GamePhase.Build or GamePhase.Intermission)
                     _buildController.StartBuild();
@@ -94,6 +102,7 @@ namespace _game.Scripts.Controls
             else
             {
                 SetActiveCameraPriority(0);
+                PlayerCursor.gameObject.SetActive(false);
                 Active = false;
             }
         }
@@ -124,7 +133,6 @@ namespace _game.Scripts.Controls
             if (round == 0)
             {
                 Map.SetGrassColor(Color);
-                Cursor.visible = false;
             }
             Finished = false;
             GamePhase = GamePhase.Play;

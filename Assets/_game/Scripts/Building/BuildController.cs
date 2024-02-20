@@ -20,6 +20,7 @@ namespace _game.Scripts.Building
         [FormerlySerializedAs("_zoomSpeed")]
         [Header("Settings")]
         [SerializeField] private float _zoomSpeedScroll;
+        [SerializeField] private float _zoomSpeed;
         [SerializeField, MinMaxSlider(0.1f, 10)]
         private Vector2 _zoomMinMax;
         [SerializeField, OnValueChanged("UpdateCameraSensitivity")]
@@ -34,27 +35,27 @@ namespace _game.Scripts.Building
         [SerializeField] private LayerMask _layerMask;
 
         private Player _player;
-        private CinemachinePOV _pov;
         private Vector3 _pos;
         private RaycastHit _hit;
         private Camera _mainCamera;
         private PlacementCheck _pendingObject;
         private int _selectedObstacleIndex = -1;
         private int _spectatingPlayerIndex;
+        private CinemachineFramingTransposer _framingTransposer;
 
-        private Vector2 _mousePos;
-        private float _rotateInput;
-        private Vector3 _movementInput;
+        private Vector2 _mousePosition = new Vector2(960, 540);
+        private Vector2 _movementInput, _joystickInput;
+        private float _rotateInput, _zoomInput;
 
         public static event Action<string, Color> OnSpectatingPlayerChanged;
+
+        private void Awake() { _player = GetComponent<Player>(); }
 
         private void Start()
         {
             _mainCamera = Camera.main;
-            _player = GetComponent<Player>();
-            _pov = _player.BuildCamera.GetCinemachineComponent<CinemachinePOV>();
+            _framingTransposer = _player.BuildCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             ResetSpectatingPlayerKey();
-            UpdateCameraSensitivity();
             Cursor.lockState = CursorLockMode.Confined;
         }
 
@@ -73,7 +74,9 @@ namespace _game.Scripts.Building
             if (!IsBuilding) return;
             if (!_player.Active) return;
 
+            MoveCursor();
             HandleMovement();
+            HandleZooming();
 
             _previewMaterial.color = CanPlace ? _canPlaceColor : _canNotPlaceColor;
 
@@ -83,22 +86,33 @@ namespace _game.Scripts.Building
             _pendingObject.transform.Rotate(Vector3.up, _rotateInput);
         }
 
+        private void MoveCursor()
+        {
+            if (!_player.PlayerCursor) return;
+
+            _player.PlayerCursor.anchoredPosition = _mousePosition;
+            _mousePosition.x = Mathf.Clamp(_mousePosition.x + _joystickInput.x * _cameraSensitivity.x * Time.deltaTime, 0, Screen.width);
+            _mousePosition.y = Mathf.Clamp(_mousePosition.y + _joystickInput.y * _cameraSensitivity.y * Time.deltaTime, 0, Screen.height);
+        }
+
         private void HandleMovement()
         {
-            //Rotate followPoint towards point on front of camera
-            Vector3 cameraForwardPos = _mainCamera.transform.position + _mainCamera.transform.forward;
-            _player.BuildCameraFollowPoint.LookAt(new Vector3(cameraForwardPos.x, _player.BuildCameraFollowPoint.position.y, cameraForwardPos.z));
             //Multiply input with direction of followPoint and move it in resulting direction
-            Vector3 moveDirection = _player.BuildCameraFollowPoint.transform.forward * _movementInput.z + _player.BuildCameraFollowPoint.transform.up * _movementInput.y + _player.BuildCameraFollowPoint.transform.right * _movementInput.x;
-            Vector3 cameraPos = _player.BuildCameraFollowPoint.position + _moveSpeed * Time.deltaTime * moveDirection;
-            cameraPos.y = Mathf.Clamp(cameraPos.y, _zoomMinMax.x, _zoomMinMax.y);
-            _player.BuildCameraFollowPoint.position = cameraPos;
+            Vector3 moveDirection = _player.BuildCameraFollowPoint.transform.forward * _movementInput.y + _player.BuildCameraFollowPoint.transform.right * _movementInput.x;
+            _player.BuildCameraFollowPoint.position += _moveSpeed * Time.deltaTime * moveDirection;
+        }
+
+        private void HandleZooming()
+        {
+            //Handle zooming camera
+            _framingTransposer.m_CameraDistance += _zoomInput * _zoomSpeed * Time.deltaTime;
+            _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
         }
 
         private void FixedUpdate()
         {
-            //Ray ray = _mainCamera.ScreenPointToRay(_mousePos);
-            Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
+            Ray ray = _mainCamera.ScreenPointToRay(_mousePosition);
+            //Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
             if (Physics.Raycast(ray, out _hit, 1000, _layerMask))
             {
                 _pos = _hit.point;
@@ -154,12 +168,6 @@ namespace _game.Scripts.Building
             _selectedObstacleIndex = -1;
         }
 
-        private void UpdateCameraSensitivity()
-        {
-            if (!Application.isPlaying) return;
-            _pov.m_HorizontalAxis.m_MaxSpeed = _cameraSensitivity.x;
-            _pov.m_VerticalAxis.m_MaxSpeed = _cameraSensitivity.y;
-        }
 
         /// <summary>
         /// Sets spectatingPlayerIndex to one based on playerId
@@ -167,7 +175,7 @@ namespace _game.Scripts.Building
         private void ResetSpectatingPlayerKey()
         {
             if (!_player.GameManager) return;
-            
+
             int key = Array.IndexOf(_player.GameManager.Players.Keys.ToArray(), _player.PlayerID);
             _spectatingPlayerIndex = key;
         }
@@ -183,8 +191,9 @@ namespace _game.Scripts.Building
 
             //Set current BuildCamera pos and rot to that of selected player's playCamera
             Player player = _player.GameManager.GetPlayer(playerId);
+            _player.BuildCameraFollowPoint.position = player.transform.position;
+
             Transform playerCam = player.PlayCamera.transform;
-            _player.BuildCameraFollowPoint.position = playerCam.position;
             _player.BuildCamera.ForceCameraPosition(playerCam.position, playerCam.rotation);
 
             OnSpectatingPlayerChanged?.Invoke(player.PlayerName, player.Color);
@@ -199,25 +208,22 @@ namespace _game.Scripts.Building
             EndPlacement();
         }
 
-        public void OnCameraMove(InputAction.CallbackContext ctx) { _movementInput = ctx.ReadValue<Vector3>(); }
+        public void OnCameraMove(InputAction.CallbackContext ctx) { _movementInput = ctx.ReadValue<Vector2>(); }
 
-        public void OnLook(InputAction.CallbackContext ctx)
+        public void OnZoomScroll(InputAction.CallbackContext ctx)
         {
-            Vector2 mouseDelta = ctx.ReadValue<Vector2>();
-            _pov.m_VerticalAxis.m_InputAxisValue = mouseDelta.y;
-            _pov.m_HorizontalAxis.m_InputAxisValue = mouseDelta.x;
+            //Handle zooming camera
+            _framingTransposer.m_CameraDistance += ctx.ReadValue<float>() * _zoomSpeedScroll;
+            _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
         }
 
-        public void OnZooming(InputAction.CallbackContext ctx)
-        {
-            Vector3 cameraPos = _player.BuildCameraFollowPoint.position;
-            cameraPos.y += ctx.ReadValue<float>() * _zoomSpeedScroll;
-            cameraPos.y = Mathf.Clamp(cameraPos.y, _zoomMinMax.x, _zoomMinMax.y);
-            _player.BuildCameraFollowPoint.position = cameraPos;
-        }
+        public void OnZooming(InputAction.CallbackContext ctx) { _zoomInput = ctx.ReadValue<float>(); }
 
-        public void GetMousePos(InputAction.CallbackContext ctx) { _mousePos = ctx.ReadValue<Vector2>(); }
         public void OnRotate(InputAction.CallbackContext ctx) { _rotateInput = ctx.ReadValue<float>(); }
+
+        public void GetMousePosition(InputAction.CallbackContext ctx) { _mousePosition = ctx.ReadValue<Vector2>(); }
+
+        public void OnJoystickMove(InputAction.CallbackContext ctx) { _joystickInput = ctx.ReadValue<Vector2>(); }
 
         public void OnSwitchSpectatingPlayer(InputAction.CallbackContext ctx)
         {
