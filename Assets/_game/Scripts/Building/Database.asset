@@ -15,21 +15,28 @@ MonoBehaviour:
   <Obstacles>k__BackingField:
   - <Name>k__BackingField: Plank
     <ID>k__BackingField: 0
-    <Prefab>k__BackingField: {fileID: 2892066726160671717, guid: aa571287718148541b52e6f17cc2e76f,
+    <Prefab>k__BackingField: {fileID: 546292164135091843, guid: a4b1c9b026a29884a9110125adf2df93,
       type: 3}
     <Sprite>k__BackingField: {fileID: 21300000, guid: 7edb40dc1f5a7404f96e2e4acfaf58e6,
       type: 3}
-    <Enabled>k__BackingField: 1
+    <Enabled>k__BackingField: 0
   - <Name>k__BackingField: Tornado
     <ID>k__BackingField: 1
-    <Prefab>k__BackingField: {fileID: 6021940366359138858, guid: 27fe806c78a900a4c9b11ea7bd3c957c,
+    <Prefab>k__BackingField: {fileID: 4158581439519135938, guid: 00b042117b069584aa53120132076030,
       type: 3}
     <Sprite>k__BackingField: {fileID: 21300000, guid: 7623b103af6eac143a41ec2b0ba34c22,
       type: 3}
-    <Enabled>k__BackingField: 1
+    <Enabled>k__BackingField: 0
   - <Name>k__BackingField: Black Hole
     <ID>k__BackingField: 2
-    <Prefab>k__BackingField: {fileID: 18190644458476307, guid: 30b2b8b722875114e8ead524f7998cfa,
+    <Prefab>k__BackingField: {fileID: 8591338833923142479, guid: 30b2b8b722875114e8ead524f7998cfa,
+      type: 3}
+    <Sprite>k__BackingField: {fileID: 21300000, guid: 51ca9713a763ab243aa4c3f6c5dfef7f,
+      type: 3}
+    <Enabled>k__BackingField: 0
+  - <Name>k__BackingField: Wind Zone
+    <ID>k__BackingField: 3
+    <Prefab>k__BackingField: {fileID: 8640560345656105829, guid: bf65e81070a8cda499fdb0f6c8fa5c21,
       type: 3}
     <Sprite>k__BackingField: {fileID: 21300000, guid: 51ca9713a763ab243aa4c3f6c5dfef7f,
       type: 3}

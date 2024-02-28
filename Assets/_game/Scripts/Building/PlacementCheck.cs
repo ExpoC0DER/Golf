@@ -6,18 +6,13 @@ namespace _game.Scripts.Building
 {
     public class PlacementCheck : MonoBehaviour
     {
-        public BuildController BuildController { get; set; }
-        private Collider _collider;
-
-        private void Awake() { _collider = GetComponent<Collider>(); }
-
-        public void Place() { _collider.isTrigger = false; }
+        [SerializeField] private ObstacleBase _obstacleObject;
 
         private void OnTriggerStay(Collider other)
         {
             if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
             {
-                BuildController.CanPlace = false;
+                _obstacleObject.BuildController.CanPlace = false;
             }
         }
 
@@ -25,7 +20,7 @@ namespace _game.Scripts.Building
         {
             if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
             {
-                BuildController.CanPlace = true;
+                _obstacleObject.BuildController.CanPlace = true;
             }
         }
     }

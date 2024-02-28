@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using static _game.Scripts.Enums;
+using static _game.Scripts.ExtensionMethods;
 using Random = UnityEngine.Random;
 
 namespace _game.Scripts.Building
@@ -16,6 +17,7 @@ namespace _game.Scripts.Building
     public class BuildController : MonoBehaviour
     {
         [HideInInspector] public bool CanPlace = true;
+        [HideInInspector] public Player Player { get; private set; }
 
         [FormerlySerializedAs("_zoomSpeed")]
         [Header("Settings")]
@@ -34,11 +36,10 @@ namespace _game.Scripts.Building
         [SerializeField] private ObstaclesDatabaseSO _obstacles;
         [SerializeField] private LayerMask _layerMask;
 
-        private Player _player;
         private Vector3 _pos;
         private RaycastHit _hit;
         private Camera _mainCamera;
-        private PlacementCheck _pendingObject;
+        private ObstacleBase _pendingObject;
         private int _selectedObstacleIndex = -1;
         private int _spectatingPlayerIndex;
         private CinemachineFramingTransposer _framingTransposer;
@@ -49,12 +50,12 @@ namespace _game.Scripts.Building
 
         public static event Action<string, Color> OnSpectatingPlayerChanged;
 
-        private void Awake() { _player = GetComponent<Player>(); }
+        private void Awake() { Player = GetComponent<Player>(); }
 
         private void Start()
         {
             _mainCamera = Camera.main;
-            _framingTransposer = _player.BuildCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+            _framingTransposer = Player.BuildCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             ResetSpectatingPlayerKey();
             Cursor.lockState = CursorLockMode.Confined;
         }
@@ -63,8 +64,8 @@ namespace _game.Scripts.Building
         {
             get
             {
-                if (_player)
-                    return _player.GamePhase == GamePhase.Build;
+                if (Player)
+                    return Player.GamePhase == GamePhase.Build;
                 return false;
             }
         }
@@ -72,7 +73,7 @@ namespace _game.Scripts.Building
         private void Update()
         {
             if (!IsBuilding) return;
-            if (!_player.Active) return;
+            if (!Player.Active) return;
 
             MoveCursor();
             HandleMovement();
@@ -88,9 +89,9 @@ namespace _game.Scripts.Building
 
         private void MoveCursor()
         {
-            if (!_player.PlayerCursor) return;
+            if (!Player.PlayerCursor) return;
 
-            _player.PlayerCursor.anchoredPosition = _mousePosition;
+            Player.PlayerCursor.anchoredPosition = _mousePosition;
             _mousePosition.x = Mathf.Clamp(_mousePosition.x + _joystickInput.x * _cameraSensitivity.x * Time.deltaTime, 0, Screen.width);
             _mousePosition.y = Mathf.Clamp(_mousePosition.y + _joystickInput.y * _cameraSensitivity.y * Time.deltaTime, 0, Screen.height);
         }
@@ -98,8 +99,8 @@ namespace _game.Scripts.Building
         private void HandleMovement()
         {
             //Multiply input with direction of followPoint and move it in resulting direction
-            Vector3 moveDirection = _player.BuildCameraFollowPoint.transform.forward * _movementInput.y + _player.BuildCameraFollowPoint.transform.right * _movementInput.x;
-            _player.BuildCameraFollowPoint.position += _moveSpeed * Time.deltaTime * moveDirection;
+            Vector3 moveDirection = Player.BuildCameraFollowPoint.transform.forward * _movementInput.y + Player.BuildCameraFollowPoint.transform.right * _movementInput.x;
+            Player.BuildCameraFollowPoint.position += _moveSpeed * Time.deltaTime * moveDirection;
         }
 
         private void HandleZooming()
@@ -123,10 +124,10 @@ namespace _game.Scripts.Building
 
         public void StartBuild()
         {
-            OnSpectatingPlayerChanged?.Invoke(_player.PlayerName, _player.Color);
-            StartPlacement(_player.NextObstacleId);
+            OnSpectatingPlayerChanged?.Invoke(Player.PlayerName, Player.Color);
+            StartPlacement(Player.NextObstacleId);
 
-            //StartCoroutine(StartPlacementWithDelay(_player.NextObstacleId, _player.GameManager.RandomizeDuration));
+            //StartCoroutine(StartPlacementWithDelay(Player.NextObstacleId, Player.GameManager.RandomizeDuration));
         }
 
         private IEnumerator StartPlacementWithDelay(int index, float delay)
@@ -145,18 +146,18 @@ namespace _game.Scripts.Building
                 return;
             }
             _pendingObject = Instantiate(_obstacles.EnabledObstacles[_selectedObstacleIndex].Prefab, _pos, Quaternion.identity);
-            _pendingObject.gameObject.layer = (int)Layer.ObstaclePreview;
+            SetLayerRecursively(_pendingObject.gameObject, Layer.ObstaclePreview);
             _pendingObject.BuildController = this;
         }
 
         private void EndPlacement()
         {
             //Set back default material before reset
-            _pendingObject.gameObject.layer = (int)Layer.Obstacle;
+            SetLayerRecursively(_pendingObject.gameObject, Layer.Obstacle);
             _pendingObject.Place();
             _pendingObject = null;
             _selectedObstacleIndex = -1;
-            _player.GameManager.SwitchPlayer(Iterate.Next);
+            Player.GameManager.SwitchPlayer(Iterate.Next);
             ResetSpectatingPlayerKey();
         }
 
@@ -168,15 +169,24 @@ namespace _game.Scripts.Building
             _selectedObstacleIndex = -1;
         }
 
+        private void SetLayerRecursively(GameObject objectToSet, Layer layer)
+        {
+            if (objectToSet.layer != (int)Layer.IgnorePreviewRender)
+                objectToSet.layer = (int)layer;
+            foreach (Transform child in objectToSet.transform)
+            {
+                SetLayerRecursively(child.gameObject, layer);
+            }
+        }
 
         /// <summary>
         /// Sets spectatingPlayerIndex to one based on playerId
         /// </summary>
         private void ResetSpectatingPlayerKey()
         {
-            if (!_player.GameManager) return;
+            if (!Player.GameManager) return;
 
-            int key = Array.IndexOf(_player.GameManager.Players.Keys.ToArray(), _player.PlayerID);
+            int key = Array.IndexOf(Player.GameManager.Players.Keys.ToArray(), Player.PlayerID);
             _spectatingPlayerIndex = key;
         }
 
@@ -187,14 +197,14 @@ namespace _game.Scripts.Building
         private void SwitchPlayerCam(int index)
         {
             //Get playerId of player at index
-            int playerId = _player.GameManager.Players.Keys.ToArray()[index];
+            int playerId = Player.GameManager.Players.Keys.ToArray()[index];
 
             //Set current BuildCamera pos and rot to that of selected player's playCamera
-            Player player = _player.GameManager.GetPlayer(playerId);
-            _player.BuildCameraFollowPoint.position = player.transform.position;
+            Player player = Player.GameManager.GetPlayer(playerId);
+            Player.BuildCameraFollowPoint.position = player.transform.position;
 
             Transform playerCam = player.PlayCamera.transform;
-            _player.BuildCamera.ForceCameraPosition(playerCam.position, playerCam.rotation);
+            Player.BuildCamera.ForceCameraPosition(playerCam.position, playerCam.rotation);
 
             OnSpectatingPlayerChanged?.Invoke(player.PlayerName, player.Color);
         }
@@ -231,7 +241,7 @@ namespace _game.Scripts.Building
 
             int index = (int)ctx.ReadValue<float>();
             if (index == _spectatingPlayerIndex) return;
-            if (index >= _player.GameManager.Players.Count) return;
+            if (index >= Player.GameManager.Players.Count) return;
 
             _spectatingPlayerIndex = index;
             SwitchPlayerCam(index);
@@ -243,10 +253,10 @@ namespace _game.Scripts.Building
 
             _spectatingPlayerIndex += (int)ctx.ReadValue<float>();
 
-            if (_spectatingPlayerIndex >= _player.GameManager.Players.Count)
+            if (_spectatingPlayerIndex >= Player.GameManager.Players.Count)
                 _spectatingPlayerIndex = 0;
             if (_spectatingPlayerIndex < 0)
-                _spectatingPlayerIndex = _player.GameManager.Players.Count - 1;
+                _spectatingPlayerIndex = Player.GameManager.Players.Count - 1;
 
             SwitchPlayerCam(_spectatingPlayerIndex);
         }
