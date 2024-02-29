@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using DG.Tweening;
 using static _game.Scripts.Enums;
 using static _game.Scripts.ExtensionMethods;
 using Random = UnityEngine.Random;
@@ -19,10 +20,10 @@ namespace _game.Scripts.Building
         [HideInInspector] public bool CanPlace = true;
         [HideInInspector] public Player Player { get; private set; }
 
-        [FormerlySerializedAs("_zoomSpeed")]
         [Header("Settings")]
         [SerializeField] private float _zoomSpeedScroll;
         [SerializeField] private float _zoomSpeed;
+        [SerializeField] private float _cameraRotationSpeed;
         [SerializeField, MinMaxSlider(0.1f, 10)]
         private Vector2 _zoomMinMax;
         [SerializeField, OnValueChanged("UpdateCameraSensitivity")]
@@ -37,6 +38,7 @@ namespace _game.Scripts.Building
         [SerializeField] private LayerMask _layerMask;
 
         private Vector3 _pos;
+        private float _targetAngle = 45f;
         private RaycastHit _hit;
         private Camera _mainCamera;
         private ObstacleBase _pendingObject;
@@ -230,6 +232,29 @@ namespace _game.Scripts.Building
         public void OnZooming(InputAction.CallbackContext ctx) { _zoomInput = ctx.ReadValue<float>(); }
 
         public void OnRotate(InputAction.CallbackContext ctx) { _rotateInput = ctx.ReadValue<float>(); }
+
+        public void OnRotateCamera(InputAction.CallbackContext ctx)
+        {
+            if (ctx.performed)
+            {
+                float currentAngle = Player.BuildCamera.transform.rotation.eulerAngles.y;
+
+                _targetAngle += 90 * ctx.ReadValue<float>();
+
+                float angleDiff = Math.Abs(_targetAngle - currentAngle);
+                angleDiff %= 360;
+
+                Player.BuildCamera.transform.DOKill();
+                Player.BuildCamera.transform.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
+                Player.BuildCameraFollowPoint.DOKill();
+                Player.BuildCameraFollowPoint.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
+
+                if (_targetAngle > 360)
+                    _targetAngle = 45;
+                if (_targetAngle < 0)
+                    _targetAngle = 315;
+            }
+        }
 
         public void GetMousePosition(InputAction.CallbackContext ctx) { _mousePosition = ctx.ReadValue<Vector2>(); }
 

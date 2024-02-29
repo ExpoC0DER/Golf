@@ -712,7 +712,7 @@ MonoBehaviour:
     type: 3}
   _sceneCamera: {fileID: 649057830}
   _scoreBoard: {fileID: 1340019323}
-  <RandomizeDuration>k__BackingField: 3
+  <RandomizeDuration>k__BackingField: 0
   <GamePhase>k__BackingField: 0
   <Players>k__BackingField:
     _serializedList: []
