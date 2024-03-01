@@ -540,6 +540,7 @@ MonoBehaviour:
   _line: {fileID: 8832334258814053907}
   _zoomSpeed: 5
   _zoomSpeedScroll: 1
+  _cameraRotationSpeed: 0.5
   _zoomMinMax: {x: 1, y: 5}
   _cameraSensitivity: {x: 400, y: 400}
   _powerDistanceMinMax: {x: 0, y: 0.6}
@@ -559,6 +560,7 @@ MonoBehaviour:
   CanPlace: 1
   _zoomSpeedScroll: 1
   _zoomSpeed: 5
+  _cameraRotationSpeed: 0.5
   _zoomMinMax: {x: 1, y: 5}
   _cameraSensitivity: {x: 400, y: 400}
   _moveSpeed: 1.5
@@ -887,6 +889,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 079f8ef9-4051-4140-b41a-19deb20e755c
     m_ActionName: 'Build/RotateCamera[/Keyboard/z,/Keyboard/x]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8221349741261837532}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.PlayController, Assembly-CSharp
+        m_MethodName: OnRotateCamera
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e6034250-9bec-4f60-b510-9fbfd50c647f
+    m_ActionName: 'Player/RotateCamera[/Keyboard/z,/Keyboard/x]'
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Menu

@@ -17,8 +17,9 @@ namespace _game.Scripts.Building
 {
     public class BuildController : MonoBehaviour
     {
-        [HideInInspector] public bool CanPlace = true;
-        [HideInInspector] public Player Player { get; private set; }
+        public float TargetAngle { get; set; } = 45f;
+        public bool CanPlace { get; set; } = true;
+        public Player Player { get; private set; }
 
         [Header("Settings")]
         [SerializeField] private float _zoomSpeedScroll;
@@ -38,7 +39,6 @@ namespace _game.Scripts.Building
         [SerializeField] private LayerMask _layerMask;
 
         private Vector3 _pos;
-        private float _targetAngle = 45f;
         private RaycastHit _hit;
         private Camera _mainCamera;
         private ObstacleBase _pendingObject;
@@ -239,9 +239,9 @@ namespace _game.Scripts.Building
             {
                 float currentAngle = Player.BuildCamera.transform.rotation.eulerAngles.y;
 
-                _targetAngle += 90 * ctx.ReadValue<float>();
+                TargetAngle += 90 * ctx.ReadValue<float>();
 
-                float angleDiff = Math.Abs(_targetAngle - currentAngle);
+                float angleDiff = Math.Abs(TargetAngle - currentAngle);
                 angleDiff %= 360;
 
                 Player.BuildCamera.transform.DOKill();
@@ -249,10 +249,10 @@ namespace _game.Scripts.Building
                 Player.BuildCameraFollowPoint.DOKill();
                 Player.BuildCameraFollowPoint.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
 
-                if (_targetAngle > 360)
-                    _targetAngle = 45;
-                if (_targetAngle < 0)
-                    _targetAngle = 315;
+                if (TargetAngle > 360)
+                    TargetAngle = 45;
+                if (TargetAngle < 0)
+                    TargetAngle = 315;
             }
         }
 

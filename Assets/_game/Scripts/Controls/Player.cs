@@ -31,13 +31,13 @@ namespace _game.Scripts.Controls
         [ReadOnly] public int ShotsTakenTotal;
         [ReadOnly] public bool Active;
         [ReadOnly] public int NextObstacleId = -1;
-        
+
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
         [field: SerializeField, ReadOnly] public RectTransform PlayerCursor { get; set; }
         [SerializeField] private Renderer _renderer;
 
         [HideInInspector] public GameManager GameManager;
-        
+
         private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
         private BuildController _buildController;
         private PlayController _playController;
@@ -77,13 +77,28 @@ namespace _game.Scripts.Controls
             //Camera.m_Priority = newPriority;
             if (GamePhase is GamePhase.Play)
             {
+                //Set camera position to player cam
+                PlayCamera.ForceCameraPosition(BuildCamera.transform.position, BuildCamera.transform.rotation);
+                
+                //Update play target angle
+                _playController.TargetAngle = BuildCamera.transform.rotation.eulerAngles.y;
+
+                //Switch camera priority
                 PlayCamera.m_Priority = newPriority;
                 BuildCamera.m_Priority = 0;
             }
             if (GamePhase is GamePhase.Build or GamePhase.Intermission)
             {
+                //Set camera position and pivot to player cam
                 BuildCameraFollowPoint.position = transform.position;
                 BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
+                
+                //Update build target angle and pivot rotation
+                Vector3 playerCamRotation = PlayCamera.transform.rotation.eulerAngles;
+                _buildController.TargetAngle = playerCamRotation.y;
+                BuildCameraFollowPoint.rotation = Quaternion.Euler(0, playerCamRotation.y, 0);
+                
+                //Switch camera priority
                 BuildCamera.m_Priority = newPriority;
                 PlayCamera.m_Priority = 0;
             }

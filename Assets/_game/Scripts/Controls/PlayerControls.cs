@@ -89,6 +89,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateCamera"",
+                    ""type"": ""Button"",
+                    ""id"": ""e6034250-9bec-4f60-b510-9fbfd50c647f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -223,6 +232,39 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""VirtualMouseJoystick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""0dca50f8-a854-4524-bb65-9bc0cee8f1de"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateCamera"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""ad7eedd2-cd8f-4287-bd5c-8b1021829fa2"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""RotateCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""113c41f1-c681-4304-b745-8f0f010bddf0"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""RotateCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -753,6 +795,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Zooming = m_Player.FindAction("Zooming", throwIfNotFound: true);
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_VirtualMouseJoystick = m_Player.FindAction("VirtualMouseJoystick", throwIfNotFound: true);
+        m_Player_RotateCamera = m_Player.FindAction("RotateCamera", throwIfNotFound: true);
         // Build
         m_Build = asset.FindActionMap("Build", throwIfNotFound: true);
         m_Build_LeftClick = m_Build.FindAction("LeftClick", throwIfNotFound: true);
@@ -837,6 +880,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Zooming;
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_VirtualMouseJoystick;
+    private readonly InputAction m_Player_RotateCamera;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -848,6 +892,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Zooming => m_Wrapper.m_Player_Zooming;
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @VirtualMouseJoystick => m_Wrapper.m_Player_VirtualMouseJoystick;
+        public InputAction @RotateCamera => m_Wrapper.m_Player_RotateCamera;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -878,6 +923,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @VirtualMouseJoystick.started += instance.OnVirtualMouseJoystick;
             @VirtualMouseJoystick.performed += instance.OnVirtualMouseJoystick;
             @VirtualMouseJoystick.canceled += instance.OnVirtualMouseJoystick;
+            @RotateCamera.started += instance.OnRotateCamera;
+            @RotateCamera.performed += instance.OnRotateCamera;
+            @RotateCamera.canceled += instance.OnRotateCamera;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -903,6 +951,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @VirtualMouseJoystick.started -= instance.OnVirtualMouseJoystick;
             @VirtualMouseJoystick.performed -= instance.OnVirtualMouseJoystick;
             @VirtualMouseJoystick.canceled -= instance.OnVirtualMouseJoystick;
+            @RotateCamera.started -= instance.OnRotateCamera;
+            @RotateCamera.performed -= instance.OnRotateCamera;
+            @RotateCamera.canceled -= instance.OnRotateCamera;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1119,6 +1170,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnZooming(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
         void OnVirtualMouseJoystick(InputAction.CallbackContext context);
+        void OnRotateCamera(InputAction.CallbackContext context);
     }
     public interface IBuildActions
     {

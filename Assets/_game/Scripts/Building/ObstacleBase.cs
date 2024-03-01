@@ -7,6 +7,7 @@ namespace _game.Scripts.Building
     {
         public BuildController BuildController { get; set; }
         public List<Rigidbody> PlayersInRange { get; set; } = new List<Rigidbody>();
+        public PlacementCheck PlacementCheck { get; set; }
 
         public abstract void Place();
     }

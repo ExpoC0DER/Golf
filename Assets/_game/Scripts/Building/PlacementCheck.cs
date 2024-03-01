@@ -8,20 +8,24 @@ namespace _game.Scripts.Building
     {
         [SerializeField] private ObstacleBase _obstacleObject;
 
+        private void Start() { _obstacleObject.PlacementCheck = this; }
+
         private void OnTriggerStay(Collider other)
         {
-            if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
-            {
-                _obstacleObject.BuildController.CanPlace = false;
-            }
+            if (enabled)
+                if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
+                {
+                    _obstacleObject.BuildController.CanPlace = false;
+                }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
-            {
-                _obstacleObject.BuildController.CanPlace = true;
-            }
+            if (enabled)
+                if (other.CompareTag(Tags.Obstacle.ToString()) || other.CompareTag(Tags.Wall.ToString()))
+                {
+                    _obstacleObject.BuildController.CanPlace = true;
+                }
         }
     }
 }

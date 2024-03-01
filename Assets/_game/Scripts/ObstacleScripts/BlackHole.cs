@@ -25,6 +25,9 @@ namespace _game.Scripts.ObstacleScripts
             }
         }
 
-        public override void Place() { }
+        public override void Place()
+        {
+            PlacementCheck.enabled = false;
+        }
     }
 }

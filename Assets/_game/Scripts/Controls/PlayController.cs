@@ -1,14 +1,18 @@
 using System;
 using Cinemachine;
+using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using static _game.Scripts.Enums;
 
 namespace _game.Scripts.Controls
 {
     public class PlayController : MonoBehaviour
     {
+        public float TargetAngle { get; set; } = 45f;
+        
         [SerializeField] private Transform _powerBar;
         [SerializeField] private Material _powerBarMat;
         [SerializeField] private Transform _powerBarRotationPivot;
@@ -18,6 +22,7 @@ namespace _game.Scripts.Controls
         [Header("Settings")]
         [SerializeField] private float _zoomSpeed;
         [SerializeField] private float _zoomSpeedScroll;
+        [SerializeField] private float _cameraRotationSpeed;
         [SerializeField, MinMaxSlider(0.1f, 10)]
         private Vector2 _zoomMinMax;
         [SerializeField] private Vector2 _cameraSensitivity = new Vector2(300, 300);
@@ -247,6 +252,29 @@ namespace _game.Scripts.Controls
                 _isAiming = true;
             if (ctx.canceled)
                 _isAiming = false;
+        }
+
+        public void OnRotateCamera(InputAction.CallbackContext ctx)
+        {
+            if (ctx.performed)
+            {
+                float currentAngle = _player.PlayCamera.transform.rotation.eulerAngles.y;
+
+                TargetAngle += 90 * ctx.ReadValue<float>();
+
+                float angleDiff = Math.Abs(TargetAngle - currentAngle);
+                angleDiff %= 360;
+
+                _player.PlayCamera.transform.DOKill();
+                _player.PlayCamera.transform.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
+                _powerBarRotationPivot.DOKill();
+                _powerBarRotationPivot.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
+
+                if (TargetAngle > 360)
+                    TargetAngle = 45;
+                if (TargetAngle < 0)
+                    TargetAngle = 315;
+            }
         }
 
         public void GetMousePosition(InputAction.CallbackContext ctx) { _mousePosition = ctx.ReadValue<Vector2>(); }

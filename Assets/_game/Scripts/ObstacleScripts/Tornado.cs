@@ -35,6 +35,7 @@ namespace _game.Scripts.ObstacleScripts
         public override void Place()
         {
             StartLooping();
+            PlacementCheck.enabled = false;
         }
 
         private void OnDisable() { EndLooping(); }

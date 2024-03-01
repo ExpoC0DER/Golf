@@ -20,7 +20,13 @@ namespace _game.Scripts.ObstacleScripts
             }
         }
 
-        private void Start() { BuildController.CanPlace = true; }
-        public override void Place() { }
+        private void Start()
+        {
+            BuildController.CanPlace = true;
+        }
+        public override void Place()
+        {
+
+        }
     }
 }
