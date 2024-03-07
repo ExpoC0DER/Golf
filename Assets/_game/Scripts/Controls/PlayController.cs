@@ -12,7 +12,7 @@ namespace _game.Scripts.Controls
     public class PlayController : MonoBehaviour
     {
         public float TargetAngle { get; set; } = 45f;
-        
+
         [SerializeField] private Transform _powerBar;
         [SerializeField] private Material _powerBarMat;
         [SerializeField] private Transform _powerBarRotationPivot;
@@ -231,7 +231,7 @@ namespace _game.Scripts.Controls
         private void OnRoundStart(int round)
         {
             _isInTheHole = false;
-            if (_player.Map.GetRoundStartLocation(round, out Transform startLocation))
+            if (_player.Map.GetRoundStartLocation(round, _player.PlayerID, out Transform startLocation))
                 _rb.position = startLocation.position;
             _rb.isKinematic = false;
         }

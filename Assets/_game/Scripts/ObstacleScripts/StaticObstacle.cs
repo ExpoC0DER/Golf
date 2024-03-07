@@ -1,17 +1,19 @@
+using System;
 using _game.Scripts.Building;
 using UnityEngine;
 
 namespace _game.Scripts.ObstacleScripts
 {
-    public class StaticObstacle : ObstacleBase
+    [RequireComponent(typeof(ObstacleBase))]
+    public class StaticObstacle : MonoBehaviour
     {
         [SerializeField] private Collider _collider;
         [SerializeField] private Collider _object;
-        public override void Place()
+
+        public void OnPlace()
         {
             _collider.enabled = false;
             _object.enabled = true;
-            PlacementCheck.enabled = false;
         }
     }
 }

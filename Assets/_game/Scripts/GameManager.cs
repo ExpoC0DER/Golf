@@ -71,11 +71,12 @@ namespace _game.Scripts
 
         public void StartGame()
         {
+            Map newMap = Instantiate(_gameMap);
+            newMap.GenerateMap(Players);
             foreach (KeyValuePair<int, Player> pair in Players)
             {
-                Map newMap = Instantiate(_gameMap);
-                int playerId = pair.Value.PlayerID;
-                newMap.transform.position = Vector3.right * playerId * 100;
+                // int playerId = pair.Value.PlayerID;
+                // newMap.transform.position = Vector3.right * playerId * 100;
                 pair.Value.Map = newMap;
             }
 

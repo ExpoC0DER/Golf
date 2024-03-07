@@ -323,7 +323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9b0087dc3a40d48a534ab632b80cbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _obstacleObject: {fileID: 4158581439519135938}
+  _obstacleObject: {fileID: 0}
 --- !u!54 &8432456554778693969
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -382,7 +382,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6248890024008033754}
-  - component: {fileID: 4158581439519135938}
+  - component: {fileID: 4231203229396215310}
+  - component: {fileID: 64602196906883694}
   m_Layer: 0
   m_Name: Tornado
   m_TagString: Untagged
@@ -408,7 +409,34 @@ Transform:
   - {fileID: 5246128000216212368}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4158581439519135938
+--- !u!114 &4231203229396215310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3876678121528225104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0590875edf0c0240a933125176bc098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _onPlace:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 64602196906883694}
+        m_TargetAssemblyTypeName: _game.Scripts.ObstacleScripts.Tornado, Assembly-CSharp
+        m_MethodName: OnPlace
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &64602196906883694
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -608,7 +636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9b0087dc3a40d48a534ab632b80cbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _obstacleObject: {fileID: 4158581439519135938}
+  _obstacleObject: {fileID: 4231203229396215310}
 --- !u!54 &6697826542900233398
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1131,4 +1159,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898265d72a4e7c54481b363b8e520ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _obstacleBase: {fileID: 4158581439519135938}
+  _obstacleBase: {fileID: 4231203229396215310}

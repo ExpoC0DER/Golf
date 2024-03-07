@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898265d72a4e7c54481b363b8e520ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _obstacleBase: {fileID: 8591338833923142479}
+  _obstacleBase: {fileID: 3093295830215057831}
 --- !u!135 &8816234246431844390
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -156,6 +156,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3705202222770101708}
+  - component: {fileID: 3093295830215057831}
   - component: {fileID: 8591338833923142479}
   m_Layer: 0
   m_Name: BlackHole
@@ -182,6 +183,21 @@ Transform:
   - {fileID: 277441138696606017}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3093295830215057831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2270275281756136883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0590875edf0c0240a933125176bc098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _onPlace:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8591338833923142479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,7 +210,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1465cf82de9f8b4c8ab7494f817ebfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _placementCheck: {fileID: 3389058992695179294}
   _strength: 40
   _range: {fileID: 277441138696606017}
 --- !u!1 &3992358132122895468
@@ -296,7 +311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9b0087dc3a40d48a534ab632b80cbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _obstacleObject: {fileID: 8591338833923142479}
+  _obstacleObject: {fileID: 3093295830215057831}
 --- !u!54 &7177194920829365788
 Rigidbody:
   m_ObjectHideFlags: 0

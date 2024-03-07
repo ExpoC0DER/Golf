@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace _game.Scripts.ObstacleScripts
 {
-    public class Tornado : ObstacleBase
+    [RequireComponent(typeof(ObstacleBase))]
+    public class Tornado : MonoBehaviour
     {
         [Header("Settings")]
         [SerializeField] private float _rotationDuration = 5f;
@@ -13,13 +14,20 @@ namespace _game.Scripts.ObstacleScripts
         [Space]
         [SerializeField] private Transform _tornadoPivot;
         [SerializeField] private Transform _range;
+        
+        private ObstacleBase _obstacleBase;
+
+        private void Awake()
+        {
+            _obstacleBase = GetComponent<ObstacleBase>();
+        }
 
         private void FixedUpdate()
         {
-            if(BuildController.Player.GameManager.GamePhase != Enums.GamePhase.Play) return;
+            if(_obstacleBase.BuildController.Player.GameManager.GamePhase != Enums.GamePhase.Play) return;
             
             Vector3 position = _range.position;
-            foreach (Rigidbody player in PlayersInRange)
+            foreach (Rigidbody player in _obstacleBase.PlayersInRange)
             {
                 Vector3 playerPosition = player.position;
                 float distanceFromCenter = Vector3.Distance(position, playerPosition);
@@ -32,10 +40,9 @@ namespace _game.Scripts.ObstacleScripts
 
         private void EndLooping() { _tornadoPivot.DOKill(); }
 
-        public override void Place()
+        public void OnPlace()
         {
             StartLooping();
-            PlacementCheck.enabled = false;
         }
 
         private void OnDisable() { EndLooping(); }

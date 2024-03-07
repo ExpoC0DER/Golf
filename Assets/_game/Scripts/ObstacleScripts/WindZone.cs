@@ -4,17 +4,26 @@ using UnityEngine;
 
 namespace _game.Scripts.ObstacleScripts
 {
-    public class WindZone : ObstacleBase
+    [RequireComponent(typeof(ObstacleBase))]
+    public class WindZone : MonoBehaviour
     {
         [Header("Settings")]
         [SerializeField] private float _strength;
         [Space]
         [SerializeField] private Transform _range;
+        
+        private ObstacleBase _obstacleBase;
+
+        private void Awake()
+        {
+            _obstacleBase = GetComponent<ObstacleBase>();
+        }
+        
         private void FixedUpdate()
         {
-            if(BuildController.Player.GameManager.GamePhase != Enums.GamePhase.Play) return;
+            if(_obstacleBase.BuildController.Player.GameManager.GamePhase != Enums.GamePhase.Play) return;
             
-            foreach (Rigidbody player in PlayersInRange)
+            foreach (Rigidbody player in _obstacleBase.PlayersInRange)
             {
                 player.AddForce(_range.forward * (_strength * Time.deltaTime), ForceMode.Acceleration);
             }
@@ -22,11 +31,7 @@ namespace _game.Scripts.ObstacleScripts
 
         private void Start()
         {
-            BuildController.CanPlace = true;
-        }
-        public override void Place()
-        {
-
+            _obstacleBase.BuildController.CanPlace = true;
         }
     }
 }
