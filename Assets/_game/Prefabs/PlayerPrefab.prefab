@@ -544,7 +544,7 @@ MonoBehaviour:
   _zoomMinMax: {x: 1, y: 5}
   _cameraSensitivity: {x: 400, y: 400}
   _powerDistanceMinMax: {x: 0, y: 0.6}
-  _powerBarMinMax: {x: 0, y: 0.5}
+  _powerBarMinMax: {x: 0, y: 0.6}
 --- !u!114 &5447992516640541083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -557,11 +557,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5748565e9babfca489a96b93f091bc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanPlace: 1
   _zoomSpeedScroll: 1
   _zoomSpeed: 5
   _cameraRotationSpeed: 0.5
-  _zoomMinMax: {x: 1, y: 5}
+  _zoomMinMax: {x: 0.5, y: 30}
   _cameraSensitivity: {x: 400, y: 400}
   _moveSpeed: 1.5
   _canPlaceColor: {r: 1, g: 1, b: 1, a: 0.29803923}

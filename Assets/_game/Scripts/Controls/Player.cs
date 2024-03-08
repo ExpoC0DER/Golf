@@ -147,7 +147,7 @@ namespace _game.Scripts.Controls
         {
             if (round == 0)
             {
-                Map.SetGrassColor(Color);
+                Map.SetGrassColor(PlayerID,Color);
             }
             Finished = false;
             GamePhase = GamePhase.Play;

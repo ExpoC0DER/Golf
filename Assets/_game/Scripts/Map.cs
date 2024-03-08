@@ -29,12 +29,19 @@ namespace _game.Scripts
             return false;
         }
 
-        public void SetGrassColor(Color color)
+        public void SetGrassColor(int playerId, Color color)
         {
-            // foreach (Hole hole in _holes)
-            // {
-            //     hole.SetGrassColor(color);
-            // }
+            foreach (List<Hole> roundHoles in _maps)
+            {
+                foreach (Hole hole in roundHoles)
+                {
+                    if (hole.PlayerId == playerId)
+                    {
+                        hole.SetGrassColor(color);
+                        break;
+                    }
+                }
+            }
         }
 
         [Button("Place")]
@@ -60,8 +67,8 @@ namespace _game.Scripts
         public void GenerateMap(Dictionary<int, Player> players)
         {
             int[] keys = players.Keys.ToArray();
-            _numberOfPlayers = players.Count;
-            
+            //_numberOfPlayers = players.Count;
+
             ClearMaps();
 
             for(int i = 0; i < _holes.Count; i++)
@@ -75,7 +82,8 @@ namespace _game.Scripts
                     float yPos = _radius * Mathf.Sin(j * (2 * Mathf.PI / _numberOfPlayers));
                     _maps[i][j].transform.position = new Vector3(xPos, 0, yPos);
                     _maps[i][j].transform.LookAt(new Vector3(i * _distance, 0, 0), Vector3.up);
-                    _maps[i][j].PlayerId = keys[j];
+                    if (j < keys.Length)
+                        _maps[i][j].PlayerId = keys[j];
                 }
             }
         }

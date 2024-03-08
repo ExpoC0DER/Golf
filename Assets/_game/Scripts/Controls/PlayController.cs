@@ -232,7 +232,16 @@ namespace _game.Scripts.Controls
         {
             _isInTheHole = false;
             if (_player.Map.GetRoundStartLocation(round, _player.PlayerID, out Transform startLocation))
-                _rb.position = startLocation.position;
+            {
+                Transform ballPrefab = transform.parent;
+                ballPrefab.SetParent(startLocation.parent.parent);
+                ballPrefab.position = startLocation.position;
+                ballPrefab.localRotation = Quaternion.Euler(Vector3.zero);
+                
+                transform.localPosition = Vector3.zero;
+                _rb.position = transform.position;
+                //_rb.position = startLocation.position;
+            }
             _rb.isKinematic = false;
         }
         private void OnRoundEnd(int round) { _rb.isKinematic = true; }

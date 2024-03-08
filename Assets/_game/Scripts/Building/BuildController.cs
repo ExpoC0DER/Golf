@@ -25,7 +25,7 @@ namespace _game.Scripts.Building
         [SerializeField] private float _zoomSpeedScroll;
         [SerializeField] private float _zoomSpeed;
         [SerializeField] private float _cameraRotationSpeed;
-        [SerializeField, MinMaxSlider(0.1f, 10)]
+        [SerializeField, MinMaxSlider(0.1f, 100)]
         private Vector2 _zoomMinMax;
         [SerializeField, OnValueChanged("UpdateCameraSensitivity")]
         private Vector2 _cameraSensitivity = new Vector2(300, 300);
@@ -102,7 +102,7 @@ namespace _game.Scripts.Building
         {
             //Multiply input with direction of followPoint and move it in resulting direction
             Vector3 moveDirection = Player.BuildCameraFollowPoint.transform.forward * _movementInput.y + Player.BuildCameraFollowPoint.transform.right * _movementInput.x;
-            Player.BuildCameraFollowPoint.position += _moveSpeed * Time.deltaTime * moveDirection;
+            Player.BuildCameraFollowPoint.position += _moveSpeed * _framingTransposer.m_CameraDistance * Time.deltaTime * moveDirection;
         }
 
         private void HandleZooming()
