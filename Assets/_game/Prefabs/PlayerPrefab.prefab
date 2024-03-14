@@ -904,6 +904,54 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: e6034250-9bec-4f60-b510-9fbfd50c647f
     m_ActionName: 'Player/RotateCamera[/Keyboard/z,/Keyboard/x]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnUiNavigationCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 1a28242a-c64b-4060-b658-c9e04d292d23
+    m_ActionName: 'Menu/MoveColor[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnUiSelectCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 84e03656-6682-4fe1-8c06-7e186a5b6b4d
+    m_ActionName: 'Menu/UiSelect[/Keyboard/enter]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnUiBackCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0bb25c28-555d-471c-9092-faab5d0a5219
+    m_ActionName: 'Menu/UiBack[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Menu

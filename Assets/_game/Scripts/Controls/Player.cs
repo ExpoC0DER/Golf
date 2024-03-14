@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using _game.Scripts.Building;
+using _game.Scripts.UI;
 using static _game.Scripts.Enums;
 using Cinemachine;
 using NaughtyAttributes;
@@ -36,7 +38,7 @@ namespace _game.Scripts.Controls
         [field: SerializeField, ReadOnly] public RectTransform PlayerCursor { get; set; }
         [SerializeField] private Renderer _renderer;
 
-        [HideInInspector] public GameManager GameManager;
+        public GameManager GameManager { get; set; }
 
         private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
         private BuildController _buildController;
@@ -55,6 +57,10 @@ namespace _game.Scripts.Controls
         /// Returns int PlayerId, int NextObstacleId, float duration
         /// </summary>
         public static event Action<int, int, float> OnRandomObstacleGenerated;
+
+        public static event Action<Vector2, Player> OnUiNavigation;
+        public static event Action OnUiSelect;
+        public static event Action OnUiBack;
 
         private void Awake()
         {
@@ -79,7 +85,7 @@ namespace _game.Scripts.Controls
             {
                 //Set camera position to player cam
                 PlayCamera.ForceCameraPosition(BuildCamera.transform.position, BuildCamera.transform.rotation);
-                
+
                 //Update play target angle
                 _playController.TargetAngle = BuildCamera.transform.rotation.eulerAngles.y;
 
@@ -92,12 +98,12 @@ namespace _game.Scripts.Controls
                 //Set camera position and pivot to player cam
                 BuildCameraFollowPoint.position = transform.position;
                 BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
-                
+
                 //Update build target angle and pivot rotation
                 Vector3 playerCamRotation = PlayCamera.transform.rotation.eulerAngles;
                 _buildController.TargetAngle = playerCamRotation.y;
                 BuildCameraFollowPoint.rotation = Quaternion.Euler(0, playerCamRotation.y, 0);
-                
+
                 //Switch camera priority
                 BuildCamera.m_Priority = newPriority;
                 PlayCamera.m_Priority = 0;
@@ -147,7 +153,8 @@ namespace _game.Scripts.Controls
         {
             if (round == 0)
             {
-                Map.SetGrassColor(PlayerID,Color);
+                Map.SetGrassColor(PlayerID, Color);
+                SetColor(Color);
             }
             Finished = false;
             GamePhase = GamePhase.Play;
@@ -156,6 +163,24 @@ namespace _game.Scripts.Controls
             _playerInput.SwitchCurrentActionMap(ActionMap.Player.ToString());
         }
         private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString()); }
+
+        public void OnUiNavigationCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnUiNavigation?.Invoke(ctx.ReadValue<Vector2>(), this);
+        }
+
+        public void OnUiSelectCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnUiSelect?.Invoke();
+        }
+        
+        public void OnUiBackCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnUiBack?.Invoke();
+        }
 
         private void OnEnable()
         {

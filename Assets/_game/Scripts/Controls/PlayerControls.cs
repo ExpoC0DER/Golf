@@ -750,6 +750,33 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UiNavigation"",
+                    ""type"": ""Value"",
+                    ""id"": ""1a28242a-c64b-4060-b658-c9e04d292d23"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""UiSelect"",
+                    ""type"": ""Value"",
+                    ""id"": ""84e03656-6682-4fe1-8c06-7e186a5b6b4d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""UiBack"",
+                    ""type"": ""Button"",
+                    ""id"": ""0bb25c28-555d-471c-9092-faab5d0a5219"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -767,7 +794,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""65a029b3-36bd-4aaa-82e6-624a6009b06d"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Controller"",
@@ -778,11 +805,88 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""905ec30e-05de-457a-8409-ec42a570bd7c"",
-                    ""path"": ""<Keyboard>/enter"",
+                    ""path"": ""<Keyboard>/j"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""KeyboardAndMouse"",
                     ""action"": ""PlayerJoin"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""5b65d684-002b-4508-9fce-988aa1b697d9"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UiNavigation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""6bac1944-d8f4-410c-8e48-2770e2e6df5a"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""UiNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""c219f7d5-2d07-40f4-acc4-2dbb5bffcca0"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""UiNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""9ab2be73-7642-468e-b3bc-7f1c23e1abb7"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""UiNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""2f24a54c-53e6-450e-809b-7563b6218f7e"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""UiNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cbe391a2-a66d-43fc-94c6-bef640e94687"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""UiSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9ce95f86-5800-47b1-be11-5be592c90ac4"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""UiBack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -845,6 +949,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_StartGame = m_Menu.FindAction("StartGame", throwIfNotFound: true);
         m_Menu_PlayerJoin = m_Menu.FindAction("PlayerJoin", throwIfNotFound: true);
+        m_Menu_UiNavigation = m_Menu.FindAction("UiNavigation", throwIfNotFound: true);
+        m_Menu_UiSelect = m_Menu.FindAction("UiSelect", throwIfNotFound: true);
+        m_Menu_UiBack = m_Menu.FindAction("UiBack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1128,12 +1235,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
     private readonly InputAction m_Menu_StartGame;
     private readonly InputAction m_Menu_PlayerJoin;
+    private readonly InputAction m_Menu_UiNavigation;
+    private readonly InputAction m_Menu_UiSelect;
+    private readonly InputAction m_Menu_UiBack;
     public struct MenuActions
     {
         private @PlayerControls m_Wrapper;
         public MenuActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @StartGame => m_Wrapper.m_Menu_StartGame;
         public InputAction @PlayerJoin => m_Wrapper.m_Menu_PlayerJoin;
+        public InputAction @UiNavigation => m_Wrapper.m_Menu_UiNavigation;
+        public InputAction @UiSelect => m_Wrapper.m_Menu_UiSelect;
+        public InputAction @UiBack => m_Wrapper.m_Menu_UiBack;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1149,6 +1262,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PlayerJoin.started += instance.OnPlayerJoin;
             @PlayerJoin.performed += instance.OnPlayerJoin;
             @PlayerJoin.canceled += instance.OnPlayerJoin;
+            @UiNavigation.started += instance.OnUiNavigation;
+            @UiNavigation.performed += instance.OnUiNavigation;
+            @UiNavigation.canceled += instance.OnUiNavigation;
+            @UiSelect.started += instance.OnUiSelect;
+            @UiSelect.performed += instance.OnUiSelect;
+            @UiSelect.canceled += instance.OnUiSelect;
+            @UiBack.started += instance.OnUiBack;
+            @UiBack.performed += instance.OnUiBack;
+            @UiBack.canceled += instance.OnUiBack;
         }
 
         private void UnregisterCallbacks(IMenuActions instance)
@@ -1159,6 +1281,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PlayerJoin.started -= instance.OnPlayerJoin;
             @PlayerJoin.performed -= instance.OnPlayerJoin;
             @PlayerJoin.canceled -= instance.OnPlayerJoin;
+            @UiNavigation.started -= instance.OnUiNavigation;
+            @UiNavigation.performed -= instance.OnUiNavigation;
+            @UiNavigation.canceled -= instance.OnUiNavigation;
+            @UiSelect.started -= instance.OnUiSelect;
+            @UiSelect.performed -= instance.OnUiSelect;
+            @UiSelect.canceled -= instance.OnUiSelect;
+            @UiBack.started -= instance.OnUiBack;
+            @UiBack.performed -= instance.OnUiBack;
+            @UiBack.canceled -= instance.OnUiBack;
         }
 
         public void RemoveCallbacks(IMenuActions instance)
@@ -1222,5 +1353,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnStartGame(InputAction.CallbackContext context);
         void OnPlayerJoin(InputAction.CallbackContext context);
+        void OnUiNavigation(InputAction.CallbackContext context);
+        void OnUiSelect(InputAction.CallbackContext context);
+        void OnUiBack(InputAction.CallbackContext context);
     }
 }

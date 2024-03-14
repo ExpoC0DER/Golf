@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace _game.Scripts.Building
 {
-    [CreateAssetMenu(menuName = "Scriptable Objects")]
+    [CreateAssetMenu(menuName = "Scriptable Objects/Obstacle Database")]
     // ReSharper disable once InconsistentNaming
     public class ObstaclesDatabaseSO : ScriptableObject
     {

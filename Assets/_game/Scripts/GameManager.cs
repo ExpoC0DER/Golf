@@ -29,6 +29,7 @@ namespace _game.Scripts
         private int _currentRound = 0;
         private int _numberOfFinishedPlayers = 0;
 
+        public static event Action<Player> OnPlayerAdded;
         public static event Action<int> OnActivePlayerChanged;
         public static event Action<int> OnRoundEnd;
         public static event Action<int> OnRoundStart;
@@ -67,6 +68,7 @@ namespace _game.Scripts
             player.GameManager = this;
             player.PlayerName = "Player " + player.PlayerID;
             Players.Add(player.PlayerID, player);
+            OnPlayerAdded?.Invoke(player);
         }
 
         public void StartGame()
