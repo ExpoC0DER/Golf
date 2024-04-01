@@ -21,10 +21,7 @@ namespace _game.Scripts.UI
         {
             _playerName.text = _gameManager.GetPlayer(playerId).PlayerName;
             Color playerColor = _gameManager.GetPlayer(playerId).Color;
-            _playerName.color = playerColor;
             _playerNameGraphic.color = playerColor;
-
-            _spectatingPlayerText.gameObject.SetActive(_gameManager.GamePhase is GamePhase.Build or GamePhase.Intermission);
         }
 
         private void OnGameStart(int round)
@@ -41,8 +38,15 @@ namespace _game.Scripts.UI
             _spectatingPlayerText.color = color;
         }
 
+        private void OnGamePhaseChanged(GamePhase gamePhase)
+        {
+            _spectatingPlayerText.gameObject.SetActive(gamePhase is GamePhase.Build);
+            _playerNameGraphic.gameObject.SetActive(gamePhase is GamePhase.Build or GamePhase.Play);
+        }
+
         private void OnEnable()
         {
+            GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
             GameManager.OnRoundStart += OnGameStart;
             BuildController.OnSpectatingPlayerChanged += SetSpectatingPlayerText;
@@ -50,6 +54,7 @@ namespace _game.Scripts.UI
 
         private void OnDisable()
         {
+            GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
             GameManager.OnRoundStart -= OnGameStart;
             BuildController.OnSpectatingPlayerChanged -= SetSpectatingPlayerText;

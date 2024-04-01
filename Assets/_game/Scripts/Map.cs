@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using _game.Scripts.Controls;
+using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,6 +11,7 @@ namespace _game.Scripts
 {
     public class Map : MonoBehaviour
     {
+        [field: SerializeField] public CinemachineVirtualCamera MapCam { get; set; }
         [SerializeField] private List<Hole> _holes = new();
         [SerializeField] private float _radius;
         [SerializeField] private float _distance;
@@ -110,6 +113,24 @@ namespace _game.Scripts
                 newRoundHoles.Add(newHole);
             }
             _maps.Add(newRoundHoles);
+        }
+
+        private void Update() { MapCam.transform.parent.Rotate(Vector3.up, 10 * Time.deltaTime); }
+
+        private void OnRoundStart(int round) { MapCam.transform.parent.position = new Vector3(round * _distance, 0, 0); }
+
+        private void OnGamePhaseChanged(Enums.GamePhase gamePhase) { MapCam.m_Priority = gamePhase == Enums.GamePhase.Intermission ? 100 : 0; }
+
+        private void OnEnable()
+        {
+            GameManager.OnRoundStart += OnRoundStart;
+            GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnRoundStart -= OnRoundStart;
+            GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
         }
     }
 }

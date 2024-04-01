@@ -17,27 +17,27 @@ MonoBehaviour:
     <ID>k__BackingField: 0
     <Prefab>k__BackingField: {fileID: 31740252478674729, guid: a4b1c9b026a29884a9110125adf2df93,
       type: 3}
-    <Sprite>k__BackingField: {fileID: 21300000, guid: 7edb40dc1f5a7404f96e2e4acfaf58e6,
+    <Sprite>k__BackingField: {fileID: 21300000, guid: 9422f839432b0564f94a2a90febbf377,
       type: 3}
     <Enabled>k__BackingField: 1
   - <Name>k__BackingField: Tornado
     <ID>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 4231203229396215310, guid: 00b042117b069584aa53120132076030,
       type: 3}
-    <Sprite>k__BackingField: {fileID: 21300000, guid: 7623b103af6eac143a41ec2b0ba34c22,
+    <Sprite>k__BackingField: {fileID: 21300000, guid: 80105d23dadd5d14f8d9266405a8e4e6,
       type: 3}
     <Enabled>k__BackingField: 1
   - <Name>k__BackingField: Black Hole
     <ID>k__BackingField: 2
     <Prefab>k__BackingField: {fileID: 3093295830215057831, guid: 30b2b8b722875114e8ead524f7998cfa,
       type: 3}
-    <Sprite>k__BackingField: {fileID: 21300000, guid: 51ca9713a763ab243aa4c3f6c5dfef7f,
+    <Sprite>k__BackingField: {fileID: 21300000, guid: 13ef4e464b07be04cbf1dbba24e9b025,
       type: 3}
     <Enabled>k__BackingField: 1
   - <Name>k__BackingField: Wind Zone
     <ID>k__BackingField: 3
     <Prefab>k__BackingField: {fileID: 3216764044969675853, guid: bf65e81070a8cda499fdb0f6c8fa5c21,
       type: 3}
-    <Sprite>k__BackingField: {fileID: 21300000, guid: 762737686ad1ef74e9f832991ad18733,
+    <Sprite>k__BackingField: {fileID: 21300000, guid: bb9b40f5272722647b7a46c5f0fd9370,
       type: 3}
     <Enabled>k__BackingField: 1

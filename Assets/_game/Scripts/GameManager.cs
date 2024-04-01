@@ -18,7 +18,6 @@ namespace _game.Scripts
         [SerializeField] private Map _gameMap;
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
-        [field: SerializeField] public float RandomizeDuration { get; private set; }
 
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
@@ -26,8 +25,8 @@ namespace _game.Scripts
 
         private int _nextAvailableId = 1;
         private int _activePlayerId = -1;
-        private int _currentRound = 0;
-        private int _numberOfFinishedPlayers = 0;
+        private int _currentRound;
+        private int _numberOfFinishedPlayers;
 
         public static event Action<Player> OnPlayerAdded;
         public static event Action<int> OnActivePlayerChanged;
@@ -128,26 +127,6 @@ namespace _game.Scripts
             ChangeActivePlayer(_activePlayerId);
         }
 
-        private void EndRound()
-        {
-            OnRoundEnd?.Invoke(_currentRound);
-            _currentRound++;
-        }
-
-        private void OnEnable()
-        {
-            Player.OnPlayerJoined += AddPlayer;
-            Player.OnPlayerLeft += RemovePlayer;
-            PlayController.OnPlayerFinished += OnPlayerFinished;
-        }
-
-        private void OnDestroy()
-        {
-            Player.OnPlayerJoined -= AddPlayer;
-            Player.OnPlayerLeft -= RemovePlayer;
-            PlayController.OnPlayerFinished -= OnPlayerFinished;
-        }
-
         public void SwitchPlayer(Iterate iterate)
         {
             //Do not switch player if round finishes
@@ -158,18 +137,9 @@ namespace _game.Scripts
             {
                 GamePhase = GamePhase == GamePhase.Play ? GamePhase.Intermission : GamePhase.Play;
                 OnGamePhaseChanged?.Invoke(GamePhase);
-                if (GamePhase == GamePhase.Intermission)
-                    StartCoroutine(ChangeGamePhaseDelayed(GamePhase.Build, RandomizeDuration));
             }
             _activePlayerId = nextPlayerId;
             ChangeActivePlayer(_activePlayerId);
-        }
-
-        private IEnumerator ChangeGamePhaseDelayed(GamePhase gamePhase, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            GamePhase = gamePhase;
-            OnGamePhaseChanged?.Invoke(GamePhase);
         }
 
         private int GetIteratedPlayerId(Iterate iterate, int startPlayerId = -1)
@@ -202,6 +172,32 @@ namespace _game.Scripts
                 break;
             }
             return nextPlayerId;
+        }
+
+        public void ChangeGamePhase(GamePhase newGamePhase)
+        {
+            GamePhase = GamePhase;
+            OnGamePhaseChanged?.Invoke(newGamePhase);
+        }
+        
+        private void EndRound()
+        {
+            OnRoundEnd?.Invoke(_currentRound);
+            _currentRound++;
+        }
+
+        private void OnEnable()
+        {
+            Player.OnPlayerJoined += AddPlayer;
+            Player.OnPlayerLeft += RemovePlayer;
+            PlayController.OnPlayerFinished += OnPlayerFinished;
+        }
+
+        private void OnDestroy()
+        {
+            Player.OnPlayerJoined -= AddPlayer;
+            Player.OnPlayerLeft -= RemovePlayer;
+            PlayController.OnPlayerFinished -= OnPlayerFinished;
         }
     }
 }

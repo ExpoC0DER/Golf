@@ -13,13 +13,19 @@ namespace _game.Scripts.UI
 {
     public class PlayerJoinScreen : MonoBehaviour
     {
+        [SerializeField] private float _inputTimeout = 0.25f;
+        [Space]
         [SerializeField] private PlayerListItem _playerListItemPrefab;
         [SerializeField] private RectTransform _playerListContent;
         [SerializeField] private List<ColorPicker> _colorPickers;
         [SerializeField] private UnityEvent _onUiSelect;
         [SerializeField] private UnityEvent _onUiBack;
 
+        private float _timeSinceLastInput;
+
         private void Start() { UpdateColors(); }
+
+        private void FixedUpdate() { _timeSinceLastInput += Time.fixedDeltaTime; }
 
         [Button("Update Colors")]
         private void UpdateColors()
@@ -51,9 +57,11 @@ namespace _game.Scripts.UI
 
         private void OnMoveColor(Vector2 uiInput, Player player)
         {
-
             int currentColorId = GetCurrentColorId(player);
             if (currentColorId == -1) return;
+            
+            if (_timeSinceLastInput < _inputTimeout) return;
+            _timeSinceLastInput = 0;
 
             _colorPickers[currentColorId].PlayerId = -1;
 
@@ -66,6 +74,7 @@ namespace _game.Scripts.UI
 
             _colorPickers[currentColorId].PlayerId = player.PlayerID;
             player.Color = _colorPickers[currentColorId].Color;
+            _colorPickers[currentColorId].transform.DOKill(true);
             _colorPickers[currentColorId].transform.DOShakePosition(0.5f, 10);
         }
 

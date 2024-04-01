@@ -9,7 +9,7 @@ namespace _game.Scripts
         [field: SerializeField] public Transform StartLocation { get; private set; }
         [field: SerializeField] public int PlayerId { get; set; }
         [SerializeField] private Renderer _renderer;
-        private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
+        private readonly int _materialColorReference = Shader.PropertyToID("_Color");
 
         public void SetGrassColor(Color color)
         {

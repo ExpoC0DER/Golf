@@ -37,6 +37,7 @@ namespace _game.Scripts.Controls
         [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
         [field: SerializeField, ReadOnly] public RectTransform PlayerCursor { get; set; }
         [SerializeField] private Renderer _renderer;
+        [SerializeField] private Marker _marker;
 
         public GameManager GameManager { get; set; }
 
@@ -56,7 +57,7 @@ namespace _game.Scripts.Controls
         /// <summary>
         /// Returns int PlayerId, int NextObstacleId, float duration
         /// </summary>
-        public static event Action<int, int, float> OnRandomObstacleGenerated;
+        public static event Action<int, int> OnRandomObstacleGenerated;
 
         public static event Action<Vector2, Player> OnUiNavigation;
         public static event Action OnUiSelect;
@@ -73,6 +74,7 @@ namespace _game.Scripts.Controls
         {
             Color = newColor;
             PlayerCursor.GetComponent<Image>().color = newColor;
+            _marker.Color = newColor;
             MaterialPropertyBlock mpb = new MaterialPropertyBlock();
             mpb.SetColor(_materialColorReference, newColor);
             _renderer.SetPropertyBlock(mpb);
@@ -142,7 +144,7 @@ namespace _game.Scripts.Controls
                     break;
                 case GamePhase.Intermission:
                     NextObstacleId = _buildController.GetRandomActiveObstacleId();
-                    OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId, GameManager.RandomizeDuration);
+                    OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gamePhase), gamePhase, null);
