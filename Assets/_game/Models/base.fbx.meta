@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Grass
+    second: {fileID: 2100000, guid: 91a2ea80c6db10145b2870796783901b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Material.009
     second: {fileID: 2100000, guid: 6469f10670557b34f9561bdad59efb11, type: 2}
   - first:
@@ -14,6 +19,16 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Material.010
     second: {fileID: 2100000, guid: 91a2ea80c6db10145b2870796783901b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Side
+    second: {fileID: 2100000, guid: f49723edd2cab27459a1411e6c061a78, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Top
+    second: {fileID: 2100000, guid: 6469f10670557b34f9561bdad59efb11, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
