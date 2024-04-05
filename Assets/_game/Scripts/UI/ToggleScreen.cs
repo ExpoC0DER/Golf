@@ -21,6 +21,7 @@ namespace _game.Scripts.UI
             _selectedToggleId = Mathf.Clamp(_selectedToggleId, 0, _eventToggles.Count - 1);
 
             _eventToggles[_selectedToggleId].Toggle.isOn = true;
+            _eventToggles[_selectedToggleId].Toggle.transform.DOKill(true);
             _eventToggles[_selectedToggleId].Toggle.transform.DOShakePosition(0.5f,10);
         }
 

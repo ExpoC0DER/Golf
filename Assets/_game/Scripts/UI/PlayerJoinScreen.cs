@@ -59,23 +59,46 @@ namespace _game.Scripts.UI
         {
             int currentColorId = GetCurrentColorId(player);
             if (currentColorId == -1) return;
-            
+
             if (_timeSinceLastInput < _inputTimeout) return;
             _timeSinceLastInput = 0;
 
-            _colorPickers[currentColorId].PlayerId = -1;
+            //Try to move color picker to new cell
+            if (!TryMoveColorPicker(ref currentColorId, OverflowClamp(currentColorId + (int)(uiInput.x + uiInput.y * 4), _colorPickers.Count), player))
+                //if the cell is occupied try to move it to the next free cell (horizontally only)
+                for(int i = 2; i < _colorPickers.Count; i++)
+                    //if new unoccupied cell is found stop searching
+                    if (TryMoveColorPicker(ref currentColorId, OverflowClamp(currentColorId + (int)(i * uiInput.x), _colorPickers.Count), player))
+                        break;
 
-            currentColorId += (int)(uiInput.x + uiInput.y * 4);
-
-            if (currentColorId >= _colorPickers.Count)
-                currentColorId -= _colorPickers.Count;
-            if (currentColorId < 0)
-                currentColorId += _colorPickers.Count;
-
-            _colorPickers[currentColorId].PlayerId = player.PlayerID;
-            player.Color = _colorPickers[currentColorId].Color;
             _colorPickers[currentColorId].transform.DOKill(true);
             _colorPickers[currentColorId].transform.DOShakePosition(0.5f, 10);
+        }
+
+        private bool TryMoveColorPicker(ref int currentColorPickerId, int newColorPickerId, Player player)
+        {
+            //if the cell is occupied return false
+            if (_colorPickers[newColorPickerId].PlayerId != -1)
+                return false;
+            
+            //set old cell to unoccupied and update current id
+            _colorPickers[currentColorPickerId].PlayerId = -1;
+            currentColorPickerId = newColorPickerId;
+
+            //update new cell to player id and color
+            _colorPickers[newColorPickerId].PlayerId = player.PlayerID;
+            player.Color = _colorPickers[newColorPickerId].Color;
+            return true;
+        }
+
+        private static int OverflowClamp(int value, int maxValue)
+        {
+            if (value >= maxValue)
+                value -= maxValue;
+            if (value < 0)
+                value += maxValue;
+
+            return value;
         }
 
         private int GetCurrentColorId(Player player)
