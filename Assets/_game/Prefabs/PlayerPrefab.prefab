@@ -1226,6 +1226,7 @@ MonoBehaviour:
   _sprite: {fileID: 3367586338664930814}
   _followPoint: {fileID: 1398196092672690374}
   _buildCam: {fileID: 663782897712765512}
+  _player: {fileID: 2611184276011494922}
   _mark: {fileID: 8438746341527913810}
   _scaleFactor: 0.2
   _showDistanceThreshold: 8
