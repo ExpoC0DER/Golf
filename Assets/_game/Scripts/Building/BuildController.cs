@@ -159,7 +159,7 @@ namespace _game.Scripts.Building
             _pendingObject.Place();
             _pendingObject = null;
             _selectedObstacleIndex = -1;
-            Player.GameManager.SwitchPlayer(Iterate.Next);
+            Player.InvokeTookTurn();
             ResetSpectatingPlayerKey();
         }
 

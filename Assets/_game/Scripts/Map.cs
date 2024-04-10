@@ -119,7 +119,7 @@ namespace _game.Scripts
 
         private void OnRoundStart(int round) { MapCam.transform.parent.position = new Vector3(round * _distance, 0, 0); }
 
-        private void OnGamePhaseChanged(Enums.GamePhase gamePhase) { MapCam.m_Priority = gamePhase == Enums.GamePhase.Intermission ? 100 : 0; }
+        private void OnGamePhaseChanged(Enums.GamePhase gamePhase) { MapCam.m_Priority = gamePhase == Enums.GamePhase.ObstacleSelection ? 100 : 0; }
 
         private void OnEnable()
         {

@@ -58,6 +58,7 @@ namespace _game.Scripts.Controls
         /// Returns int PlayerId, int NextObstacleId, float duration
         /// </summary>
         public static event Action<int, int> OnRandomObstacleGenerated;
+        public static event Action<int, bool> OnPlayerTookTurn;
 
         public static event Action<Vector2, Player> OnUiNavigation;
         public static event Action OnUiSelect;
@@ -80,6 +81,8 @@ namespace _game.Scripts.Controls
             _renderer.SetPropertyBlock(mpb);
         }
 
+        public void InvokeTookTurn(bool finished = false) { OnPlayerTookTurn?.Invoke(PlayerID, finished); }
+
         private void SetActiveCameraPriority(int newPriority)
         {
             //Camera.m_Priority = newPriority;
@@ -95,7 +98,7 @@ namespace _game.Scripts.Controls
                 PlayCamera.m_Priority = newPriority;
                 BuildCamera.m_Priority = 0;
             }
-            if (GamePhase is GamePhase.Build or GamePhase.Intermission)
+            if (GamePhase is GamePhase.Build)
             {
                 //Set camera position and pivot to player cam
                 BuildCameraFollowPoint.position = transform.position;
@@ -114,26 +117,37 @@ namespace _game.Scripts.Controls
 
         private void OnActivePlayerChanged(int playerId)
         {
-            if (PlayerID == playerId)
+            Active = PlayerID == playerId;
+            ActivatePlayer(Active);
+        }
+
+        private void ActivatePlayer(bool value)
+        {
+            if (value)
             {
                 SetActiveCameraPriority(10);
-                PlayerCursor.gameObject.SetActive(true);
-                Active = true;
-                if (GamePhase is GamePhase.Build or GamePhase.Intermission)
+                if (GamePhase is GamePhase.Build or GamePhase.Play)
+                    PlayerCursor.gameObject.SetActive(true);
+                if (GamePhase is GamePhase.Build)
                     _buildController.StartBuild();
             }
             else
             {
                 SetActiveCameraPriority(0);
                 PlayerCursor.gameObject.SetActive(false);
-                Active = false;
             }
         }
+
+
         private void OnGamePhaseChanged(GamePhase gamePhase)
         {
-            if (Finished) return;
-
             GamePhase = gamePhase;
+
+            //Try activate player just in case other GamePhase overrode initial activation
+            ActivatePlayer(Active);
+
+            //if (Finished) return;
+
             switch (gamePhase)
             {
                 case GamePhase.Play:
@@ -142,12 +156,10 @@ namespace _game.Scripts.Controls
                 case GamePhase.Build:
                     _playerInput.SwitchCurrentActionMap(ActionMap.Build.ToString());
                     break;
-                case GamePhase.Intermission:
+                case GamePhase.ObstacleSelection:
                     NextObstacleId = _buildController.GetRandomActiveObstacleId();
                     OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(gamePhase), gamePhase, null);
             }
         }
 
@@ -177,7 +189,7 @@ namespace _game.Scripts.Controls
             if (!ctx.performed) return;
             OnUiSelect?.Invoke();
         }
-        
+
         public void OnUiBackCallback(InputAction.CallbackContext ctx)
         {
             if (!ctx.performed) return;

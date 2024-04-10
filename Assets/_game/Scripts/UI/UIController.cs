@@ -15,13 +15,16 @@ namespace _game.Scripts.UI
         [SerializeField] private Image _playerNameGraphic;
         [SerializeField] private GameObject _playerJoinScreen;
         [SerializeField] private TMP_Text _spectatingPlayerText;
-
+        [SerializeField] private Image _playerModeGraphic;
+        [SerializeField] private TMP_Text _playerModeText;
+ 
 
         private void OnActivePlayerChanged(int playerId)
         {
             _playerName.text = _gameManager.GetPlayer(playerId).PlayerName;
             Color playerColor = _gameManager.GetPlayer(playerId).Color;
             _playerNameGraphic.color = playerColor;
+            _playerModeGraphic.color = playerColor;
         }
 
         private void OnGameStart(int round)
@@ -42,6 +45,7 @@ namespace _game.Scripts.UI
         {
             _spectatingPlayerText.gameObject.SetActive(gamePhase is GamePhase.Build);
             _playerNameGraphic.gameObject.SetActive(gamePhase is GamePhase.Build or GamePhase.Play);
+            _playerModeText.text = gamePhase is GamePhase.Play ? "Playing" : "Building";
         }
 
         private void OnEnable()
