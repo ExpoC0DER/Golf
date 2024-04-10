@@ -40,8 +40,6 @@ namespace _game.Scripts.Controls
         private bool _isAiming, _shotBall, _tookTurn, _isInTheHole;
         private Camera _mainCamera;
 
-        public static event Action<int> OnPlayerFinished;
-
         private void Awake()
         {
             _player = GetComponent<Player>();
@@ -99,25 +97,30 @@ namespace _game.Scripts.Controls
 
             if (!_player.Active) return;
 
-            if (_tookTurn && ballSpeed < 0.01f)
+            if (ballSpeed > 0.01f)
             {
-                _tookTurn = false;
-                _player.GameManager.SwitchPlayer(Iterate.Next);
+                if (_shotBall)
+                {
+                    _tookTurn = true;
+                    _shotBall = false;
+                }
             }
-
-            if (_shotBall && ballSpeed > 0.01f)
+            else
             {
-                _tookTurn = true;
-                _shotBall = false;
-            }
+                if (_isInTheHole)
+                {
+                    _player.Finished = true;
+                    gameObject.layer = (int)Layer.Ghost;
+                    _player.Active = false;
+                    _rb.isKinematic = true;
+                    _player.InvokeTookTurn(true);
+                }
+                else if (_tookTurn)
+                {
+                    _tookTurn = false;
+                    _player.InvokeTookTurn();
+                }
 
-            if (_isInTheHole && ballSpeed < 0.01f)
-            {
-                _player.Finished = true;
-                gameObject.layer = (int)Layer.Ghost;
-                _player.Active = false;
-                _rb.isKinematic = true;
-                OnPlayerFinished?.Invoke(_player.PlayerID);
             }
         }
 
@@ -231,13 +234,15 @@ namespace _game.Scripts.Controls
         private void OnRoundStart(int round)
         {
             _isInTheHole = false;
+            _tookTurn = false;
+            _shotBall = false;
             if (_player.Map.GetRoundStartLocation(round, _player.PlayerID, out Transform startLocation))
             {
                 Transform ballPrefab = transform.parent;
                 ballPrefab.SetParent(startLocation.parent.parent);
                 ballPrefab.position = startLocation.position;
                 ballPrefab.localRotation = Quaternion.Euler(Vector3.zero);
-                
+
                 transform.localPosition = Vector3.zero;
                 _rb.position = transform.position;
                 //_rb.position = startLocation.position;

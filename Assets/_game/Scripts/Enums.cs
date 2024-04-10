@@ -13,9 +13,11 @@ namespace _game.Scripts
 
         public enum GamePhase
         {
+            Menu,
             Play,
             Build,
-            Intermission
+            ObstacleSelection,
+            RoundEnd
         }
 
         public enum ActionMap
