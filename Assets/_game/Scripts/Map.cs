@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using _game.Scripts.Controls;
+using _game.Scripts.UI;
 using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace _game.Scripts
         [SerializeField] private float _distance;
         [SerializeField] private int _numberOfPlayers;
         [SerializeField] private Transform _target;
+        [SerializeField] private Transform _testColors;
         private List<List<Hole>> _maps = new();
 
         public int RoundsCount { get => _holes.Count; }
@@ -43,6 +45,21 @@ namespace _game.Scripts
                         hole.SetGrassColor(color);
                         break;
                     }
+                }
+            }
+        }
+
+        [Button("Debug Colors")]
+        private void DebugColors()
+        {
+            ColorPicker[] colorPickers = _testColors.GetComponentsInChildren<ColorPicker>();
+            foreach (List<Hole> roundHoles in _maps)
+            {
+                int i = 0;
+                foreach (Hole hole in roundHoles)
+                {
+                    hole.SetGrassColor(colorPickers[i].Color);
+                    i++;
                 }
             }
         }

@@ -23,7 +23,7 @@ namespace _game.Scripts.UI
 
         [SerializeField, SerializedDictionary("PlayerId", "Line"), ReadOnly]
         private SerializedDictionary<int, ScoreBoardLine> _playerLines = new();
-        
+
         //* Update scoreboard when changed from editor
         private void UpdateScoreBoard() { InstantiateScoreboard(_numberOfPlayers, _numberOfRounds); }
 
@@ -91,8 +91,24 @@ namespace _game.Scripts.UI
             _content.gameObject.SetActive(true);
         }
 
-        private void OnEnable() { GameManager.OnRoundEnd += OnRoundEnd; }
+        public void StartNextRound()
+        {
+            if (_gameManager.GamePhase != Enums.GamePhase.RoundEnd) return;
 
-        private void OnDisable() { GameManager.OnRoundEnd -= OnRoundEnd; }
+            _content.gameObject.SetActive(false);
+            _gameManager.StartNextRound();
+        }
+
+        private void OnEnable()
+        {
+            GameManager.OnRoundEnd += OnRoundEnd;
+            Player.OnUiSelect += StartNextRound;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnRoundEnd -= OnRoundEnd;
+            Player.OnUiSelect -= StartNextRound;
+        }
     }
 }
