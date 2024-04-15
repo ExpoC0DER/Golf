@@ -17,7 +17,8 @@ namespace _game.Scripts
             Play,
             Build,
             ObstacleSelection,
-            RoundEnd
+            RoundEnd,
+            GameEnd
         }
 
         public enum ActionMap

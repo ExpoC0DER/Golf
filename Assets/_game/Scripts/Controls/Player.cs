@@ -160,6 +160,9 @@ namespace _game.Scripts.Controls
                     NextObstacleId = _buildController.GetRandomActiveObstacleId();
                     OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId);
                     break;
+                case GamePhase.RoundEnd or GamePhase.GameEnd:
+                    _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString());
+                    break;
             }
         }
 
@@ -176,7 +179,7 @@ namespace _game.Scripts.Controls
             ShotsTaken = 0;
             _playerInput.SwitchCurrentActionMap(ActionMap.Player.ToString());
         }
-        private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString()); }
+        //private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString()); }
 
         public void OnUiNavigationCallback(InputAction.CallbackContext ctx)
         {
@@ -187,6 +190,7 @@ namespace _game.Scripts.Controls
         public void OnUiSelectCallback(InputAction.CallbackContext ctx)
         {
             if (!ctx.performed) return;
+            print("select");
             OnUiSelect?.Invoke();
         }
 
@@ -201,7 +205,7 @@ namespace _game.Scripts.Controls
             OnPlayerJoined?.Invoke(this);
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
             GameManager.OnRoundStart += OnRoundStart;
-            GameManager.OnRoundEnd += OnRoundEnd;
+            //GameManager.OnRoundEnd += OnRoundEnd;
             GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
         }
 
@@ -210,7 +214,7 @@ namespace _game.Scripts.Controls
             OnPlayerLeft?.Invoke(PlayerID);
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
             GameManager.OnRoundStart -= OnRoundStart;
-            GameManager.OnRoundEnd -= OnRoundEnd;
+            //GameManager.OnRoundEnd -= OnRoundEnd;
             GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
         }
     }

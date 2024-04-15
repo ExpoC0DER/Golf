@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e7976d66e574ca4a900431d6ea019c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <StartLocation>k__BackingField: {fileID: 5956632408870583254}
+  <StartLocation>k__BackingField: {fileID: 7079237210293371394}
   <PlayerId>k__BackingField: 0
   _renderer: {fileID: 951093715196622638}
   _renderers: []

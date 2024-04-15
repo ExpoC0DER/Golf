@@ -33,6 +33,7 @@ namespace _game.Scripts
         public static event Action<int> OnRoundEnd;
         public static event Action<int> OnRoundStart;
         public static event Action<GamePhase> OnGamePhaseChanged;
+        public static event Action<SerializedDictionary<int, Player>> OnGameEnd;
 
         private void OnApplicationFocus(bool hasFocus)
         {
@@ -111,7 +112,10 @@ namespace _game.Scripts
                 _numberOfFinishedPlayers++;
                 if (_numberOfFinishedPlayers >= Players.Count)
                 {
-                    EndRound();
+                    if (_currentRound < _gameMap.RoundsCount - 1)
+                        EndRound();
+                    else
+                        EndGame();
                     return; //Do not switch player if round finishes
                 }
             }
@@ -204,6 +208,23 @@ namespace _game.Scripts
             OnGamePhaseChanged?.Invoke(GamePhase);
         }
 
+        private void EndGame()
+        {
+            OnGameEnd?.Invoke(Players);
+            GamePhase = GamePhase.GameEnd;
+            OnGamePhaseChanged?.Invoke(GamePhase);
+        }
+
+        public void RestartGame()
+        {
+            List<Player> p = Players.Values.ToList();
+            foreach (Player player in p)
+            {
+                Destroy(player.gameObject);
+            }
+            OnDisable();
+        }
+
         private void OnEnable()
         {
             Player.OnPlayerJoined += AddPlayer;
@@ -211,11 +232,11 @@ namespace _game.Scripts
             Player.OnPlayerTookTurn += OnPlayerTookTurn;
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             Player.OnPlayerJoined -= AddPlayer;
             Player.OnPlayerLeft -= RemovePlayer;
-            Player.OnPlayerTookTurn += OnPlayerTookTurn;
+            Player.OnPlayerTookTurn -= OnPlayerTookTurn;
         }
     }
 }

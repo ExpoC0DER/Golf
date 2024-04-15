@@ -15,6 +15,20 @@ namespace _game.Scripts.UI
 
         private int _selectedToggleId;
 
+        private void Start()
+        {
+            int i = 0;
+            foreach (EventToggle toggle in _eventToggles)
+            {
+                if (toggle.Toggle.isOn)
+                {
+                    _selectedToggleId = i;
+                    break;
+                }
+                i++;
+            }
+        }
+
         private void OnSwitchToggle(Vector2 uiInput, Player player)
         {
             _selectedToggleId += (int)uiInput.x;
@@ -22,7 +36,7 @@ namespace _game.Scripts.UI
 
             _eventToggles[_selectedToggleId].Toggle.isOn = true;
             _eventToggles[_selectedToggleId].Toggle.transform.DOKill(true);
-            _eventToggles[_selectedToggleId].Toggle.transform.DOShakePosition(0.5f,10);
+            _eventToggles[_selectedToggleId].Toggle.transform.DOShakePosition(0.5f, 10);
         }
 
         private void OnUiSelect() { _eventToggles[_selectedToggleId].Event?.Invoke(); }

@@ -13,6 +13,7 @@ namespace _game.Scripts.UI
         [SerializeField] private ScoreBoardLine _scoreBoardLinePrefab;
         [SerializeField] private ScoreBoardLine _headerLine;
         [SerializeField] private Transform _content;
+        [SerializeField] private Transform _scoreboardContent;
 
         [Header("Settings"), SerializeField, Min(0), OnValueChanged("UpdateScoreBoard")]
         private int _numberOfRounds;
@@ -33,7 +34,7 @@ namespace _game.Scripts.UI
 
             for(int i = 0; i < numberOfPlayers; i++)
             {
-                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
+                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _scoreboardContent);
                 _playerLines.Add(i, tempLine);
                 tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
             }
@@ -51,7 +52,7 @@ namespace _game.Scripts.UI
 
             foreach (KeyValuePair<int, Player> pair in players)
             {
-                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
+                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _scoreboardContent);
                 _playerLines.Add(pair.Key, tempLine);
                 tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
             }

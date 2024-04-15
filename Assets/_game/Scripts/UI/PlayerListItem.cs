@@ -16,14 +16,16 @@ namespace _game.Scripts.UI
         [SerializeField] private Image _idBg;
         [SerializeField] private TMP_Text _idText;
 
-        private void Start()
+        private void OnEnable()
         {
-            _idText.text = "P" + Player.PlayerID;
+            if (Player)
+                _idText.text = "P" + Player.PlayerID;
         }
 
         private void Update()
         {
-            SetColor(Player.Color);
+            if (Player)
+                SetColor(Player.Color);
         }
 
         public void SetColor(Color newColor)

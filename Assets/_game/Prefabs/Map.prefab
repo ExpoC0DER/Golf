@@ -54,11 +54,11 @@ MonoBehaviour:
   - {fileID: 5666116253429126093, guid: 45a23990527782a43827d3d318f6cefd, type: 3}
   - {fileID: 5666116253429126093, guid: 45a23990527782a43827d3d318f6cefd, type: 3}
   - {fileID: 5666116253429126093, guid: 45a23990527782a43827d3d318f6cefd, type: 3}
-  - {fileID: 5666116253429126093, guid: 45a23990527782a43827d3d318f6cefd, type: 3}
   _radius: 15
   _distance: 100
   _numberOfPlayers: 10
   _target: {fileID: 5601595948754084320}
+  _testColors: {fileID: 0}
 --- !u!114 &7986842279438852566
 MonoBehaviour:
   m_ObjectHideFlags: 0
