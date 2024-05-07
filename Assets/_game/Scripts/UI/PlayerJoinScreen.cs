@@ -49,6 +49,7 @@ namespace _game.Scripts.UI
                 else
                 {
                     newPlayerListItem.SetColor(_colorPickers[colorId].Color);
+                    newPlayerListItem.SetName("P" + player.PlayerID);
                     player.Color = _colorPickers[colorId].Color;
                     _colorPickers[colorId].PlayerId = player.PlayerID;
                 }
@@ -80,7 +81,7 @@ namespace _game.Scripts.UI
             //if the cell is occupied return false
             if (_colorPickers[newColorPickerId].PlayerId != -1)
                 return false;
-            
+
             //set old cell to unoccupied and update current id
             _colorPickers[currentColorPickerId].PlayerId = -1;
             currentColorPickerId = newColorPickerId;

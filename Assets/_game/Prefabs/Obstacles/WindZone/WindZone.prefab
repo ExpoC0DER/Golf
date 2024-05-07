@@ -5172,6 +5172,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4401829929266120476}
+  - component: {fileID: 8421593742851088745}
   m_Layer: 0
   m_Name: PropelersPivot
   m_TagString: Untagged
@@ -5197,6 +5198,20 @@ Transform:
   - {fileID: 3860063905936706426}
   m_Father: {fileID: 7244505040579946152}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -30}
+--- !u!114 &8421593742851088745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5205480218407409392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc7ee21b384bffa45a7ad3e645c785d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationAxis: 1
+  _speed: 300
 --- !u!1 &5681880985051303039
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,11 @@ namespace _game.Scripts.UI
         [SerializeField] private HorizontalLayoutGroup _roundsHolderLayout;
         [SerializeField] private TMP_Text _roundScorePrefab;
         [SerializeField] private TMP_Text _total;
+        [SerializeField] private TMP_Text _playerName;
+        [SerializeField] private Image _bg;
+
+        public Color Color { set { _bg.color = value; } }
+        public string PlayerName { set { _playerName.text = value; } }
 
         [Header("Settings"), SerializeField, Min(0), OnValueChanged("UpdateLine")]
         private int _numberOfScores;

@@ -1,6 +1,7 @@
 using System;
 using _game.Scripts.Controls;
 using Cinemachine;
+using TMPro;
 using UnityEngine;
 
 namespace _game.Scripts
@@ -10,6 +11,7 @@ namespace _game.Scripts
         public Color Color { set { _sprite.color = value; } }
 
         [SerializeField] private SpriteRenderer _sprite;
+        [SerializeField] private TMP_Text _playerName;
         [SerializeField] private Transform _followPoint;
         [SerializeField] private CinemachineVirtualCamera _buildCam;
         [SerializeField] private Player _player;
@@ -56,6 +58,8 @@ namespace _game.Scripts
             lookTargetPos.y = transform.position.y;
             transform.LookAt(lookTargetPos, transform.up);
             transform.localScale = Vector3.one * (_scaleFactor * distance);
+
+            _playerName.text = "P"+_player.PlayerID;
         }
 
         private void OnGamePhaseChanged(Enums.GamePhase gamePhase) { _isBuildPhase = gamePhase == Enums.GamePhase.Build; }

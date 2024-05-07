@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using _game.Scripts.Controls;
 using AYellowpaper.SerializedCollections;
 using NaughtyAttributes;
@@ -55,6 +56,8 @@ namespace _game.Scripts.UI
                 ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _scoreboardContent);
                 _playerLines.Add(pair.Key, tempLine);
                 tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
+                tempLine.Color = pair.Value.Color;
+                tempLine.PlayerName = "P" + pair.Value.PlayerID;
             }
 
             SetHeaderLine(numberOfRounds);
@@ -89,6 +92,14 @@ namespace _game.Scripts.UI
                 _playerLines[pair.Key].SetScore(round, pair.Value.ShotsTaken);
                 _playerLines[pair.Key].SetTotal(pair.Value.ShotsTakenTotal);
             }
+            
+            //Move lines depending on player standing
+            List<KeyValuePair<int, Player>> sortedPairs = _gameManager.Players.OrderBy(pair => pair.Value.ShotsTakenTotal).ToList();
+            foreach (KeyValuePair<int, Player> sortedPair in sortedPairs)
+            {
+                _playerLines[sortedPair.Key].transform.SetAsLastSibling();
+            }
+            
             _content.gameObject.SetActive(true);
         }
 

@@ -736,8 +736,8 @@ MonoBehaviour:
   _zoomMinMax: {x: 0.5, y: 30}
   _cameraSensitivity: {x: 400, y: 400}
   _moveSpeed: 1.5
-  _canPlaceColor: {r: 1, g: 1, b: 1, a: 0.29803923}
-  _canNotPlaceColor: {r: 1, g: 0, b: 0, a: 0.29803923}
+  _canPlaceColor: {r: 1, g: 1, b: 1, a: 0.69803923}
+  _canNotPlaceColor: {r: 1, g: 0, b: 0, a: 0.69803923}
   _previewMaterial: {fileID: 2100000, guid: 3b75f4d311dff7a4d802910260ee7567, type: 2}
   _obstacles: {fileID: 11400000, guid: 04a40c4f851380c4cb3a70e5c27bc4e8, type: 2}
   _layerMask:
@@ -1224,6 +1224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _sprite: {fileID: 3367586338664930814}
+  _playerName: {fileID: 1149898525791422052}
   _followPoint: {fileID: 1398196092672690374}
   _buildCam: {fileID: 663782897712765512}
   _player: {fileID: 2611184276011494922}

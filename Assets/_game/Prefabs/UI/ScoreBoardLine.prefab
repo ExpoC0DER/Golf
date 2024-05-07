@@ -202,6 +202,8 @@ MonoBehaviour:
   _roundScorePrefab: {fileID: 5381210731400822438, guid: 713cc34c04b74954b8b6e84418406f81,
     type: 3}
   _total: {fileID: 2311417560477242991}
+  _playerName: {fileID: 6727291497794420889}
+  _bg: {fileID: 6165896201846031317}
   _numberOfScores: 0
   _forceSameWidth: 1
   _roundScores: []

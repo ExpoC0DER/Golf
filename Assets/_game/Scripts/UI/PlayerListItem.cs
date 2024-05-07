@@ -33,5 +33,10 @@ namespace _game.Scripts.UI
             _bg.color = newColor;
             _idBg.color = newColor;
         }
+
+        public void SetName(string name)
+        {
+            _idText.text = name;
+        }
     }
 }
