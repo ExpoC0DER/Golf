@@ -2,6 +2,7 @@ using System;
 using Cinemachine;
 using DG.Tweening;
 using NaughtyAttributes;
+using NaughtyAttributes.Test;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -12,12 +13,15 @@ namespace _game.Scripts.Controls
     public class PlayController : MonoBehaviour
     {
         public float TargetAngle { get; set; } = 45f;
+        public float Power { get; private set; }
+        [field: SerializeField, MinMaxSlider(0, 10)]
+        public Vector2 PowerDistanceMinMax { get; private set; }
+        [field: SerializeField, MinMaxSlider(0, 10)]
+        public Vector2 PowerBarMinMax { get; private set; }
 
-        [SerializeField] private Transform _powerBar;
-        [SerializeField] private Material _powerBarMat;
+        [SerializeField] private Transform _aimPosition;
         [SerializeField] private Transform _powerBarRotationPivot;
         [SerializeField] private Transform _highlightRing;
-        [SerializeField] private LineRenderer _line;
 
         [Header("Settings")]
         [SerializeField] private float _zoomSpeed;
@@ -26,19 +30,19 @@ namespace _game.Scripts.Controls
         [SerializeField, MinMaxSlider(0.1f, 10)]
         private Vector2 _zoomMinMax;
         [SerializeField] private Vector2 _cameraSensitivity = new Vector2(300, 300);
-        [SerializeField, MinMaxSlider(0, 10)]
-        private Vector2 _powerDistanceMinMax;
-        [SerializeField, MinMaxSlider(0, 10)]
-        private Vector2 _powerBarMinMax;
+        [SerializeField] private float _stopVelocityThreshold;
+        [SerializeField] private float _minPowerThreshold;
+        [SerializeField] private LayerMask _golfTrackLayer;
 
         private Player _player;
         private CinemachineFramingTransposer _framingTransposer;
         private Rigidbody _rb;
-        private float _zoomInput, _power;
+        private float _zoomInput;
         private Vector2 _mousePosition = new Vector2(960, 540);
         private Vector2 _joystickInput;
         private bool _isAiming, _shotBall, _tookTurn, _isInTheHole;
         private Camera _mainCamera;
+        private Vector3 _startTurnPos;
 
         private void Awake()
         {
@@ -56,11 +60,11 @@ namespace _game.Scripts.Controls
         private float Interpolate(float inputPower)
         {
             // Ensure that inputPower is within the specified range
-            inputPower = Mathf.Clamp(inputPower, _powerBarMinMax.x, _powerBarMinMax.y);
+            inputPower = Mathf.Clamp(inputPower, PowerBarMinMax.x, PowerBarMinMax.y);
             // Normalize inputPower within the range [0, 1]
-            float t = Mathf.InverseLerp(_powerBarMinMax.x, _powerBarMinMax.y, inputPower);
+            float t = Mathf.InverseLerp(PowerBarMinMax.x, PowerBarMinMax.y, inputPower);
             // Use Mathf.Lerp to interpolate on the InSine curve
-            float interpolatedValue = Mathf.Lerp(0, _power, t);
+            float interpolatedValue = Mathf.Lerp(0, Power, t);
 
             return interpolatedValue;
         }
@@ -87,6 +91,10 @@ namespace _game.Scripts.Controls
             //Handle aiming when holding down left mouse button
             HandleAiming();
             HandleZooming();
+            if (_rb.velocity.magnitude <= _stopVelocityThreshold)
+            {
+                _rb.velocity = Vector3.zero;
+            }
         }
 
         private void FixedUpdate()
@@ -117,6 +125,11 @@ namespace _game.Scripts.Controls
                 }
                 else if (_tookTurn)
                 {
+                    bool touchingTrack = Physics.Raycast(transform.position, Vector3.down, 10, _golfTrackLayer);
+                    if (!touchingTrack)
+                        _rb.position = _startTurnPos;
+                    else
+                        _startTurnPos = _rb.position;
                     _tookTurn = false;
                     _player.InvokeTookTurn();
                 }
@@ -141,18 +154,15 @@ namespace _game.Scripts.Controls
 
             if (_isAiming && _rb.velocity.magnitude < 0.01f)
             {
-                SetLineLength(transform.position, mouseWorldPos);
-
                 _powerBarRotationPivot.gameObject.SetActive(true);
-                _power = Vector3.Distance(transform.position, mouseWorldPos).RemapClamped(_powerDistanceMinMax.x, _powerDistanceMinMax.y, _powerBarMinMax.x, _powerBarMinMax.y);
-                SetPowerBarScale(_power);
+                Power = Vector3.Distance(_aimPosition.position, mouseWorldPos).RemapClamped(PowerDistanceMinMax.x, PowerDistanceMinMax.y, PowerBarMinMax.x, PowerBarMinMax.y);
             }
             else
             {
                 //If PowerBar is active (play was aiming) add force to ball in direction of pivot times inputPower multiplied by fraction of PowerBar
-                if (_power > 0.01f)
+                if (Power > _minPowerThreshold)
                 {
-                    _rb.AddForce(_powerBarRotationPivot.forward * _power, ForceMode.Impulse);
+                    _rb.AddForce(_powerBarRotationPivot.forward * Power, ForceMode.Impulse);
                     _shotBall = true;
                     _player.ShotsTaken++;
                     _player.ShotsTakenTotal++;
@@ -161,8 +171,7 @@ namespace _game.Scripts.Controls
 
                 //Turn off PowerBar rotation and reset scale
                 _powerBarRotationPivot.gameObject.SetActive(false);
-                _power = 0f;
-                SetPowerBarScale(0);
+                Power = 0f;
             }
         }
 
@@ -175,44 +184,11 @@ namespace _game.Scripts.Controls
             _mousePosition.y = Mathf.Clamp(_mousePosition.y + _joystickInput.y * _cameraSensitivity.y * Time.deltaTime, 0, Screen.height);
         }
 
-        /// <summary>
-        /// Sets start and end world position for aiming line
-        /// </summary>
-        /// <param name="startPos">Start world position</param>
-        /// <param name="endPos">End world position</param>
-        private void SetLineLength(Vector3 startPos, Vector3 endPos)
-        {
-            Vector3 dir = endPos - startPos;
-            float dist = Mathf.Clamp(Vector3.Distance(startPos, endPos), _powerDistanceMinMax.x, _powerDistanceMinMax.y);
-            endPos = startPos + (dir.normalized * dist);
-
-            _line.SetPosition(0, startPos);
-            _line.SetPosition(1, endPos);
-        }
-
         private void HandleZooming()
         {
             //Handle zooming camera
             _framingTransposer.m_CameraDistance += _zoomInput * _zoomSpeed * Time.deltaTime;
             _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
-        }
-
-        /// <summary>
-        /// Changes PowerBar length(Z scale) by amount
-        /// </summary>
-        /// <param name="power">Amount to change length by</param>
-        private void SetPowerBarScale(float power)
-        {
-            power = Mathf.Clamp(power, _powerBarMinMax.x, _powerBarMinMax.y);
-
-            Vector3 powerBarLocalScale = _powerBar.localScale;
-            _powerBar.localScale = powerBarLocalScale;
-
-            float hue = Mathf.Clamp(power.Remap(_powerBarMinMax.x, _powerBarMinMax.y, 0.42f, 0f), 0, 0.42f);
-            Color newColor = Color.HSVToRGB(hue, 1, 1);
-            _line.startColor = _line.endColor = newColor;
-            _powerBarMat.SetColor("_BaseColor", newColor);
-            _powerBarMat.SetColor("_EmissionColor", newColor);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -242,6 +218,7 @@ namespace _game.Scripts.Controls
                 ballPrefab.SetParent(startLocation.parent.parent);
                 ballPrefab.position = startLocation.position;
                 ballPrefab.localRotation = Quaternion.Euler(Vector3.zero);
+                _startTurnPos = startLocation.position;
 
                 transform.localPosition = Vector3.zero;
                 _rb.position = transform.position;
@@ -300,10 +277,10 @@ namespace _game.Scripts.Controls
             if (!ctx.performed) return;
 
             //Cancel aiming
+            Power = 0;
             _isAiming = false;
             //Turn off PowerBar and reset scale
             _powerBarRotationPivot.gameObject.SetActive(false);
-            SetPowerBarScale(-_powerBarMinMax.y);
         }
 
         private void OnEnable()

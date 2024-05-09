@@ -33,6 +33,7 @@ namespace _game.Scripts.ObstacleScripts
                 float distanceFromCenter = Vector3.Distance(position, playerPosition);
                 float scaledStrength = distanceFromCenter.RemapClamped(0, _range.lossyScale.x, _strength, 0);
                 player.AddForce((position - playerPosition).normalized * (scaledStrength * Time.deltaTime), ForceMode.Acceleration);
+                player.AddForce(Vector3.up * (scaledStrength * Time.deltaTime), ForceMode.Force);
             }
         }
 

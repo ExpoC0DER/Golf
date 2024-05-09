@@ -364,6 +364,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -437,6 +443,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Base
+      objectReference: {fileID: 0}
+    - target: {fileID: 5623395253996823244, guid: ceb0c4fd4c606de4bbacd3db90a219b8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6127899636900725529, guid: ceb0c4fd4c606de4bbacd3db90a219b8,
         type: 3}
@@ -647,6 +658,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (20)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -671,6 +688,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: log (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1982579956593942128, guid: fb9da558949e4db4e97bb0e4616088f6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     - target: {fileID: 2015125969946958779, guid: fb9da558949e4db4e97bb0e4616088f6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -932,6 +955,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1016,6 +1045,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1090,6 +1125,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (18)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1164,6 +1205,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1188,6 +1235,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: log (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1982579956593942128, guid: fb9da558949e4db4e97bb0e4616088f6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     - target: {fileID: 2015125969946958779, guid: fb9da558949e4db4e97bb0e4616088f6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1312,6 +1365,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1386,6 +1445,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1460,6 +1525,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1549,6 +1620,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (17)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1573,6 +1650,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: log (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1982579956593942128, guid: fb9da558949e4db4e97bb0e4616088f6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     - target: {fileID: 2015125969946958779, guid: fb9da558949e4db4e97bb0e4616088f6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1707,6 +1790,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1781,6 +1870,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1855,6 +1950,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1879,6 +1980,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: log
       objectReference: {fileID: 0}
+    - target: {fileID: 1982579956593942128, guid: fb9da558949e4db4e97bb0e4616088f6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     - target: {fileID: 2015125969946958779, guid: fb9da558949e4db4e97bb0e4616088f6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2013,6 +2120,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2087,6 +2200,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2111,6 +2230,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: log (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1982579956593942128, guid: fb9da558949e4db4e97bb0e4616088f6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     - target: {fileID: 2015125969946958779, guid: fb9da558949e4db4e97bb0e4616088f6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2235,6 +2360,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2319,6 +2450,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2393,6 +2530,27 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 641623645455429099, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434252713401715774, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2467,6 +2625,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (16)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2655,6 +2819,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2729,6 +2899,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: plank1M
       objectReference: {fileID: 0}
+    - target: {fileID: 8186901823487294323, guid: 0db770babc09243418146ec7490b8ee6,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 7b2ed5e1c5d7b0041a0b47bbab214e9f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

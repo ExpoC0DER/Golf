@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,11 +14,27 @@ namespace _game.Scripts.Building
 
         [SerializeField] private UnityEvent _onPlace;
 
+        private float _fullTurnsUntilDespawn = 2;
+        [ReadOnly] private float _fullTurnsCounter = -0.5f;
+
         public void Place()
         {
             if (PlacementCheck)
                 PlacementCheck.enabled = false;
             _onPlace.Invoke();
         }
+
+        private void OnGamePhaseChanged(Enums.GamePhase gamePhase)
+        {
+            _fullTurnsCounter += 0.5f;
+            if (_fullTurnsCounter >= _fullTurnsUntilDespawn)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void OnEnable() { GameManager.OnGamePhaseChanged += OnGamePhaseChanged; }
+
+        private void OnDisable() { GameManager.OnGamePhaseChanged -= OnGamePhaseChanged; }
     }
 }
