@@ -1128,6 +1128,70 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 0bb25c28-555d-471c-9092-faab5d0a5219
     m_ActionName: 'Menu/UiBack[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnShowControlsKeyboardCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 284f9a3d-723f-41b7-befa-51ea7620dfc6
+    m_ActionName: 'Player/ShowControlsKeyboard[/Keyboard/h]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnShowControlsControllerCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: f5528707-5606-4328-bb3a-0d8914b0a370
+    m_ActionName: Player/ShowControlsController
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnShowControlsKeyboardCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 06100bca-73f4-46a8-92f6-852634e186be
+    m_ActionName: 'Build/ShowControlsKeyboard[/Keyboard/h]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2611184276011494922}
+        m_TargetAssemblyTypeName: _game.Scripts.Controls.Player, Assembly-CSharp
+        m_MethodName: OnShowControlsControllerCallback
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6a5566f1-7168-44ce-8664-c59302debaa0
+    m_ActionName: Build/ShowControlsController
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Menu

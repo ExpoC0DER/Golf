@@ -98,6 +98,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowControlsKeyboard"",
+                    ""type"": ""Button"",
+                    ""id"": ""284f9a3d-723f-41b7-befa-51ea7620dfc6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowControlsController"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5528707-5606-4328-bb3a-0d8914b0a370"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -298,6 +316,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""RotateCamera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1c354b1d-e4f6-4d73-8e96-5d09e86b442b"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""ShowControlsKeyboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3b644d14-7097-4fb1-a67d-18291efb906a"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""ShowControlsController"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -390,6 +430,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": ""RotateCamera"",
                     ""type"": ""Button"",
                     ""id"": ""079f8ef9-4051-4140-b41a-19deb20e755c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowControlsKeyboard"",
+                    ""type"": ""Button"",
+                    ""id"": ""06100bca-73f4-46a8-92f6-852634e186be"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowControlsController"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a5566f1-7168-44ce-8664-c59302debaa0"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -759,6 +817,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""RotateCamera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d8b207de-0779-4b8e-a090-2329950336ef"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardAndMouse"",
+                    ""action"": ""ShowControlsKeyboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b09b2610-676d-46a9-b7fa-2f1e7624acd4"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""ShowControlsController"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1032,6 +1112,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_VirtualMouseJoystick = m_Player.FindAction("VirtualMouseJoystick", throwIfNotFound: true);
         m_Player_RotateCamera = m_Player.FindAction("RotateCamera", throwIfNotFound: true);
+        m_Player_ShowControlsKeyboard = m_Player.FindAction("ShowControlsKeyboard", throwIfNotFound: true);
+        m_Player_ShowControlsController = m_Player.FindAction("ShowControlsController", throwIfNotFound: true);
         // Build
         m_Build = asset.FindActionMap("Build", throwIfNotFound: true);
         m_Build_LeftClick = m_Build.FindAction("LeftClick", throwIfNotFound: true);
@@ -1044,6 +1126,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Build_MousePosition = m_Build.FindAction("MousePosition", throwIfNotFound: true);
         m_Build_VirtualMouseJoystick = m_Build.FindAction("VirtualMouseJoystick", throwIfNotFound: true);
         m_Build_RotateCamera = m_Build.FindAction("RotateCamera", throwIfNotFound: true);
+        m_Build_ShowControlsKeyboard = m_Build.FindAction("ShowControlsKeyboard", throwIfNotFound: true);
+        m_Build_ShowControlsController = m_Build.FindAction("ShowControlsController", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_StartGame = m_Menu.FindAction("StartGame", throwIfNotFound: true);
@@ -1120,6 +1204,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_VirtualMouseJoystick;
     private readonly InputAction m_Player_RotateCamera;
+    private readonly InputAction m_Player_ShowControlsKeyboard;
+    private readonly InputAction m_Player_ShowControlsController;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1132,6 +1218,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @VirtualMouseJoystick => m_Wrapper.m_Player_VirtualMouseJoystick;
         public InputAction @RotateCamera => m_Wrapper.m_Player_RotateCamera;
+        public InputAction @ShowControlsKeyboard => m_Wrapper.m_Player_ShowControlsKeyboard;
+        public InputAction @ShowControlsController => m_Wrapper.m_Player_ShowControlsController;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1165,6 +1253,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RotateCamera.started += instance.OnRotateCamera;
             @RotateCamera.performed += instance.OnRotateCamera;
             @RotateCamera.canceled += instance.OnRotateCamera;
+            @ShowControlsKeyboard.started += instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.performed += instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.canceled += instance.OnShowControlsKeyboard;
+            @ShowControlsController.started += instance.OnShowControlsController;
+            @ShowControlsController.performed += instance.OnShowControlsController;
+            @ShowControlsController.canceled += instance.OnShowControlsController;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1193,6 +1287,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RotateCamera.started -= instance.OnRotateCamera;
             @RotateCamera.performed -= instance.OnRotateCamera;
             @RotateCamera.canceled -= instance.OnRotateCamera;
+            @ShowControlsKeyboard.started -= instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.performed -= instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.canceled -= instance.OnShowControlsKeyboard;
+            @ShowControlsController.started -= instance.OnShowControlsController;
+            @ShowControlsController.performed -= instance.OnShowControlsController;
+            @ShowControlsController.canceled -= instance.OnShowControlsController;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1224,6 +1324,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Build_MousePosition;
     private readonly InputAction m_Build_VirtualMouseJoystick;
     private readonly InputAction m_Build_RotateCamera;
+    private readonly InputAction m_Build_ShowControlsKeyboard;
+    private readonly InputAction m_Build_ShowControlsController;
     public struct BuildActions
     {
         private @PlayerControls m_Wrapper;
@@ -1238,6 +1340,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @MousePosition => m_Wrapper.m_Build_MousePosition;
         public InputAction @VirtualMouseJoystick => m_Wrapper.m_Build_VirtualMouseJoystick;
         public InputAction @RotateCamera => m_Wrapper.m_Build_RotateCamera;
+        public InputAction @ShowControlsKeyboard => m_Wrapper.m_Build_ShowControlsKeyboard;
+        public InputAction @ShowControlsController => m_Wrapper.m_Build_ShowControlsController;
         public InputActionMap Get() { return m_Wrapper.m_Build; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1277,6 +1381,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RotateCamera.started += instance.OnRotateCamera;
             @RotateCamera.performed += instance.OnRotateCamera;
             @RotateCamera.canceled += instance.OnRotateCamera;
+            @ShowControlsKeyboard.started += instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.performed += instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.canceled += instance.OnShowControlsKeyboard;
+            @ShowControlsController.started += instance.OnShowControlsController;
+            @ShowControlsController.performed += instance.OnShowControlsController;
+            @ShowControlsController.canceled += instance.OnShowControlsController;
         }
 
         private void UnregisterCallbacks(IBuildActions instance)
@@ -1311,6 +1421,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RotateCamera.started -= instance.OnRotateCamera;
             @RotateCamera.performed -= instance.OnRotateCamera;
             @RotateCamera.canceled -= instance.OnRotateCamera;
+            @ShowControlsKeyboard.started -= instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.performed -= instance.OnShowControlsKeyboard;
+            @ShowControlsKeyboard.canceled -= instance.OnShowControlsKeyboard;
+            @ShowControlsController.started -= instance.OnShowControlsController;
+            @ShowControlsController.performed -= instance.OnShowControlsController;
+            @ShowControlsController.canceled -= instance.OnShowControlsController;
         }
 
         public void RemoveCallbacks(IBuildActions instance)
@@ -1434,6 +1550,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMousePosition(InputAction.CallbackContext context);
         void OnVirtualMouseJoystick(InputAction.CallbackContext context);
         void OnRotateCamera(InputAction.CallbackContext context);
+        void OnShowControlsKeyboard(InputAction.CallbackContext context);
+        void OnShowControlsController(InputAction.CallbackContext context);
     }
     public interface IBuildActions
     {
@@ -1447,6 +1565,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMousePosition(InputAction.CallbackContext context);
         void OnVirtualMouseJoystick(InputAction.CallbackContext context);
         void OnRotateCamera(InputAction.CallbackContext context);
+        void OnShowControlsKeyboard(InputAction.CallbackContext context);
+        void OnShowControlsController(InputAction.CallbackContext context);
     }
     public interface IMenuActions
     {

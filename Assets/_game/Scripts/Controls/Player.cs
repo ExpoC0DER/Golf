@@ -63,6 +63,8 @@ namespace _game.Scripts.Controls
         public static event Action<Vector2, Player> OnUiNavigation;
         public static event Action OnUiSelect;
         public static event Action OnUiBack;
+        public static event Action OnShowControlsKeyboard;
+        public static event Action OnShowControlsController;
 
         private void Awake()
         {
@@ -198,6 +200,18 @@ namespace _game.Scripts.Controls
         {
             if (!ctx.performed) return;
             OnUiBack?.Invoke();
+        }
+
+        public void OnShowControlsKeyboardCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnShowControlsKeyboard?.Invoke();
+        }
+        
+        public void OnShowControlsControllerCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnShowControlsController?.Invoke();
         }
 
         private void OnEnable()
