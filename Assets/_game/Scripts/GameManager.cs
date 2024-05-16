@@ -19,35 +19,26 @@ namespace _game.Scripts
         [SerializeField] private CinemachineVirtualCamera _sceneCamera;
         [SerializeField] private ScoreBoard _scoreBoard;
 
-        [field: Header("Settings")]
-        [field: SerializeField] public float RandomizeDuration { get; private set; }
-        [field: SerializeField] public bool SingleBoard { get; set; }
-
-        [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
+        [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Menu;
         [field: SerializeField, SerializedDictionary("PlayerId", "Player"), ReadOnly]
         public SerializedDictionary<int, Player> Players { get; private set; } = new();
 
         private int _nextAvailableId = 1;
         private int _activePlayerId = -1;
-        private int _currentRound = 0;
-        private int _numberOfFinishedPlayers = 0;
+        private int _currentRound;
+        private int _numberOfFinishedPlayers;
 
+        public static event Action<Player> OnPlayerAdded;
         public static event Action<int> OnActivePlayerChanged;
         public static event Action<int> OnRoundEnd;
         public static event Action<int> OnRoundStart;
         public static event Action<GamePhase> OnGamePhaseChanged;
+        public static event Action<SerializedDictionary<int, Player>> OnGameEnd;
 
-        private void Update()
+        private void OnApplicationFocus(bool hasFocus)
         {
-            // Check for debug input
-            if (Input.GetKeyDown(KeyCode.Period))
-            {
-                SwitchPlayer(Iterate.Next);
-            }
-            if (Input.GetKeyDown(KeyCode.Comma))
-            {
-                SwitchPlayer(Iterate.Previous);
-            }
+            if (hasFocus)
+                Cursor.visible = false;
         }
 
         public void PrintTest(string message) { Debug.Log(message); }
@@ -70,21 +61,17 @@ namespace _game.Scripts
             player.GameManager = this;
             player.PlayerName = "Player " + player.PlayerID;
             Players.Add(player.PlayerID, player);
+            OnPlayerAdded?.Invoke(player);
         }
 
         public void StartGame()
         {
-            Map newMap = null;
+            Map newMap = Instantiate(_gameMap);
+            newMap.GenerateMap(Players);
             foreach (KeyValuePair<int, Player> pair in Players)
             {
-                int playerId = pair.Value.PlayerID;
-
-                if (!newMap || !SingleBoard)
-                {
-                    newMap = Instantiate(_gameMap);
-                    newMap.transform.position = Vector3.right * playerId * 100;
-                }
-
+                // int playerId = pair.Value.PlayerID;
+                // newMap.transform.position = Vector3.right * playerId * 100;
                 pair.Value.Map = newMap;
             }
 
@@ -93,6 +80,8 @@ namespace _game.Scripts
             _scoreBoard.InstantiateScoreboard(Players, _gameMap.RoundsCount);
 
             OnRoundStart?.Invoke(_currentRound);
+            GamePhase = GamePhase.Play;
+            OnGamePhaseChanged?.Invoke(GamePhase);
         }
 
         public Player GetPlayer(int playerId) { return Players.TryGetValue(playerId, out Player player) ? player : null; }
@@ -102,6 +91,7 @@ namespace _game.Scripts
             if (Players.ContainsKey(playerId))
             {
                 //TODO: Disable/Delete Player
+
                 Players.Remove(playerId);
             }
         }
@@ -115,81 +105,71 @@ namespace _game.Scripts
             return _nextAvailableId++;
         }
 
-        private void OnPlayerFinished(int playerId)
+        private void OnPlayerTookTurn(int playerId, bool finished)
         {
-            _numberOfFinishedPlayers++;
-            if (_numberOfFinishedPlayers >= Players.Count)
+            if (finished)
             {
-                EndRound();
+                _numberOfFinishedPlayers++;
+                if (_numberOfFinishedPlayers >= Players.Count)
+                {
+                    if (_currentRound < _gameMap.RoundsCount - 1)
+                        EndRound();
+                    else
+                        EndGame();
+                    return; //Do not switch player if round finishes
+                }
             }
+            SwitchPlayer(Iterate.Next);
         }
 
         public void StartNextRound()
         {
-            StopAllCoroutines();
-            GamePhase = GamePhase.Play;
-            OnGamePhaseChanged?.Invoke(GamePhase);
             _numberOfFinishedPlayers = 0;
             OnRoundStart?.Invoke(_currentRound);
+            GamePhase = GamePhase.Play;
+            OnGamePhaseChanged?.Invoke(GamePhase);
+            _activePlayerId = Players[FirstPlayerId].PlayerID;
             ChangeActivePlayer(_activePlayerId);
         }
 
-        private void EndRound()
+        private void SwitchPlayer(Iterate iterate)
         {
-            OnRoundEnd?.Invoke(_currentRound);
-            _currentRound++;
-        }
-
-        private void OnEnable()
-        {
-            Player.OnPlayerJoined += AddPlayer;
-            Player.OnPlayerLeft += RemovePlayer;
-            PlayController.OnPlayerFinished += OnPlayerFinished;
-        }
-
-        private void OnDestroy()
-        {
-            Player.OnPlayerJoined -= AddPlayer;
-            Player.OnPlayerLeft -= RemovePlayer;
-            PlayController.OnPlayerFinished -= OnPlayerFinished;
-        }
-
-        public void SwitchPlayer(Iterate iterate)
-        {
-            //Do not switch player if round finishes
-            if (_numberOfFinishedPlayers >= Players.Count) return;
-
             int nextPlayerId = GetIteratedPlayerId(iterate);
             if (nextPlayerId <= _activePlayerId)
             {
-                GamePhase = GamePhase == GamePhase.Play ? GamePhase.Intermission : GamePhase.Play;
+                GamePhase = GamePhase == GamePhase.Play ? GamePhase.ObstacleSelection : GamePhase.Play;
                 OnGamePhaseChanged?.Invoke(GamePhase);
             }
-
             _activePlayerId = nextPlayerId;
-            if (GamePhase == GamePhase.Intermission)
-                StartCoroutine(ChangeGamePhaseDelayed(GamePhase.Build, RandomizeDuration));
-            else
-                ChangeActivePlayer(_activePlayerId);
-        }
-
-        private IEnumerator ChangeGamePhaseDelayed(GamePhase gamePhase, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            GamePhase = gamePhase;
-            OnGamePhaseChanged?.Invoke(GamePhase);
             ChangeActivePlayer(_activePlayerId);
         }
 
-        //TODO add support to iterate by more than 1
+        private int FirstPlayerId
+        {
+            get
+            {
+                int[] keys = Players.Keys.ToArray();
+                Array.Sort(keys);
+                return keys.First();
+            }
+        }
+
+        private int LastPlayerId
+        {
+            get
+            {
+                int[] keys = Players.Keys.ToArray();
+                Array.Sort(keys);
+                return keys.Last();
+            }
+        }
+
         private int GetIteratedPlayerId(Iterate iterate, int startPlayerId = -1)
         {
             int nextPlayerId = startPlayerId == -1 ? _activePlayerId : startPlayerId;
             int iterateBy = iterate == Iterate.Next ? 1 : -1;
-            int[] keys = Players.Keys.ToArray();
-            Array.Sort(keys);
-            int firstPlayerId = keys.First();
-            int lastPlayerId = keys.Last();
+            int firstPlayerId = FirstPlayerId;
+            int lastPlayerId = LastPlayerId;
             while (true)
             {
                 while (true)
@@ -212,6 +192,51 @@ namespace _game.Scripts
                 break;
             }
             return nextPlayerId;
+        }
+
+        public void ChangeGamePhase(GamePhase newGamePhase)
+        {
+            GamePhase = GamePhase;
+            OnGamePhaseChanged?.Invoke(newGamePhase);
+        }
+
+        private void EndRound()
+        {
+            OnRoundEnd?.Invoke(_currentRound);
+            _currentRound++;
+            GamePhase = GamePhase.RoundEnd;
+            OnGamePhaseChanged?.Invoke(GamePhase);
+        }
+
+        private void EndGame()
+        {
+            OnGameEnd?.Invoke(Players);
+            GamePhase = GamePhase.GameEnd;
+            OnGamePhaseChanged?.Invoke(GamePhase);
+        }
+
+        public void RestartGame()
+        {
+            List<Player> p = Players.Values.ToList();
+            foreach (Player player in p)
+            {
+                Destroy(player.gameObject);
+            }
+            OnDisable();
+        }
+
+        private void OnEnable()
+        {
+            Player.OnPlayerJoined += AddPlayer;
+            Player.OnPlayerLeft += RemovePlayer;
+            Player.OnPlayerTookTurn += OnPlayerTookTurn;
+        }
+
+        private void OnDisable()
+        {
+            Player.OnPlayerJoined -= AddPlayer;
+            Player.OnPlayerLeft -= RemovePlayer;
+            Player.OnPlayerTookTurn -= OnPlayerTookTurn;
         }
     }
 }

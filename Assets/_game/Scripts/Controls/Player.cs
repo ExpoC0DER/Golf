@@ -1,12 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using _game.Scripts.Building;
+using _game.Scripts.UI;
 using static _game.Scripts.Enums;
 using Cinemachine;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace _game.Scripts.Controls
@@ -16,6 +20,7 @@ namespace _game.Scripts.Controls
     {
         [field: SerializeField] public CinemachineVirtualCamera PlayCamera { get; private set; }
         [field: SerializeField] public CinemachineVirtualCamera BuildCamera { get; private set; }
+        //[field: SerializeField] public CinemachineVirtualCamera Camera { get; private set; }
         [field: SerializeField] public Transform BuildCameraFollowPoint { get; private set; }
 
         [Header("Player Info")]
@@ -28,16 +33,19 @@ namespace _game.Scripts.Controls
         [ReadOnly] public int ShotsTakenTotal;
         [ReadOnly] public bool Active;
         [ReadOnly] public int NextObstacleId = -1;
-        [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
 
-        [HideInInspector] public GameManager GameManager;
+        [field: SerializeField, ReadOnly] public GamePhase GamePhase { get; private set; } = GamePhase.Play;
+        [field: SerializeField, ReadOnly] public RectTransform PlayerCursor { get; set; }
         [SerializeField] private Renderer _renderer;
+        [SerializeField] private Marker _marker;
+
+        public GameManager GameManager { get; set; }
 
         private readonly int _materialColorReference = Shader.PropertyToID("_BaseColor");
         private BuildController _buildController;
         private PlayController _playController;
         private PlayerInput _playerInput;
-        
+
         /// <summary>
         /// Returns Player object of Player who joined
         /// </summary>
@@ -49,7 +57,14 @@ namespace _game.Scripts.Controls
         /// <summary>
         /// Returns int PlayerId, int NextObstacleId, float duration
         /// </summary>
-        public static event Action<int, int, float>OnRandomObstacleGenerated;
+        public static event Action<int, int> OnRandomObstacleGenerated;
+        public static event Action<int, bool> OnPlayerTookTurn;
+
+        public static event Action<Vector2, Player> OnUiNavigation;
+        public static event Action OnUiSelect;
+        public static event Action OnUiBack;
+        public static event Action OnShowControlsKeyboard;
+        public static event Action OnShowControlsController;
 
         private void Awake()
         {
@@ -61,22 +76,42 @@ namespace _game.Scripts.Controls
         public void SetColor(Color newColor)
         {
             Color = newColor;
+            PlayerCursor.GetComponent<Image>().color = newColor;
+            _marker.Color = newColor;
             MaterialPropertyBlock mpb = new MaterialPropertyBlock();
             mpb.SetColor(_materialColorReference, newColor);
             _renderer.SetPropertyBlock(mpb);
         }
 
+        public void InvokeTookTurn(bool finished = false) { OnPlayerTookTurn?.Invoke(PlayerID, finished); }
+
         private void SetActiveCameraPriority(int newPriority)
         {
+            //Camera.m_Priority = newPriority;
             if (GamePhase is GamePhase.Play)
             {
+                //Set camera position to player cam
+                PlayCamera.ForceCameraPosition(BuildCamera.transform.position, BuildCamera.transform.rotation);
+
+                //Update play target angle
+                _playController.TargetAngle = BuildCamera.transform.rotation.eulerAngles.y;
+
+                //Switch camera priority
                 PlayCamera.m_Priority = newPriority;
                 BuildCamera.m_Priority = 0;
             }
             if (GamePhase is GamePhase.Build)
             {
-                BuildCameraFollowPoint.position = PlayCamera.transform.position;
+                //Set camera position and pivot to player cam
+                BuildCameraFollowPoint.position = transform.position;
                 BuildCamera.ForceCameraPosition(PlayCamera.transform.position, PlayCamera.transform.rotation);
+
+                //Update build target angle and pivot rotation
+                Vector3 playerCamRotation = PlayCamera.transform.rotation.eulerAngles;
+                _buildController.TargetAngle = playerCamRotation.y;
+                BuildCameraFollowPoint.rotation = Quaternion.Euler(0, playerCamRotation.y, 0);
+
+                //Switch camera priority
                 BuildCamera.m_Priority = newPriority;
                 PlayCamera.m_Priority = 0;
             }
@@ -84,24 +119,37 @@ namespace _game.Scripts.Controls
 
         private void OnActivePlayerChanged(int playerId)
         {
-            if (PlayerID == playerId)
+            Active = PlayerID == playerId;
+            ActivatePlayer(Active);
+        }
+
+        private void ActivatePlayer(bool value)
+        {
+            if (value)
             {
                 SetActiveCameraPriority(10);
-                Active = true;
+                if (GamePhase is GamePhase.Build or GamePhase.Play)
+                    PlayerCursor.gameObject.SetActive(true);
                 if (GamePhase is GamePhase.Build)
                     _buildController.StartBuild();
             }
             else
             {
                 SetActiveCameraPriority(0);
-                Active = false;
+                PlayerCursor.gameObject.SetActive(false);
             }
         }
+
+
         private void OnGamePhaseChanged(GamePhase gamePhase)
         {
-            if (Finished) return;
-
             GamePhase = gamePhase;
+
+            //Try activate player just in case other GamePhase overrode initial activation
+            ActivatePlayer(Active);
+
+            //if (Finished) return;
+
             switch (gamePhase)
             {
                 case GamePhase.Play:
@@ -110,12 +158,13 @@ namespace _game.Scripts.Controls
                 case GamePhase.Build:
                     _playerInput.SwitchCurrentActionMap(ActionMap.Build.ToString());
                     break;
-                case GamePhase.Intermission:
+                case GamePhase.ObstacleSelection:
                     NextObstacleId = _buildController.GetRandomActiveObstacleId();
-                    OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId, GameManager.RandomizeDuration);
+                    OnRandomObstacleGenerated?.Invoke(PlayerID, NextObstacleId);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(gamePhase), gamePhase, null);
+                case GamePhase.RoundEnd or GamePhase.GameEnd:
+                    _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString());
+                    break;
             }
         }
 
@@ -123,8 +172,8 @@ namespace _game.Scripts.Controls
         {
             if (round == 0)
             {
-                Map.SetGrassColor(Color);
-                Cursor.visible = false;
+                Map.SetGrassColor(PlayerID, Color);
+                SetColor(Color);
             }
             Finished = false;
             GamePhase = GamePhase.Play;
@@ -132,14 +181,45 @@ namespace _game.Scripts.Controls
             ShotsTaken = 0;
             _playerInput.SwitchCurrentActionMap(ActionMap.Player.ToString());
         }
-        private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString()); }
+        //private void OnRoundEnd(int round) { _playerInput.SwitchCurrentActionMap(ActionMap.Menu.ToString()); }
+
+        public void OnUiNavigationCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnUiNavigation?.Invoke(ctx.ReadValue<Vector2>(), this);
+        }
+
+        public void OnUiSelectCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            print("select");
+            OnUiSelect?.Invoke();
+        }
+
+        public void OnUiBackCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnUiBack?.Invoke();
+        }
+
+        public void OnShowControlsKeyboardCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnShowControlsKeyboard?.Invoke();
+        }
+        
+        public void OnShowControlsControllerCallback(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            OnShowControlsController?.Invoke();
+        }
 
         private void OnEnable()
         {
             OnPlayerJoined?.Invoke(this);
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
             GameManager.OnRoundStart += OnRoundStart;
-            GameManager.OnRoundEnd += OnRoundEnd;
+            //GameManager.OnRoundEnd += OnRoundEnd;
             GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
         }
 
@@ -148,7 +228,7 @@ namespace _game.Scripts.Controls
             OnPlayerLeft?.Invoke(PlayerID);
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
             GameManager.OnRoundStart -= OnRoundStart;
-            GameManager.OnRoundEnd -= OnRoundEnd;
+            //GameManager.OnRoundEnd -= OnRoundEnd;
             GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
         }
     }

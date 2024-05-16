@@ -15,16 +15,16 @@ namespace _game.Scripts.UI
         [SerializeField] private Image _playerNameGraphic;
         [SerializeField] private GameObject _playerJoinScreen;
         [SerializeField] private TMP_Text _spectatingPlayerText;
-
+        [SerializeField] private Image _playerModeGraphic;
+        [SerializeField] private TMP_Text _playerModeText;
+ 
 
         private void OnActivePlayerChanged(int playerId)
         {
             _playerName.text = _gameManager.GetPlayer(playerId).PlayerName;
             Color playerColor = _gameManager.GetPlayer(playerId).Color;
-            _playerName.color = playerColor;
             _playerNameGraphic.color = playerColor;
-
-            _spectatingPlayerText.gameObject.SetActive(_gameManager.GamePhase is GamePhase.Build or GamePhase.Intermission);
+            _playerModeGraphic.color = playerColor;
         }
 
         private void OnGameStart(int round)
@@ -41,8 +41,16 @@ namespace _game.Scripts.UI
             _spectatingPlayerText.color = color;
         }
 
+        private void OnGamePhaseChanged(GamePhase gamePhase)
+        {
+            _spectatingPlayerText.gameObject.SetActive(gamePhase is GamePhase.Build);
+            _playerNameGraphic.gameObject.SetActive(gamePhase is GamePhase.Build or GamePhase.Play);
+            _playerModeText.text = gamePhase is GamePhase.Play ? "Playing" : "Building";
+        }
+
         private void OnEnable()
         {
+            GameManager.OnGamePhaseChanged += OnGamePhaseChanged;
             GameManager.OnActivePlayerChanged += OnActivePlayerChanged;
             GameManager.OnRoundStart += OnGameStart;
             BuildController.OnSpectatingPlayerChanged += SetSpectatingPlayerText;
@@ -50,6 +58,7 @@ namespace _game.Scripts.UI
 
         private void OnDisable()
         {
+            GameManager.OnGamePhaseChanged -= OnGamePhaseChanged;
             GameManager.OnActivePlayerChanged -= OnActivePlayerChanged;
             GameManager.OnRoundStart -= OnGameStart;
             BuildController.OnSpectatingPlayerChanged -= SetSpectatingPlayerText;

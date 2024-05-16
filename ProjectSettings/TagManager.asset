@@ -18,9 +18,9 @@ TagManager:
   - Ghost
   - Obstacle
   - ObstaclePreview
-  - 
-  - 
-  - 
+  - IgnorePreviewRender
+  - PowerBar
+  - GolfTrack
   - 
   - 
   - 

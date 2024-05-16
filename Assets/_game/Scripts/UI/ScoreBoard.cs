@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using _game.Scripts.Controls;
 using AYellowpaper.SerializedCollections;
 using NaughtyAttributes;
@@ -13,6 +14,7 @@ namespace _game.Scripts.UI
         [SerializeField] private ScoreBoardLine _scoreBoardLinePrefab;
         [SerializeField] private ScoreBoardLine _headerLine;
         [SerializeField] private Transform _content;
+        [SerializeField] private Transform _scoreboardContent;
 
         [Header("Settings"), SerializeField, Min(0), OnValueChanged("UpdateScoreBoard")]
         private int _numberOfRounds;
@@ -23,7 +25,7 @@ namespace _game.Scripts.UI
 
         [SerializeField, SerializedDictionary("PlayerId", "Line"), ReadOnly]
         private SerializedDictionary<int, ScoreBoardLine> _playerLines = new();
-        
+
         //* Update scoreboard when changed from editor
         private void UpdateScoreBoard() { InstantiateScoreboard(_numberOfPlayers, _numberOfRounds); }
 
@@ -33,7 +35,7 @@ namespace _game.Scripts.UI
 
             for(int i = 0; i < numberOfPlayers; i++)
             {
-                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
+                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _scoreboardContent);
                 _playerLines.Add(i, tempLine);
                 tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
             }
@@ -51,9 +53,11 @@ namespace _game.Scripts.UI
 
             foreach (KeyValuePair<int, Player> pair in players)
             {
-                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _content);
+                ScoreBoardLine tempLine = Instantiate(_scoreBoardLinePrefab, _scoreboardContent);
                 _playerLines.Add(pair.Key, tempLine);
                 tempLine.InstantiateRoundScores(numberOfRounds, _forceSameWidth);
+                tempLine.Color = pair.Value.Color;
+                tempLine.PlayerName = "P" + pair.Value.PlayerID;
             }
 
             SetHeaderLine(numberOfRounds);
@@ -88,11 +92,35 @@ namespace _game.Scripts.UI
                 _playerLines[pair.Key].SetScore(round, pair.Value.ShotsTaken);
                 _playerLines[pair.Key].SetTotal(pair.Value.ShotsTakenTotal);
             }
+            
+            //Move lines depending on player standing
+            List<KeyValuePair<int, Player>> sortedPairs = _gameManager.Players.OrderBy(pair => pair.Value.ShotsTakenTotal).ToList();
+            foreach (KeyValuePair<int, Player> sortedPair in sortedPairs)
+            {
+                _playerLines[sortedPair.Key].transform.SetAsLastSibling();
+            }
+            
             _content.gameObject.SetActive(true);
         }
 
-        private void OnEnable() { GameManager.OnRoundEnd += OnRoundEnd; }
+        public void StartNextRound()
+        {
+            if (_gameManager.GamePhase != Enums.GamePhase.RoundEnd) return;
 
-        private void OnDisable() { GameManager.OnRoundEnd -= OnRoundEnd; }
+            _content.gameObject.SetActive(false);
+            _gameManager.StartNextRound();
+        }
+
+        private void OnEnable()
+        {
+            GameManager.OnRoundEnd += OnRoundEnd;
+            Player.OnUiSelect += StartNextRound;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnRoundEnd -= OnRoundEnd;
+            Player.OnUiSelect -= StartNextRound;
+        }
     }
 }

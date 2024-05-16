@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace _game.Scripts.Building
 {
-    [CreateAssetMenu(menuName = "Scriptable Objects")]
+    [CreateAssetMenu(menuName = "Scriptable Objects/Obstacle Database")]
     // ReSharper disable once InconsistentNaming
     public class ObstaclesDatabaseSO : ScriptableObject
     {
@@ -26,7 +26,7 @@ namespace _game.Scripts.Building
     {
         [field: SerializeField] public string Name { get; private set; }
         [field: SerializeField] public int ID { get; private set; }
-        [field: SerializeField] public PlacementCheck Prefab { get; private set; }
+        [field: SerializeField] public ObstacleBase Prefab { get; private set; }
         [field: SerializeField] public Sprite Sprite { get; private set; }
         [field: SerializeField] public bool Enabled { get; private set; }
     }

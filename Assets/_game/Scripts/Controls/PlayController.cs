@@ -1,60 +1,70 @@
 using System;
 using Cinemachine;
+using DG.Tweening;
 using NaughtyAttributes;
+using NaughtyAttributes.Test;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static _game.Scripts.Enums;
-using Random = UnityEngine.Random;
-using DG.Tweening;
 using UnityEngine.Serialization;
+using static _game.Scripts.Enums;
 
 namespace _game.Scripts.Controls
 {
     public class PlayController : MonoBehaviour
     {
-        [SerializeField] private Transform _powerBar;
-        [SerializeField] private Material _powerBarMat;
+        public float TargetAngle { get; set; } = 45f;
+        public float Power { get; private set; }
+        [field: SerializeField, MinMaxSlider(0, 10)]
+        public Vector2 PowerDistanceMinMax { get; private set; }
+        [field: SerializeField, MinMaxSlider(0, 10)]
+        public Vector2 PowerBarMinMax { get; private set; }
+
+        [SerializeField] private Transform _aimPosition;
         [SerializeField] private Transform _powerBarRotationPivot;
         [SerializeField] private Transform _highlightRing;
 
         [Header("Settings")]
         [SerializeField] private float _zoomSpeed;
         [SerializeField] private float _zoomSpeedScroll;
+        [SerializeField] private float _cameraRotationSpeed;
         [SerializeField, MinMaxSlider(0.1f, 10)]
         private Vector2 _zoomMinMax;
         [SerializeField] private Vector2 _cameraSensitivity = new Vector2(300, 300);
-        [SerializeField] private float _cameraPrecisionSensitivity = 30;
-        [SerializeField, MinMaxSlider(0.1f, 100)]
-        private Vector2 _powerBarMinMax;
-        [SerializeField] private float _powerSensitivity = 0.1f;
-        [SerializeField] private float _power;
+        [SerializeField] private float _stopVelocityThreshold;
+        [SerializeField] private float _minPowerThreshold;
+        [SerializeField] private LayerMask _golfTrackLayer;
 
         private Player _player;
         private CinemachineFramingTransposer _framingTransposer;
-        private CinemachinePOV _pov;
         private Rigidbody _rb;
-        private float _powerInput, _aimRotationInput, _zoomInput;
+        private float _zoomInput;
+        private Vector2 _mousePosition = new Vector2(960, 540);
+        private Vector2 _joystickInput;
         private bool _isAiming, _shotBall, _tookTurn, _isInTheHole;
-
-        public static event Action<int> OnPlayerFinished;
+        private Camera _mainCamera;
+        private Vector3 _startTurnPos;
 
         private void Awake()
         {
             _player = GetComponent<Player>();
-            _framingTransposer = _player.PlayCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
-            _pov = _player.PlayCamera.GetCinemachineComponent<CinemachinePOV>();
             _rb = GetComponent<Rigidbody>();
+        }
+
+        private void Start()
+        {
+            _mainCamera = Camera.main;
+            _framingTransposer = _player.PlayCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         }
 
         // Method to interpolate values on an InSine curve
         private float Interpolate(float inputPower)
         {
             // Ensure that inputPower is within the specified range
-            inputPower = Mathf.Clamp(inputPower, _powerBarMinMax.x, _powerBarMinMax.y);
+            inputPower = Mathf.Clamp(inputPower, PowerBarMinMax.x, PowerBarMinMax.y);
             // Normalize inputPower within the range [0, 1]
-            float t = Mathf.InverseLerp(_powerBarMinMax.x, _powerBarMinMax.y, inputPower);
+            float t = Mathf.InverseLerp(PowerBarMinMax.x, PowerBarMinMax.y, inputPower);
             // Use Mathf.Lerp to interpolate on the InSine curve
-            float interpolatedValue = Mathf.Lerp(0, _power, t);
+            float interpolatedValue = Mathf.Lerp(0, Power, t);
 
             return interpolatedValue;
         }
@@ -81,6 +91,10 @@ namespace _game.Scripts.Controls
             //Handle aiming when holding down left mouse button
             HandleAiming();
             HandleZooming();
+            if (_rb.velocity.magnitude <= _stopVelocityThreshold)
+            {
+                _rb.velocity = Vector3.zero;
+            }
         }
 
         private void FixedUpdate()
@@ -91,61 +105,83 @@ namespace _game.Scripts.Controls
 
             if (!_player.Active) return;
 
-            if (_tookTurn && ballSpeed < 0.01f)
+            if (ballSpeed > 0.01f)
             {
-                _tookTurn = false;
-                _player.GameManager.SwitchPlayer(Iterate.Next);
+                if (_shotBall)
+                {
+                    _tookTurn = true;
+                    _shotBall = false;
+                }
             }
+            else
+            {
+                if (_isInTheHole)
+                {
+                    _player.Finished = true;
+                    gameObject.layer = (int)Layer.Ghost;
+                    _player.Active = false;
+                    _rb.isKinematic = true;
+                    _player.InvokeTookTurn(true);
+                }
+                else if (_tookTurn)
+                {
+                    bool touchingTrack = Physics.Raycast(transform.position, Vector3.down, 10, _golfTrackLayer);
+                    if (!touchingTrack)
+                        _rb.position = _startTurnPos;
+                    else
+                        _startTurnPos = _rb.position;
+                    _tookTurn = false;
+                    _player.InvokeTookTurn();
+                }
 
-            if (_shotBall && ballSpeed > 0.01f)
-            {
-                _tookTurn = true;
-                _shotBall = false;
             }
+        }
 
-            if (_isInTheHole && ballSpeed < 0.01f)
-            {
-                _player.Finished = true;
-                gameObject.layer = (int)Layer.Ghost;
-                _player.Active = false;
-                _rb.isKinematic = true;
-                OnPlayerFinished?.Invoke(_player.PlayerID);
-            }
+        private Vector3 GetWorldPositionOnPlane(Vector3 screenPosition, float z)
+        {
+            Ray ray = _mainCamera.ScreenPointToRay(screenPosition);
+            Plane xy = new Plane(Vector3.down, new Vector3(0, z, 0));
+            xy.Raycast(ray, out float distance);
+            return ray.GetPoint(distance);
         }
 
         private void HandleAiming()
         {
+            MoveCursor();
+
+            Vector3 mouseWorldPos = GetWorldPositionOnPlane(_mousePosition, transform.position.y);
+            _powerBarRotationPivot.LookAt(mouseWorldPos, Vector3.up);
+
             if (_isAiming && _rb.velocity.magnitude < 0.01f)
             {
-                //Lock vertical camera movement and set horizontal sensitivity to more precise
-                _pov.m_VerticalAxis.m_MaxSpeed = 0;
-                _pov.m_HorizontalAxis.m_MaxSpeed = _cameraPrecisionSensitivity;
-
-                //Turn on PowerBar, scale it by mouseYDelta, and rotate facing camera 
                 _powerBarRotationPivot.gameObject.SetActive(true);
-                SetPowerBarScale(_powerInput * +_powerSensitivity);
-                _powerBarRotationPivot.rotation = Quaternion.Euler(0, _pov.m_HorizontalAxis.Value, 0);
+                Power = Vector3.Distance(_aimPosition.position, mouseWorldPos).RemapClamped(PowerDistanceMinMax.x, PowerDistanceMinMax.y, PowerBarMinMax.x, PowerBarMinMax.y);
             }
             else
             {
                 //If PowerBar is active (play was aiming) add force to ball in direction of pivot times inputPower multiplied by fraction of PowerBar
-                if (_powerBarRotationPivot.gameObject.activeSelf)
+                if (Power > _minPowerThreshold)
                 {
-                    _rb.AddForce(_powerBarRotationPivot.forward * Interpolate(_powerBar.localScale.z), ForceMode.Impulse);
+                    _rb.AddForce(_powerBarRotationPivot.forward * Power, ForceMode.Impulse);
                     _shotBall = true;
                     _player.ShotsTaken++;
                     _player.ShotsTakenTotal++;
                     gameObject.layer = (int)Layer.Player;
                 }
 
-                //Set vertical and horizontal camera movement back to normal
-                _pov.m_VerticalAxis.m_MaxSpeed = _cameraSensitivity.y;
-                _pov.m_HorizontalAxis.m_MaxSpeed = _cameraSensitivity.x;
-
                 //Turn off PowerBar rotation and reset scale
                 _powerBarRotationPivot.gameObject.SetActive(false);
-                SetPowerBarScale(-_powerBarMinMax.y);
+                Power = 0f;
             }
+        }
+
+        private void MoveCursor()
+        {
+            if (!_player.PlayerCursor) return;
+
+            _player.PlayerCursor.anchoredPosition = _mousePosition;
+            _mousePosition.x = Mathf.Clamp(_mousePosition.x + _joystickInput.x * _cameraSensitivity.x * Time.deltaTime, 0, Screen.width);
+            _mousePosition.y = Mathf.Clamp(_mousePosition.y + _joystickInput.y * _cameraSensitivity.y * Time.deltaTime, 0, Screen.height);
         }
 
         private void HandleZooming()
@@ -153,22 +189,6 @@ namespace _game.Scripts.Controls
             //Handle zooming camera
             _framingTransposer.m_CameraDistance += _zoomInput * _zoomSpeed * Time.deltaTime;
             _framingTransposer.m_CameraDistance = Mathf.Clamp(_framingTransposer.m_CameraDistance, _zoomMinMax.x, _zoomMinMax.y);
-        }
-
-        /// <summary>
-        /// Changes PowerBar length(Z scale) by amount
-        /// </summary>
-        /// <param name="lenght">Amount to change length by</param>
-        private void SetPowerBarScale(float lenght)
-        {
-            Vector3 powerBarLocalScale = _powerBar.localScale;
-            powerBarLocalScale.z += lenght;
-            powerBarLocalScale.z = Mathf.Clamp(powerBarLocalScale.z, _powerBarMinMax.x, _powerBarMinMax.y);
-            _powerBar.localScale = powerBarLocalScale;
-            float hue = powerBarLocalScale.z.Remap(_powerBarMinMax.x, _powerBarMinMax.y, 0.42f, 0f);
-            Color newColor = Color.HSVToRGB(hue, 1, 1);
-            _powerBarMat.SetColor("_BaseColor", newColor);
-            _powerBarMat.SetColor("_EmissionColor", newColor);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -190,19 +210,23 @@ namespace _game.Scripts.Controls
         private void OnRoundStart(int round)
         {
             _isInTheHole = false;
-            if (_player.Map.GetRoundStartLocation(round, out Transform startLocation))
-                _rb.position = startLocation.position;
+            _tookTurn = false;
+            _shotBall = false;
+            if (_player.Map.GetRoundStartLocation(round, _player.PlayerID, out Transform startLocation))
+            {
+                Transform ballPrefab = transform.parent;
+                ballPrefab.SetParent(startLocation.parent.parent);
+                ballPrefab.position = startLocation.position;
+                ballPrefab.localRotation = Quaternion.Euler(Vector3.zero);
+                _startTurnPos = startLocation.position;
+
+                transform.localPosition = Vector3.zero;
+                _rb.position = transform.position;
+                //_rb.position = startLocation.position;
+            }
             _rb.isKinematic = false;
         }
         private void OnRoundEnd(int round) { _rb.isKinematic = true; }
-
-        public void OnLook(InputAction.CallbackContext ctx)
-        {
-            Vector2 mouseDelta = ctx.ReadValue<Vector2>();
-            _pov.m_VerticalAxis.m_InputAxisValue = mouseDelta.y;
-            if (!_isAiming)
-                _pov.m_HorizontalAxis.m_InputAxisValue = mouseDelta.x;
-        }
 
         public void OnZoomScroll(InputAction.CallbackContext ctx)
         {
@@ -221,24 +245,42 @@ namespace _game.Scripts.Controls
                 _isAiming = false;
         }
 
-        public void GetPower(InputAction.CallbackContext ctx) { _powerInput = ctx.ReadValue<float>(); }
-
-        public void GetAimRotation(InputAction.CallbackContext ctx)
+        public void OnRotateCamera(InputAction.CallbackContext ctx)
         {
-            _aimRotationInput = ctx.ReadValue<float>();
-            if (_isAiming)
-                _pov.m_HorizontalAxis.m_InputAxisValue = _aimRotationInput;
+            if (ctx.performed)
+            {
+                float currentAngle = _player.PlayCamera.transform.rotation.eulerAngles.y;
+
+                TargetAngle += 90 * ctx.ReadValue<float>();
+
+                float angleDiff = Math.Abs(TargetAngle - currentAngle);
+                angleDiff %= 360;
+
+                _player.PlayCamera.transform.DOKill();
+                _player.PlayCamera.transform.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
+                _powerBarRotationPivot.DOKill();
+                _powerBarRotationPivot.DORotate(new Vector3(0, angleDiff * ctx.ReadValue<float>(), 0), angleDiff.Remap(0, 90, 0, _cameraRotationSpeed), RotateMode.WorldAxisAdd).SetEase(Ease.Linear);
+
+                if (TargetAngle > 360)
+                    TargetAngle = 45;
+                if (TargetAngle < 0)
+                    TargetAngle = 315;
+            }
         }
+
+        public void GetMousePosition(InputAction.CallbackContext ctx) { _mousePosition = ctx.ReadValue<Vector2>(); }
+
+        public void OnJoystickMove(InputAction.CallbackContext ctx) { _joystickInput = ctx.ReadValue<Vector2>(); }
 
         public void CancelAiming(InputAction.CallbackContext ctx)
         {
             if (!ctx.performed) return;
 
             //Cancel aiming
+            Power = 0;
             _isAiming = false;
             //Turn off PowerBar and reset scale
             _powerBarRotationPivot.gameObject.SetActive(false);
-            SetPowerBarScale(-_powerBarMinMax.y);
         }
 
         private void OnEnable()

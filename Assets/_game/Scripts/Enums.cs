@@ -1,20 +1,24 @@
 namespace _game.Scripts
 {
-    public abstract class Enums
+    public static class Enums
     {
         public enum Layer
         {
             Player = 6,
             Ghost = 7,
             Obstacle = 8,
-            ObstaclePreview = 9
+            ObstaclePreview = 9,
+            IgnorePreviewRender = 10
         }
 
         public enum GamePhase
         {
+            Menu,
             Play,
             Build,
-            Intermission
+            ObstacleSelection,
+            RoundEnd,
+            GameEnd
         }
 
         public enum ActionMap
@@ -23,14 +27,14 @@ namespace _game.Scripts
             Build,
             Menu
         }
-        
+
         public enum Tags
         {
             Hole,
             Obstacle,
             Wall
         }
-        
+
         public enum Iterate
         {
             Next,
