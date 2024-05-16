@@ -14,8 +14,8 @@ namespace _game.Scripts.Building
 
         [SerializeField] private UnityEvent _onPlace;
 
-        private float _fullTurnsUntilDespawn = 2;
-        [ReadOnly] private float _fullTurnsCounter = -0.5f;
+        private float _fullTurnsUntilDespawn = 3;
+        private float _fullTurnsCounter = -0.5f;
 
         public void Place()
         {
@@ -27,7 +27,7 @@ namespace _game.Scripts.Building
         private void OnGamePhaseChanged(Enums.GamePhase gamePhase)
         {
             _fullTurnsCounter += 0.5f;
-            if (_fullTurnsCounter >= _fullTurnsUntilDespawn)
+            if (_fullTurnsCounter > _fullTurnsUntilDespawn)
             {
                 Destroy(gameObject);
             }
